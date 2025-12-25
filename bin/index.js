@@ -173,8 +173,11 @@ const selectOption = async (query, options) => {
   console.log("📄 Updating prisma/base.prisma...");
   if (fs.existsSync(prismaBaseFile)) {
     let baseContent = fs.readFileSync(prismaBaseFile, "utf8");
-    // Replace provider
-    baseContent = baseContent.replace(/provider\s*=\s*".*"/, `provider = "${dbProvider}"`);
+    // Replace provider in datasource block
+    baseContent = baseContent.replace(
+      /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")([^"]+)(")/, 
+      `$1${dbProvider}$3`
+    );
     fs.writeFileSync(prismaBaseFile, baseContent);
   }
 

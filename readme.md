@@ -14,16 +14,32 @@
 
 ## 📦 Instalasi & Penggunaan
 
-Buat project baru cukup dengan satu perintah:
+Anda dapat menginstall framework ini menggunakan versi terbaru atau versi spesifik agar lebih fleksibel:
+
+### 1. Menggunakan Versi Terbaru (Recommended)
 
 ```bash
-npx lapeh nama-project-anda
+npx lapeh@latest nama-project-anda
 ```
 
 Atau gunakan flag `--full` untuk setup lengkap (termasuk seeding data default user & roles):
 
 ```bash
-npx lapeh nama-project-anda --full
+npx lapeh@latest nama-project-anda --full
+```
+
+### 2. Menggunakan Versi Spesifik
+
+Jika Anda membutuhkan versi tertentu (misalnya untuk kompatibilitas):
+
+```bash
+npx lapeh@1.0.8 nama-project-anda
+```
+
+Atau dengan setup lengkap:
+
+```bash
+npx lapeh@1.0.8 nama-project-anda --full
 ```
 
 ### Apa yang terjadi otomatis?
@@ -43,6 +59,18 @@ npm run dev
 ```
 
 Server akan berjalan di `http://localhost:4000`.
+
+### 🔑 Akun Default (Jika menggunakan `--full` atau `npm run db:seed`)
+
+Jika Anda melakukan setup dengan flag `--full`, database akan terisi dengan akun default berikut:
+
+| Role            | Email       | Password |
+| :-------------- | :---------- | :------- |
+| **Super Admin** | `sa@sa.com` | `string` |
+| **Admin**       | `a@a.com`   | `string` |
+| **User**        | `u@u.com`   | `string` |
+
+> **Catatan:** Segera ubah password akun-akun ini jika Anda mendeploy ke production!
 
 ---
 

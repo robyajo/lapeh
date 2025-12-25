@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "index.js",
   "bin": {
@@ -32,7 +32,9 @@
     "boilerplate",
     "typescript",
     "prisma",
-    "lapeh-cli"
+    "roby",
+    "roby-karti-s",
+    "lapeh"
   ],
   "author": "Roby Karti S <robyfull.dev@gmail.com>",
   "license": "MIT",

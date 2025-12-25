@@ -26,6 +26,14 @@ Setelah selesai, Anda bisa langsung menjalankan project:
 npm run dev
 ```
 
+### Akun Default
+
+Jika seeder dijalankan (via `npm run first` atau `npm run db:seed`), gunakan akun berikut:
+
+- **Super Admin**: `sa@sa.com` / `string`
+- **Admin**: `a@a.com` / `string`
+- **User**: `u@u.com` / `string`
+
 ## Database Workflow (Prisma)
 
 Framework ini menggunakan **Prisma ORM** dengan struktur schema yang modular (dipecah per file). Berikut adalah panduan lengkap dari Development hingga Deployment.
