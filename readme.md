@@ -20,12 +20,20 @@ Buat project baru cukup dengan satu perintah:
 npx lapeh nama-project-anda
 ```
 
+Atau gunakan flag `--full` untuk setup lengkap (termasuk seeding data default user & roles):
+
+```bash
+npx lapeh nama-project-anda --full
+```
+
 ### Apa yang terjadi otomatis?
 
 1. Struktur project dibuat.
 2. Dependencies diinstall.
-3. Environment variable (`.env`) disiapkan.
-4. **JWT Secret** di-generate otomatis.
+3. Database dipilih & dikonfigurasi secara interaktif.
+4. **Database** dibuat dan dimigrasi otomatis.
+5. **JWT Secret** di-generate otomatis.
+6. **Seeding Data** (jika menggunakan `--full`).
 
 Masuk ke folder project dan jalankan:
 

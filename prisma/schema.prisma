@@ -1,11 +1,13 @@
 generator client {
-  provider = "prisma-client"
+  provider = "postgresql"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+
 
 model cache {
   key        String @id @db.VarChar(255)
