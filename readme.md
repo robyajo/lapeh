@@ -1,6 +1,6 @@
-# API Lapeh Framework
+# Lapeh Framework
 
-**API Lapeh** adalah framework berbasis Express.js yang terstandarisasi, dirancang untuk mempercepat pengembangan REST API dengan struktur yang solid, aman, dan scalable. Terinspirasi oleh struktur Laravel dan NestJS, namun tetap menjaga kesederhanaan Express.
+**Lapeh** adalah framework berbasis Express.js yang terstandarisasi, dirancang untuk mempercepat pengembangan REST API dengan struktur yang solid, aman, dan scalable. Terinspirasi oleh struktur Laravel dan NestJS, namun tetap menjaga kesederhanaan Express.
 
 ## 🚀 Fitur Utama
 
@@ -81,6 +81,9 @@ npm run prisma:generate
 
 # Migrasi Database (Development)
 npm run prisma:migrate
+
+# Migrasi Database Dan Seed (Development)
+npm run db:reset
 
 # Deploy ke Production
 npm run prisma:deploy
