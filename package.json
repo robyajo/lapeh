@@ -33,6 +33,8 @@
     "typescript",
     "prisma",
     "roby",
+    "roby-ajo",
+    "ajo-roby",
     "roby-karti-s",
     "lapeh"
   ],
