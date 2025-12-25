@@ -43,7 +43,7 @@ Framework ini menggunakan **Prisma ORM** dengan struktur schema yang modular (di
 Saat mengembangkan aplikasi di local environment:
 
 **a. Mengupdate Schema Database**
-Jika Anda mengubah file schema di `src/models/*.prisma` atau `prisma/schema.prisma`:
+Jika Anda mengubah file schema di `src/models/*.prisma` atau konfigurasi di `prisma/base.prisma.template`:
 
 ```bash
 npm run prisma:migrate

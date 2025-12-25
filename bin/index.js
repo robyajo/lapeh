@@ -146,7 +146,7 @@ const selectOption = async (query, options) => {
   console.log('⚙️  Configuring environment...');
   const envExamplePath = path.join(projectDir, '.env.example');
   const envPath = path.join(projectDir, '.env');
-  const prismaBaseFile = path.join(projectDir, "prisma", "base.prisma");
+  const prismaBaseFile = path.join(projectDir, "prisma", "base.prisma.template");
 
   if (fs.existsSync(envExamplePath)) {
     let envContent = fs.readFileSync(envExamplePath, 'utf8');
@@ -168,9 +168,9 @@ const selectOption = async (query, options) => {
 
     fs.writeFileSync(envPath, envContent);
   }
-
-  // Update prisma/base.prisma
-  console.log("📄 Updating prisma/base.prisma...");
+  
+  // Update prisma/base.prisma.template
+  console.log("📄 Updating prisma/base.prisma.template...");
   if (fs.existsSync(prismaBaseFile)) {
     let baseContent = fs.readFileSync(prismaBaseFile, "utf8");
     // Replace provider in datasource block

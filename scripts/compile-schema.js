@@ -4,7 +4,7 @@ const path = require('path');
 const prismaDir = path.join(__dirname, '..', 'prisma');
 const modelsDir = path.join(__dirname, '..', 'src', 'models');
 const schemaFile = path.join(prismaDir, 'schema.prisma');
-const baseFile = path.join(prismaDir, 'base.prisma');
+const baseFile = path.join(prismaDir, 'base.prisma.template');
 
 // Ensure models directory exists
 if (!fs.existsSync(modelsDir)) {

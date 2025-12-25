@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { redis, useRedis } from "../redis";
+import { redis } from "../redis";
 
 type DayMemoryStats = {
   requests: number;
@@ -75,7 +75,7 @@ export async function visitorCounter(
     });
   }
 
-  if (useRedis && redis) {
+  if (redis && redis.status === "ready") {
     const base = dateKey;
     const kRequests = `requests-${base}`;
     const kNewVisitors = `new-visitors-${base}`;
@@ -127,8 +127,7 @@ export async function visitorCounter(
       if (addedSession === 1) {
         await redis.incr(kSessions);
       }
-    } catch {
-    }
+    } catch {}
   } else {
     let stats = memoryStats.get(dateKey);
     if (!stats) {
@@ -177,4 +176,3 @@ export async function visitorCounter(
 
   next();
 }
-

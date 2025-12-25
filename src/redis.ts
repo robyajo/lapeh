@@ -1,69 +1,121 @@
 import Redis from "ioredis";
+// @ts-ignore
+import RedisMock from "ioredis-mock";
 
-export const useRedis = !!process.env.REDIS_URL;
+const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
-let redis: Redis | null = null;
-if (useRedis) {
-  redis = new Redis(process.env.REDIS_URL as string, {
+// Create a wrapper to handle connection attempts
+let redis: Redis;
+let isRedisConnected = false;
+
+// If explicitly disabled via env
+if (process.env.NO_REDIS === "true") {
+  console.log("Redis disabled via NO_REDIS, using in-memory mock.");
+  redis = new RedisMock();
+  isRedisConnected = true;
+} else {
+  // Try to connect to real Redis
+  redis = new Redis(redisUrl, {
     lazyConnect: true,
-    maxRetriesPerRequest: 0,
-    enableOfflineQueue: false,
+    maxRetriesPerRequest: 1,
+    retryStrategy: (times) => {
+      // Retry 3 times then give up
+      if (times > 3) return null;
+      return 200;
+    },
   });
 }
 
-const memory = new Map<string, { value: any; expireAt: number }>();
+redis.on("ready", () => {
+  isRedisConnected = true;
+  // console.log("Redis connected!");
+});
+
+redis.on("error", (err) => {
+  // If connection fails and we haven't switched to mock yet
+  if (!isRedisConnected && !(redis instanceof RedisMock)) {
+    // console.log("Redis connection failed, switching to in-memory mock...");
+    // Replace the global redis instance with mock
+    // Note: This is a runtime switch. Existing listeners might be lost if we don't handle carefully.
+    // However, for a simple fallback, we can just use the mock for future calls.
+    
+    // Better approach: Since we exported 'redis' as a const (reference), we can't reassign it easily 
+    // if other modules already imported it.
+    // BUT, ioredis instance itself is an EventEmitter.
+    
+    // Strategy: We keep 'redis' as the main interface. 
+    // If real redis fails, we just don't set isRedisConnected to true for the *real* one.
+    // But wait, the user wants 'bundle redis'.
+    // The best way is to detect failure during init and SWAP the implementation.
+  }
+  isRedisConnected = false;
+});
+
+// We need a way to seamlessly switch or just default to Mock if connect fails.
+// Since 'redis' is exported immediately, we can't easily swap the object reference for importers.
+// PROXY APPROACH:
+// We export a Proxy that forwards to real redis OR mock redis.
+
+const mockRedis = new RedisMock();
+let activeRedis = redis; // Start with real redis attempt
+
+// Custom init function to determine which one to use
+export async function initRedis() {
+  if (process.env.NO_REDIS === "true") {
+    activeRedis = mockRedis;
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "⚠️  WARNING: Running in PRODUCTION with in-memory Redis mock. Data will be lost on restart and not shared between instances."
+      );
+    }
+    return;
+  }
+
+  try {
+    await redis.connect();
+    activeRedis = redis; // Keep using real redis
+    isRedisConnected = true;
+  } catch (err) {
+    // Connection failed, switch to mock
+    // console.log("Redis failed, using in-memory mock");
+    activeRedis = mockRedis;
+    isRedisConnected = true; // Mock is always "connected"
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "⚠️  WARNING: Redis connection failed in PRODUCTION. Switched to in-memory mock. Data will be lost on restart."
+      );
+    }
+  }
+}
+
+// Proxy handler to forward all calls to activeRedis
+const redisProxy = new Proxy({} as Redis, {
+  get: (target, prop) => {
+    // @ts-ignore
+    return activeRedis[prop];
+  },
+});
 
 export async function getCache(key: string) {
-  if (useRedis && redis) {
-    try {
-      const v = await redis.get(key);
-      return v ? JSON.parse(v) : null;
-    } catch {
-      // fall through
-    }
-  } else {
-    const entry = memory.get(key);
-    if (entry && entry.expireAt > Date.now()) return entry.value;
-    if (entry) memory.delete(key);
+  try {
+    const v = await activeRedis.get(key);
+    return v ? JSON.parse(v) : null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 export async function setCache(key: string, value: any, ttlSeconds = 60) {
-  if (useRedis && redis) {
-    try {
-      await redis.set(key, JSON.stringify(value), "EX", ttlSeconds);
-      return;
-    } catch {
-      // fall through
-    }
-  } else {
-    memory.set(key, { value, expireAt: Date.now() + ttlSeconds * 1000 });
-  }
+  try {
+    await activeRedis.set(key, JSON.stringify(value), "EX", ttlSeconds);
+  } catch {}
 }
 
 export async function delCache(key: string) {
-  if (useRedis && redis) {
-    try {
-      await redis.del(key);
-      return;
-    } catch {
-      // fall through
-    }
-  } else {
-    memory.delete(key);
-  }
-}
-
-export async function pingRedis(): Promise<boolean> {
-  if (!useRedis || !redis) return false;
   try {
-    await redis.connect();
-    const res = await redis.ping();
-    return res === "PONG";
-  } catch {
-    return false;
-  }
+    await activeRedis.del(key);
+  } catch {}
 }
 
-export { redis };
+// Export the proxy as 'redis' so consumers use it transparently
+export { redisProxy as redis };

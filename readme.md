@@ -9,6 +9,7 @@
 - **Prisma ORM**: Integrasi database yang modern dan type-safe.
 - **Schema Terpisah**: Mendukung pemisahan schema Prisma per model (mirip Eloquent).
 - **Generator Tools**: CLI commands untuk generate Module dan Model dengan cepat.
+- **Zero-Config Redis**: Otomatis menggunakan Redis jika tersedia, atau fallback ke in-memory mock tanpa konfigurasi.
 - **Security Best Practices**: Dilengkapi dengan Helmet, Rate Limiting, CORS, dan JWT Authentication.
 - **Validasi Data**: Menggunakan Zod untuk validasi request yang kuat.
 
@@ -154,7 +155,7 @@ src/
 └── index.ts         # App Entry Point
 prisma/
 ├── schema.prisma    # [GENERATED] Jangan edit file ini
-└── base.prisma      # Konfigurasi Datasource & Generator
+└── base.prisma.template # Konfigurasi Datasource & Generator
 ```
 
 ## 📝 Lisensi

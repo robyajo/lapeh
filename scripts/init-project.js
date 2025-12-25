@@ -6,7 +6,7 @@ const readline = require("readline");
 const rootDir = path.join(__dirname, "..");
 const envExample = path.join(rootDir, ".env.example");
 const envFile = path.join(rootDir, ".env");
-const prismaBaseFile = path.join(rootDir, "prisma", "base.prisma");
+const prismaBaseFile = path.join(rootDir, "prisma", "base.prisma.template");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -104,8 +104,8 @@ const selectOption = async (query, options) => {
     fs.writeFileSync(envFile, envContent);
     console.log("✅ .env updated with database configuration.");
 
-    // 2. Update prisma/base.prisma
-    console.log("📄 Updating prisma/base.prisma...");
+    // 2. Update prisma/base.prisma.template
+    console.log("📄 Updating prisma/base.prisma.template...");
     if (fs.existsSync(prismaBaseFile)) {
       let baseContent = fs.readFileSync(prismaBaseFile, "utf8");
       // Replace provider in datasource block
@@ -115,7 +115,7 @@ const selectOption = async (query, options) => {
       );
       fs.writeFileSync(prismaBaseFile, baseContent);
     } else {
-      console.warn("⚠️ prisma/base.prisma not found. Skipping.");
+      console.warn("⚠️ prisma/base.prisma.template not found. Skipping.");
     }
 
     // 3. Install dependencies

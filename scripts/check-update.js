@@ -83,7 +83,7 @@ function showUpdateMessage(latest, current) {
     console.log(`${fgYellow}│   Silakan cek repository untuk melihat perubahan terbaru.   │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}│   Untuk upgrade jalankan:                                   │${reset}`);
-    console.log(`${fgYellow}│   ${fgCyan}npm install lapeh@latest${reset}${fgYellow}                                  │${reset}`);
+    console.log(`${fgYellow}│   ${fgCyan}npm install lapeh@latest${reset}${fgYellow}                                    │${reset}`);
     console.log(`${fgYellow}│                                                             │${reset}`);
     console.log(`${fgYellow}└─────────────────────────────────────────────────────────────┘${reset}`);
     console.log('\n');
