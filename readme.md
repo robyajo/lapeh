@@ -17,7 +17,7 @@
 Buat project baru cukup dengan satu perintah:
 
 ```bash
-npx lapeh-cli nama-project-anda
+npx lapeh nama-project-anda
 ```
 
 ### Apa yang terjadi otomatis?
@@ -82,7 +82,10 @@ npm run prisma:generate
 # Migrasi Database (Development)
 npm run prisma:migrate
 
-# Migrasi Database Dan Seed (Development)
+# Membuka GUI Database (Prisma Studio)
+npm run db:studio
+
+# Migrasi Database Dan Seed (Development - Reset Total default option for development)
 npm run db:reset
 
 # Deploy ke Production
