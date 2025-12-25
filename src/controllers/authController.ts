@@ -26,7 +26,7 @@ export async function register(req: Request, res: Response) {
   if (existing) {
     sendError(res, 409, "Email already used", {
       field: "email",
-      message: "Email sudah terdaftar, silakan gunakan email lain",
+      message: "Email is already registered, please use another email",
     });
     return;
   }
@@ -55,7 +55,7 @@ export async function register(req: Request, res: Response) {
     });
   }
 
-  sendSuccess(res, 200, "Registrasi berhasil", {
+  sendSuccess(res, 200, "Registration successful", {
     id: user.id.toString(),
     email: user.email,
     name: user.name,
@@ -84,7 +84,7 @@ export async function login(req: Request, res: Response) {
   if (!user) {
     sendError(res, 401, "Email not registered", {
       field: "email",
-      message: "Email belum terdaftar, silakan registrasi terlebih dahulu",
+      message: "Email is not registered, please register first",
     });
     return;
   }
@@ -92,7 +92,7 @@ export async function login(req: Request, res: Response) {
   if (!ok) {
     sendError(res, 401, "Invalid credentials", {
       field: "password",
-      message: "Password yang Anda masukkan salah",
+      message: "The password you entered is incorrect",
     });
     return;
   }
@@ -124,7 +124,7 @@ export async function login(req: Request, res: Response) {
     secret,
     { expiresIn: refreshExpiresInSeconds }
   );
-  sendSuccess(res, 200, "Login berhasil", {
+  sendSuccess(res, 200, "Login successful", {
     token,
     refreshToken,
     expiresIn: accessExpiresInSeconds,
@@ -166,7 +166,7 @@ export async function me(req: Request, res: Response) {
 }
 
 export async function logout(req: Request, res: Response) {
-  sendSuccess(res, 200, "Logout berhasil", null);
+  sendSuccess(res, 200, "Logout successful", null);
 }
 
 export async function refreshToken(req: Request, res: Response) {
@@ -243,7 +243,7 @@ export async function updateAvatar(req: Request, res: Response) {
     path: string;
   } | null;
   if (!file) {
-    sendError(res, 400, "Avatar file wajib diupload");
+    sendError(res, 400, "Avatar file is required");
     return;
   }
   const userId = BigInt(payload.userId);
@@ -259,7 +259,7 @@ export async function updateAvatar(req: Request, res: Response) {
     },
   });
   const { password, remember_token, ...rest } = updated as any;
-  sendSuccess(res, 200, "Avatar berhasil diperbarui", {
+  sendSuccess(res, 200, "Avatar updated successfully", {
     ...rest,
     id: updated.id.toString(),
   });
@@ -289,7 +289,7 @@ export async function updatePassword(req: Request, res: Response) {
   if (!ok) {
     sendError(res, 401, "Invalid credentials", {
       field: "currentPassword",
-      message: "Password saat ini tidak sesuai",
+      message: "Current password is incorrect",
     });
     return;
   }
@@ -301,7 +301,7 @@ export async function updatePassword(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
-  sendSuccess(res, 200, "Password berhasil diperbarui", null);
+  sendSuccess(res, 200, "Password updated successfully", null);
 }
 
 export async function updateProfile(req: Request, res: Response) {
@@ -327,7 +327,7 @@ export async function updateProfile(req: Request, res: Response) {
   if (existing) {
     sendError(res, 409, "Email already used", {
       field: "email",
-      message: "Email sudah terdaftar, silakan gunakan email lain",
+      message: "Email is already registered, please use another email",
     });
     return;
   }
@@ -340,7 +340,7 @@ export async function updateProfile(req: Request, res: Response) {
     },
   });
   const { password, remember_token, ...rest } = updated as any;
-  sendSuccess(res, 200, "Profil berhasil diperbarui", {
+  sendSuccess(res, 200, "Profile updated successfully", {
     ...rest,
     id: updated.id.toString(),
   });
