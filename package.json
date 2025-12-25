@@ -1,0 +1,70 @@
+{
+  "name": "lapeh",
+  "version": "1.0.1",
+  "description": "Framework API Express yang siap pakai (Standardized)",
+  "main": "index.js",
+  "bin": {
+    "lapeh": "bin/index.js"
+  },
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "start:prod": "NODE_ENV=production node dist/src/index.js",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "node scripts/compile-schema.js && prisma generate",
+    "prisma:migrate": "node scripts/compile-schema.js && prisma migrate dev",
+    "prisma:deploy": "node scripts/compile-schema.js && prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "generate:jwt": "node scripts/generate-jwt-secret.js",
+    "make:module": "node scripts/make-module.js",
+    "make:model": "node scripts/make-model.js"
+  },
+  "keywords": [
+    "express",
+    "api",
+    "framework",
+    "cli",
+    "generator",
+    "boilerplate",
+    "typescript",
+    "prisma",
+    "lapeh-cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.2.0",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.8.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "pg": "^8.16.3",
+    "slugify": "^1.6.6",
+    "socket.io": "^4.8.3",
+    "uuid": "^13.0.0",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.16.0",
+    "@types/uuid": "^10.0.0",
+    "nodemon": "^3.1.11",
+    "prisma": "^7.2.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
