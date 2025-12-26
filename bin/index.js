@@ -355,8 +355,20 @@ function createProject() {
     }
 
     console.log(`\n✅ Project ${projectName} created successfully!`);
-    console.log(`\nNext steps:`);
-    console.log(`  cd ${projectName}`);
-    console.log(`  npm run dev`);
+
+    if (isFull) {
+      console.log(`\n🚀 Launching development server (--full detected)...`);
+      try {
+        execSync('npm run dev', { cwd: projectDir, stdio: 'inherit' });
+      } catch (error) {
+        // Graceful exit
+      }
+      console.log(`\nℹ️  Server stopped.`);
+      console.log(`   To enter project folder: cd ${projectName}`);
+    } else {
+      console.log(`\nNext steps:`);
+      console.log(`  cd ${projectName}`);
+      console.log(`  npm run dev`);
+    }
   })();
 }

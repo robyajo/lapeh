@@ -20,6 +20,8 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 - **Struktur Folder Baru**:
   - Pemisahan konfigurasi inti ke `src/core/` (`server.ts`, `database.ts`, `redis.ts`, `realtime.ts`) agar folder `src` lebih bersih.
   - Sentralisasi route di `src/routes/index.ts` (WIP).
+- **CLI Improvements**:
+  - `npx lapeh <project-name> --full` kini otomatis menjalankan server dev setelah instalasi selesai, sehingga user bisa langsung melihat hasil tanpa mengetik perintah tambahan.
 
 ### 🛠️ Perbaikan & Refactoring
 - **Controller Refactoring**:
