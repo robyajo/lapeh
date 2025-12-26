@@ -75,6 +75,25 @@ Jika Anda melakukan setup dengan flag `--full`, database akan terisi dengan akun
 
 ---
 
+## 🔄 Upgrade Project
+
+Jika Anda memiliki project lama yang dibuat dengan versi Lapeh sebelumnya dan ingin memperbarui struktur, scripts, dan konfigurasi ke standar terbaru (termasuk keamanan Redis baru), Anda tidak perlu membuat project ulang.
+
+Cukup jalankan perintah ini di dalam folder project Anda:
+
+```bash
+npx lapeh@latest upgrade
+```
+
+Perintah ini akan secara otomatis:
+
+1.  Mengupdate `scripts/` (termasuk generator controller baru).
+2.  Mengupdate `docker-compose.yml` (keamanan Redis).
+3.  Mengupdate dependencies di `package.json`.
+4.  Menambahkan konfigurasi `.vscode` dan `tsconfig` terbaru.
+
+> **Catatan:** File `.env` Anda **tidak akan ditimpa**, namun kami akan mengupdate `.env.example` sebagai referensi konfigurasi terbaru.
+
 ## 🧠 Zero-Config Redis
 
 Lapeh otomatis mendeteksi ketersediaan Redis.
