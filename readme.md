@@ -1,17 +1,19 @@
-# Lapeh Framework
+# Lapeh Framework - Modern Node.js & TypeScript API Framework
 
-**Lapeh** adalah framework berbasis Express.js yang terstandarisasi, dirancang untuk mempercepat pengembangan REST API dengan struktur yang solid, aman, dan scalable. Terinspirasi oleh struktur Laravel dan NestJS, namun tetap menjaga kesederhanaan Express.
+**Lapeh** adalah framework **Node.js** berbasis **Express** dan **TypeScript** yang dirancang untuk kecepatan dan skalabilitas. Menggabungkan fleksibilitas Express dengan struktur solid ala **Laravel** dan **NestJS**, Lapeh memberikan pengalaman development **REST API** yang cepat, terstandarisasi, dan siap produksi.
+
+Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap: Prisma ORM, Authentication, RBAC, dan Zero-Config Redis.
 
 ## 🚀 Fitur Utama
 
-- **Struktur Modular**: Terorganisir rapi dengan Controllers, Services, Routes, dan Middleware.
-- **TypeScript Ready**: Full TypeScript support untuk type-safety.
-- **Prisma ORM**: Integrasi database yang modern dan type-safe.
-- **Schema Terpisah**: Mendukung pemisahan schema Prisma per model (mirip Eloquent).
-- **Generator Tools**: CLI commands untuk generate Module dan Model dengan cepat.
-- **Zero-Config Redis**: Otomatis menggunakan Redis jika tersedia, atau fallback ke in-memory mock tanpa konfigurasi.
-- **Security Best Practices**: Dilengkapi dengan Helmet, Rate Limiting, CORS, dan JWT Authentication.
-- **Validasi Data**: Menggunakan Zod untuk validasi request yang kuat.
+- **Production Ready**: Struktur folder modular (MVC) yang mudah dikembangkan.
+- **TypeScript First**: Full type-safety untuk mengurangi runtime error.
+- **Prisma ORM Integration**: Database modern dengan dukungan PostgreSQL dan MySQL.
+- **Laravel-style Structure**: Controller, Service, dan Route yang terpisah rapi.
+- **Auto CLI Generator**: Buat modul, model, dan controller dengan satu perintah.
+- **Smart Caching**: Otomatis menggunakan Redis jika tersedia, fallback ke in-memory jika tidak.
+- **Secure by Default**: Dilengkapi Helmet, Rate Limiting, CORS, dan JWT Auth.
+- **Robust Validation**: Validasi request otomatis menggunakan Zod.
 
 ## 📦 Instalasi & Penggunaan
 
