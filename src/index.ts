@@ -27,6 +27,31 @@ const startServer = async () => {
     // Initialize Redis transparently (no logs if missing)
     await initRedis();
 
+    // Handle specific listen errors
+    server.on("error", (e: any) => {
+      if (e.code === "EADDRINUSE") {
+        console.log(`\n❌ Error: Port ${port} is already in use.`);
+        console.log(
+          `💡 Suggestion: Run this command to kill the conflicting process:\n`
+        );
+
+        if (process.platform === "win32") {
+          console.log(`   npx kill-port ${port}`);
+          console.log(
+            `   (PowerShell): Stop-Process -Id (Get-NetTCPConnection -LocalPort ${port}).OwningProcess -Force`
+          );
+        } else if (process.platform === "darwin") {
+          console.log(`   npx kill-port ${port}`);
+          console.log(`   (Terminal): kill -9 $(lsof -t -i:${port})`);
+        } else {
+          // Linux
+          console.log(`   npx kill-port ${port}`);
+          console.log(`   (Terminal): fuser -k ${port}/tcp`);
+        }
+        process.exit(1);
+      }
+    });
+
     server.listen(port, () => {
       console.log(`✅ API running at http://localhost:${port}`);
       console.log(`🛡️  Environment: ${process.env.NODE_ENV || "development"}`);
