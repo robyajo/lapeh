@@ -2,7 +2,14 @@ version: "3.9"
 services:
   redis:
     image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes"]
+    command: 
+      - "redis-server"
+      - "--appendonly"
+      - "yes"
+      - "--user"
+      - "default on >12341234 ~* +@all"
+      - "--user"
+      - "lapeh on >12341234 ~* +@all"
     ports:
       - "6379:6379"
     volumes:

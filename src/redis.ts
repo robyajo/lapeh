@@ -38,12 +38,10 @@ redis.on("error", (err) => {
     // Replace the global redis instance with mock
     // Note: This is a runtime switch. Existing listeners might be lost if we don't handle carefully.
     // However, for a simple fallback, we can just use the mock for future calls.
-    
-    // Better approach: Since we exported 'redis' as a const (reference), we can't reassign it easily 
+    // Better approach: Since we exported 'redis' as a const (reference), we can't reassign it easily
     // if other modules already imported it.
     // BUT, ioredis instance itself is an EventEmitter.
-    
-    // Strategy: We keep 'redis' as the main interface. 
+    // Strategy: We keep 'redis' as the main interface.
     // If real redis fails, we just don't set isRedisConnected to true for the *real* one.
     // But wait, the user wants 'bundle redis'.
     // The best way is to detect failure during init and SWAP the implementation.
@@ -63,6 +61,7 @@ let activeRedis = redis; // Start with real redis attempt
 export async function initRedis() {
   if (process.env.NO_REDIS === "true") {
     activeRedis = mockRedis;
+    console.log("✅ Redis: Active (Source: Zero-Config Redis [NO_REDIS=true])");
     if (process.env.NODE_ENV === "production") {
       console.warn(
         "⚠️  WARNING: Running in PRODUCTION with in-memory Redis mock. Data will be lost on restart and not shared between instances."
@@ -75,9 +74,18 @@ export async function initRedis() {
     await redis.connect();
     activeRedis = redis; // Keep using real redis
     isRedisConnected = true;
+
+    // Determine source label
+    const sourceLabel = process.env.REDIS_URL
+      ? redisUrl
+      : "Zero-Config Redis (Localhost)";
+
+    console.log(`✅ Redis: Active (Source: ${sourceLabel})`);
   } catch (err) {
     // Connection failed, switch to mock
-    // console.log("Redis failed, using in-memory mock");
+    console.log(
+      `⚠️  Redis: Connection failed to ${redisUrl}, switching to fallback (Source: Zero-Config Redis [Mock])`
+    );
     activeRedis = mockRedis;
     isRedisConnected = true; // Mock is always "connected"
     if (process.env.NODE_ENV === "production") {

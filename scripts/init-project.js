@@ -122,7 +122,22 @@ const selectOption = async (query, options) => {
     console.log("\n📦 Installing dependencies...");
     execSync("npm install", { stdio: "inherit", cwd: rootDir });
 
-    // 4. Generate JWT Secret
+    // 4. Create .vscode/settings.json
+    console.log("\n🛠️ Configuring VS Code...");
+    const vscodeDir = path.join(rootDir, ".vscode");
+    if (!fs.existsSync(vscodeDir)) {
+      fs.mkdirSync(vscodeDir, { recursive: true });
+    }
+    const settingsFile = path.join(vscodeDir, "settings.json");
+    const settingsContent = {
+      "files.associations": {
+        "*.model": "prisma"
+      }
+    };
+    fs.writeFileSync(settingsFile, JSON.stringify(settingsContent, null, 2));
+    console.log("✅ VS Code configured (.model support added).");
+
+    // 5. Generate JWT Secret
     console.log("\n🔑 Generating JWT Secret...");
     try {
         execSync("node scripts/generate-jwt-secret.js", {

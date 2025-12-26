@@ -75,6 +75,44 @@ Jika Anda melakukan setup dengan flag `--full`, database akan terisi dengan akun
 
 ---
 
+## 🧠 Zero-Config Redis
+
+Lapeh otomatis mendeteksi ketersediaan Redis.
+
+1.  **Auto-Discovery**: Mencoba terhubung ke Redis URL di `.env` (`REDIS_URL`).
+2.  **Smart Fallback**: Jika Redis tidak tersedia atau koneksi gagal, otomatis beralih ke **In-Memory Mock**.
+    - Tidak perlu install Redis di local development.
+    - Fitur rate-limiting dan caching tetap berjalan (namun data hilang saat restart).
+3.  **Production Safety**: Memberikan peringatan log jika berjalan di Production menggunakan Mock.
+
+**Force Mock Mode:**
+Anda bisa memaksa menggunakan mock (misal untuk testing) dengan menambahkan env variable:
+
+```env
+NO_REDIS=true
+```
+
+### Optional: Menggunakan Real Redis dengan Docker
+
+Jika Anda ingin menggunakan Redis yang sebenarnya di local environment, kami telah menyertakan konfigurasi `docker-compose.yml` yang aman (menggunakan ACL).
+
+1.  Jalankan Redis container:
+
+    ```bash
+    docker-compose up -d
+    ```
+
+2.  Uncomment konfigurasi Redis di file `.env` Anda:
+
+    ```env
+    REDIS_URL="redis://lapeh:12341234@localhost:6379"
+    ```
+
+    > **Credential Default:**
+    >
+    > - User: `lapeh`
+    > - Password: `12341234`
+
 ## 🛠 Development Tools
 
 API Lapeh menyediakan tools untuk mempercepat development, mirip dengan `artisan` di Laravel.
