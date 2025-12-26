@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "rootDir": "./",
-    "outDir": "./dist",
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "dist",
+    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": [
+    "src",
+    "prisma",
+    "generated"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
