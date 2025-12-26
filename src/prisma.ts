@@ -1,11 +1,11 @@
-import { PrismaClient } from "../generated/prisma";
+const { PrismaClient } = require("@prisma/client");
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 const url = process.env.DATABASE_URL || "";
 const provider = (process.env.DATABASE_PROVIDER || "").toLowerCase();
 
-let prisma: PrismaClient;
+let prisma: any;
 
 if (provider === "postgresql" || url.startsWith("postgres")) {
   const adapter = new PrismaPg({ connectionString: url });

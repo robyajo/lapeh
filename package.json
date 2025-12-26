@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "index.js",
   "bin": {
@@ -9,8 +9,11 @@
   "scripts": {
     "dev": "node scripts/check-update.js && nodemon src/index.ts",
     "first": "node scripts/init-project.js",
+    "prebuild": "npm run prisma:generate",
     "build": "tsc",
+    "prestart": "npm run prisma:generate",
     "start": "node dist/src/index.js",
+    "prestart:prod": "npm run prisma:generate",
     "start:prod": "NODE_ENV=production node dist/src/index.js",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "node scripts/compile-schema.js && prisma generate",

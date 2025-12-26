@@ -243,3 +243,124 @@ prisma/
 ## 📝 Lisensi
 
 MIT
+
+---
+
+## 🚀 Deployment Guide
+
+### 1) Build & Generate Prisma Client (Otomatis)
+- Build: `npm run build`
+- Start (dev): `npm run start`
+- Start (prod): `npm run start:prod`
+- Hooks otomatis:
+  - `prebuild`, `prestart`, dan `prestart:prod` akan memanggil `npm run prisma:generate` sehingga Prisma Client selalu tersedia tanpa error.
+
+### 2) Production Environment
+- Pastikan `.env` berisi kredensial production:
+  - `DATABASE_URL` dan `DATABASE_PROVIDER` (mysql/postgresql)
+  - `JWT_SECRET` (gunakan `npm run generate:jwt` untuk mengganti)
+- Terapkan migrasi production (tanpa reset data):
+
+```bash
+npm run prisma:deploy
+```
+
+### 3) Menjalankan dengan PM2
+- Install PM2:
+
+```bash
+npm i -g pm2
+```
+
+- Jalankan aplikasi:
+
+```bash
+pm2 start dist/src/index.js --name lapeh-api --time
+```
+
+- Simpan proses agar auto-start saat reboot:
+
+```bash
+pm2 save
+pm2 startup
+```
+
+- Monitoring:
+
+```bash
+pm2 status
+pm2 logs lapeh-api
+pm2 restart lapeh-api
+```
+
+### 4) Nginx Reverse Proxy (Recommended)
+- Buat server block `/etc/nginx/sites-available/lapeh`:
+
+```nginx
+server {
+  listen 80;
+  server_name example.com;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_pass http://127.0.0.1:4000;
+  }
+}
+```
+
+- Aktifkan:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/lapeh /etc/nginx/sites-enabled/lapeh
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+- SSL (opsional, Certbot):
+
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d example.com
+```
+
+### 5) Apache 2 Reverse Proxy (Alternatif)
+- Enable modul proxy:
+
+```bash
+sudo a2enmod proxy proxy_http headers
+sudo systemctl reload apache2
+```
+
+- Buat vhost `/etc/apache2/sites-available/lapeh.conf`:
+
+```apache
+<VirtualHost *:80>
+  ServerName example.com
+  ProxyPreserveHost On
+  ProxyRequests Off
+  <Proxy *>
+    Require all granted
+  </Proxy>
+  ProxyPass / http://127.0.0.1:4000/
+  ProxyPassReverse / http://127.0.0.1:4000/
+  ErrorLog ${APACHE_LOG_DIR}/lapeh-error.log
+  CustomLog ${APACHE_LOG_DIR}/lapeh-access.log combined
+</VirtualHost>
+```
+
+- Aktifkan:
+
+```bash
+sudo a2ensite lapeh.conf
+sudo apachectl configtest
+sudo systemctl reload apache2
+```
+
+### 6) Checklist Produksi
+- `npm run prisma:deploy` sukses dan tabel terbentuk
+- `pm2 status` menunjukkan proses hidup
+- Proxy (Nginx/Apache) menuju port aplikasi (default 4000)
+- `.env` aman dan tidak di-commit ke repository
