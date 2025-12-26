@@ -219,6 +219,9 @@ function createProject() {
       'bin', // Don't copy the CLI script itself
       'package-lock.json',
       '.DS_Store',
+      'prisma/migrations', // Exclude existing migrations
+      'prisma/dev.db', // Exclude sqlite db if exists
+      'prisma/dev.db-journal',
       projectName // Don't copy the destination folder itself if creating inside the template
     ];
 
@@ -231,6 +234,11 @@ function createProject() {
 
         if (ignoreList.includes(entry.name)) {
           continue;
+        }
+        
+        // Explicitly check for prisma/migrations to ensure it's skipped at any depth if logic changes
+        if (entry.name === 'migrations' && srcPath.includes('prisma')) {
+             continue;
         }
 
         if (entry.isDirectory()) {

@@ -10,23 +10,24 @@ let prisma: PrismaClient;
 if (provider === "postgresql" || url.startsWith("postgres")) {
   const adapter = new PrismaPg({ connectionString: url });
   prisma = new PrismaClient({ adapter });
-} else if (
-  provider === "mysql" ||
-  provider === "mariadb" ||
-  url.startsWith("mysql") ||
-  url.startsWith("mariadb")
-) {
-  const adapter = new PrismaMariaDb({
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_NAME,
-  } as any);
-  prisma = new PrismaClient({ adapter });
 } else {
-  throw new Error(
-    'Unsupported DATABASE_PROVIDER. Use "postgresql" or "mysql".'
-  );
+  if (provider === "mysql" || url.startsWith("mysql")) {
+    try {
+      const u = new URL(url);
+      const adapter = new PrismaMariaDb({
+        host: u.hostname,
+        port: Number(u.port || "3306"),
+        user: decodeURIComponent(u.username),
+        password: decodeURIComponent(u.password),
+        database: u.pathname.replace("/", ""),
+      } as any);
+      prisma = new PrismaClient({ adapter });
+    } catch {
+      prisma = new PrismaClient({});
+    }
+  } else {
+    prisma = new PrismaClient({});
+  }
 }
 
 export { prisma };

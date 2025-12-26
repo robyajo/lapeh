@@ -28,9 +28,9 @@ if (!fs.existsSync(modelsDir)) {
 
 const content = `model ${tableName} {
   id        BigInt    @id @default(autoincrement())
-  name      String    @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.Timestamp(0)
-  updatedAt DateTime? @updatedAt @db.Timestamp(0)
+  name      String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 `;
 
