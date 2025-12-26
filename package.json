@@ -18,10 +18,12 @@
     "prisma:deploy": "node scripts/compile-schema.js && prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset",
+    "db:rs": "prisma migrate reset --force && prisma db seed",
     "db:studio": "prisma studio",
     "generate:jwt": "node scripts/generate-jwt-secret.js",
     "make:module": "node scripts/make-module.js",
-    "make:model": "node scripts/make-model.js"
+    "make:model": "node scripts/make-model.js",
+    "make:controller": "node scripts/make-controller.js"
   },
   "keywords": [
     "express",
@@ -72,7 +74,6 @@
     "nodemon": "3.1.11",
     "prisma": "7.2.0",
     "ts-node": "10.9.2",
-    "ts-node-dev": "2.0.0",
     "typescript": "5.9.3"
   }
 }

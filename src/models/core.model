@@ -1,13 +1,3 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-}
-
-
 model cache {
   key        String @id @db.VarChar(255)
   value      String @db.Text
@@ -170,15 +160,4 @@ model user_permissions {
   permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, permission_id])
-}
-
-
-
-model pets {
-  id         BigInt    @id @default(autoincrement())
-  name       String    @db.VarChar(255)
-  species    String    @db.VarChar(100)
-  age        Int       @db.SmallInt
-  created_at DateTime? @db.Timestamp(0)
-  updated_at DateTime? @db.Timestamp(0)
 }

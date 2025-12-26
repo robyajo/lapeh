@@ -17,7 +17,7 @@ build
 coverage
 
 # IDEs
-.vscode/
+.vscode/sftp.json
 .idea/
 *.swp
 *.swo

@@ -76,7 +76,7 @@ export async function login(req: Request, res: Response) {
     include: {
       user_roles: {
         include: {
-          roles: true,
+          role: true,
         },
       },
     },
@@ -102,8 +102,8 @@ export async function login(req: Request, res: Response) {
     return;
   }
   const primaryUserRole =
-    user.user_roles && user.user_roles.length > 0 && user.user_roles[0].roles
-      ? user.user_roles[0].roles.slug
+    user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
+      ? user.user_roles[0].role.slug
       : "user";
   const accessExpiresInSeconds = ACCESS_TOKEN_EXPIRES_IN_SECONDS;
   const accessExpiresAt = new Date(
@@ -145,7 +145,7 @@ export async function me(req: Request, res: Response) {
     include: {
       user_roles: {
         include: {
-          roles: true,
+          role: true,
         },
       },
     },
@@ -159,8 +159,8 @@ export async function me(req: Request, res: Response) {
     ...rest,
     id: user.id.toString(),
     role:
-      user.user_roles && user.user_roles.length > 0 && user.user_roles[0].roles
-        ? user.user_roles[0].roles.slug
+      user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
+        ? user.user_roles[0].role.slug
         : "user",
   });
 }
@@ -198,7 +198,7 @@ export async function refreshToken(req: Request, res: Response) {
       include: {
         user_roles: {
           include: {
-            roles: true,
+            role: true,
           },
         },
       },
@@ -208,8 +208,8 @@ export async function refreshToken(req: Request, res: Response) {
       return;
     }
     const primaryUserRole =
-      user.user_roles && user.user_roles.length > 0 && user.user_roles[0].roles
-        ? user.user_roles[0].roles.slug
+      user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
+        ? user.user_roles[0].role.slug
         : "user";
     const accessExpiresInSeconds = ACCESS_TOKEN_EXPIRES_IN_SECONDS;
     const accessExpiresAt = new Date(

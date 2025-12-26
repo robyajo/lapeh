@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { authRouter } from "./routes/auth";
 import { rbacRouter } from "./routes/rbac";
+import petRouter from "./routes/pets";
 import { visitorCounter } from "./middleware/visitor";
 import { errorHandler } from "./middleware/error";
 
@@ -28,5 +29,6 @@ app.use(visitorCounter);
 
 app.use("/api/auth", authRouter);
 app.use("/api/rbac", rbacRouter);
+app.use("/api/pets", petRouter);
 
 app.use(errorHandler);

@@ -14,8 +14,8 @@ if (!fs.existsSync(modelsDir)) {
 // Read base schema (datasource & generator)
 let schemaContent = fs.readFileSync(baseFile, 'utf8');
 
-// Read all .prisma files in src/models
-const modelFiles = fs.readdirSync(modelsDir).filter(file => file.endsWith('.prisma'));
+// Read all .model files in src/models
+const modelFiles = fs.readdirSync(modelsDir).filter(file => file.endsWith('.model'));
 
 modelFiles.forEach(file => {
   const content = fs.readFileSync(path.join(modelsDir, file), 'utf8');

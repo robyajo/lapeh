@@ -338,6 +338,65 @@ async function main() {
   }
 
   console.log("Assigned roles to users");
+
+  // 6. Seed Pets (Massive Seeding)
+  console.log("Starting massive pet seeding (50,000 records)...");
+  const petData = [];
+  const speciesList = [
+    "Dog",
+    "Cat",
+    "Bird",
+    "Fish",
+    "Rabbit",
+    "Hamster",
+    "Turtle",
+    "Parrot",
+  ];
+  const names = [
+    "Bella",
+    "Max",
+    "Charlie",
+    "Luna",
+    "Lucy",
+    "Cooper",
+    "Bailey",
+    "Daisy",
+    "Sadie",
+    "Molly",
+  ];
+
+  for (let i = 0; i < 50000; i++) {
+    const species = speciesList[Math.floor(Math.random() * speciesList.length)];
+    const name = names[Math.floor(Math.random() * names.length)] + " " + i;
+    const age = Math.floor(Math.random() * 15) + 1;
+
+    petData.push({
+      name,
+      species,
+      age,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    // Batch insert every 5000 records to prevent memory issues
+    if (petData.length === 5000) {
+      await prisma.pets.createMany({
+        data: petData,
+      });
+      petData.length = 0; // Clear array
+      console.log(`Seeded ${i + 1} pets...`);
+    }
+  }
+
+  // Insert remaining pets
+  if (petData.length > 0) {
+    await prisma.pets.createMany({
+      data: petData,
+    });
+  }
+  console.log("Finished seeding 50,000 pets.");
+
+  console.log("Seeding finished.");
 }
 
 main()
