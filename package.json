@@ -1,11 +1,20 @@
 {
   "name": "lapeh",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "index.js",
   "bin": {
     "lapeh": "bin/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robyajo/lapeh.git"
+  },
+  "homepage": "https://github.com/robyajo/lapeh#readme",
+  "bugs": {
+    "url": "https://github.com/robyajo/lapeh/issues"
+  },
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "dev": "node scripts/check-update.js && nodemon src/index.ts",
     "first": "node scripts/init-project.js",
