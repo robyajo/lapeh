@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
 import { sendError } from "../utils/response";
+import { Log } from "../utils/logger";
 
 export function errorHandler(
   err: any,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ) {
@@ -49,9 +50,15 @@ export function errorHandler(
   const code = err.statusCode || 500;
   const msg = err.message || "Internal Server Error";
 
-  // Log error in development for debugging
-  if (code === 500 && process.env.NODE_ENV !== "production") {
-    console.error("❌ [Global Error Handler]:", err);
+  // Log error (file log for production, console for dev)
+  if (code === 500) {
+    Log.error(msg, {
+      error: err,
+      path: req.path,
+      method: req.method,
+      ip: req.ip,
+      stack: err.stack,
+    });
   }
 
   return sendError(res, code, msg);

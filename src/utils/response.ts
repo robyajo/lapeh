@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { Log } from "./logger";
 
 type SuccessStatus = "success";
 type ErrorStatus = "error";
@@ -51,6 +52,13 @@ export function sendError<T = unknown>(
   message: string,
   errors?: T
 ) {
+  // Log the error
+  if (statusCode >= 500) {
+    Log.error(message, { statusCode, errors });
+  } else if (statusCode >= 400) {
+    Log.warn(message, { statusCode, errors });
+  }
+
   const body: ErrorBody<T> = { status: "error", message };
   if (errors !== undefined) {
     body.errors = errors;

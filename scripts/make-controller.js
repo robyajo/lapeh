@@ -37,7 +37,7 @@ let content = '';
 
 if (isResource) {
   content = `import { Request, Response } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../core/database";
 import { sendSuccess, sendError } from "../utils/response";
 import { getPagination, buildPaginationMeta } from "../utils/pagination";
 

@@ -1,9 +1,8 @@
-
 import { Request, Response } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../core/database";
 import { sendSuccess, sendError } from "../utils/response";
-import { createPetSchema, updatePetSchema } from "../schema/pet-schema";
 import { getPagination, buildPaginationMeta } from "../utils/pagination";
+import { Validator } from "../utils/validator";
 
 export async function index(req: Request, res: Response) {
   const { page, perPage, skip, take } = getPagination(req.query);
@@ -58,16 +57,21 @@ export async function show(req: Request, res: Response) {
 }
 
 export async function store(req: Request, res: Response) {
-  const parsed = createPetSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
+  const validator = Validator.make(req.body || {}, {
+    name: "required|string",
+    species: "required|string",
+    age: "required|integer|min:1",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
 
+  const validatedData = await validator.validated();
   const pet = await prisma.pets.create({
     data: {
-      ...parsed.data,
+      ...validatedData,
       created_at: new Date(),
       updated_at: new Date(),
     },
@@ -81,11 +85,14 @@ export async function store(req: Request, res: Response) {
 
 export async function update(req: Request, res: Response) {
   const { id } = req.params;
-  const parsed = updatePetSchema.safeParse(req.body);
+  const validator = Validator.make(req.body || {}, {
+    name: "string",
+    species: "string",
+    age: "integer|min:1",
+  });
 
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
 
@@ -98,10 +105,11 @@ export async function update(req: Request, res: Response) {
     return;
   }
 
+  const validatedData = await validator.validated();
   const updated = await prisma.pets.update({
     where: { id: BigInt(id) },
     data: {
-      ...parsed.data,
+      ...validatedData,
       updated_at: new Date(),
     },
   });
@@ -114,7 +122,7 @@ export async function update(req: Request, res: Response) {
 
 export async function destroy(req: Request, res: Response) {
   const { id } = req.params;
-  
+
   const existing = await prisma.pets.findUnique({
     where: { id: BigInt(id) },
   });

@@ -1,35 +1,27 @@
 import { Request, Response } from "express";
-import { prisma } from "../prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
+import { prisma } from "../core/database";
 import { sendSuccess, sendError } from "../utils/response";
-import {
-  registerSchema,
-  loginSchema,
-  refreshSchema,
-  updatePasswordSchema,
-  updateProfileSchema,
-} from "../schema/auth-schema";
+import { Validator } from "../utils/validator";
 
 export const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 7 * 24 * 60 * 60;
 
 export async function register(req: Request, res: Response) {
-  const parsed = registerSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
+  const validator = Validator.make(req.body || {}, {
+    email: "required|email|unique:users,email",
+    name: "required|min:1",
+    password: "required|min:4",
+    confirmPassword: "required|min:4|same:password",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
-  const { email, name, password } = parsed.data;
-  const existing = await prisma.users.findUnique({ where: { email } });
-  if (existing) {
-    sendError(res, 409, "Email already used", {
-      field: "email",
-      message: "Email is already registered, please use another email",
-    });
-    return;
-  }
+  const { email, name, password } = await validator.validated();
+  // Manual unique check removed as it is handled by validator
   const hash = await bcrypt.hash(password, 10);
   const user = await prisma.users.create({
     data: {
@@ -64,13 +56,16 @@ export async function register(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
+  const validator = Validator.make(req.body || {}, {
+    email: "required|email",
+    password: "required|min:4",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
-  const { email, password } = parsed.data;
+  const { email, password } = await validator.validated();
   const user = await prisma.users.findUnique({
     where: { email },
     include: {
@@ -170,10 +165,11 @@ export async function logout(req: Request, res: Response) {
 }
 
 export async function refreshToken(req: Request, res: Response) {
-  const parsed = refreshSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
+  const validator = Validator.make(req.body || {}, {
+    refreshToken: "required|min:1",
+  });
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
   const secret = process.env.JWT_SECRET;
@@ -182,7 +178,8 @@ export async function refreshToken(req: Request, res: Response) {
     return;
   }
   try {
-    const decoded = jwt.verify(parsed.data.refreshToken, secret) as {
+    const validatedData = await validator.validated();
+    const decoded = jwt.verify(validatedData.refreshToken, secret) as {
       userId: string;
       role: string;
       tokenType?: string;
@@ -238,10 +235,22 @@ export async function updateAvatar(req: Request, res: Response) {
     sendError(res, 401, "Unauthorized");
     return;
   }
-  const file = (req as any).file as {
-    filename: string;
-    path: string;
-  } | null;
+
+  const data = {
+    avatar: (req as any).file,
+  };
+
+  const validator = Validator.make(data, {
+    avatar: "nullable|image|mimes:jpeg,png,jpg,gif|max:2048",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
+    return;
+  }
+
+  const { avatar: file } = await validator.validated();
+
   if (!file) {
     sendError(res, 400, "Avatar file is required");
     return;
@@ -271,13 +280,16 @@ export async function updatePassword(req: Request, res: Response) {
     sendError(res, 401, "Unauthorized");
     return;
   }
-  const parsed = updatePasswordSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
+  const validator = Validator.make(req.body || {}, {
+    currentPassword: "required|min:4",
+    newPassword: "required|min:4",
+    confirmPassword: "required|min:4|same:newPassword",
+  });
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
-  const { currentPassword, newPassword } = parsed.data;
+  const { currentPassword, newPassword } = await validator.validated();
   const user = await prisma.users.findUnique({
     where: { id: BigInt(payload.userId) },
   });
@@ -310,27 +322,18 @@ export async function updateProfile(req: Request, res: Response) {
     sendError(res, 401, "Unauthorized");
     return;
   }
-  const parsed = updateProfileSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errors = parsed.error.flatten().fieldErrors;
-    sendError(res, 422, "Validation error", errors);
-    return;
-  }
-  const { name, email } = parsed.data;
-  const userId = BigInt(payload.userId);
-  const existing = await prisma.users.findFirst({
-    where: {
-      email,
-      NOT: { id: userId },
-    },
+  const validator = Validator.make(req.body || {}, {
+    name: "required|min:1",
+    email: `required|email|unique:users,email,${payload.userId}`,
   });
-  if (existing) {
-    sendError(res, 409, "Email already used", {
-      field: "email",
-      message: "Email is already registered, please use another email",
-    });
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { name, email } = await validator.validated();
+  const userId = BigInt(payload.userId);
+  // Manual unique check removed as it is handled by validator
+
   const updated = await prisma.users.update({
     where: { id: userId },
     data: {

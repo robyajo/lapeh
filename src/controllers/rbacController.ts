@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../core/database";
 import { sendSuccess, sendError } from "../utils/response";
+import { Validator } from "../utils/validator";
+import { z } from "zod";
 
 export async function createRole(req: Request, res: Response) {
-  const { name, slug, description } = req.body || {};
-  if (!name || !slug) {
-    sendError(res, 422, "Validation error", {
-      name: !name ? ["Nama role wajib diisi"] : undefined,
-      slug: !slug ? ["Slug role wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    name: "required|string|min:1",
+    slug: "required|string|min:1|unique:roles,slug",
+    description: "string",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
-  const exists = await prisma.roles.findUnique({ where: { slug } });
-  if (exists) {
-    sendError(res, 409, "Role already exists", {
-      slug: ["Slug role sudah digunakan"],
-    });
-    return;
-  }
+
+  const { name, slug, description } = await validator.validated();
+  // Manual unique check removed as it is handled by validator
+
   const role = await prisma.roles.create({
     data: {
       name,
@@ -40,26 +41,25 @@ export async function listRoles(_req: Request, res: Response) {
 export async function updateRole(req: Request, res: Response) {
   const { id } = req.params;
   const roleId = BigInt(id);
-  const { name, slug, description } = req.body || {};
+
+  const validator = Validator.make(req.body || {}, {
+    name: "string",
+    slug: `string|unique:roles,slug,${id}`,
+    description: "string",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
+    return;
+  }
+  const { name, slug, description } = await validator.validated();
+
   const role = await prisma.roles.findUnique({ where: { id: roleId } });
   if (!role) {
     sendError(res, 404, "Role not found");
     return;
   }
-  if (slug) {
-    const exists = await prisma.roles.findFirst({
-      where: {
-        slug,
-        NOT: { id: roleId },
-      },
-    });
-    if (exists) {
-      sendError(res, 409, "Role already exists", {
-        slug: ["Slug role sudah digunakan"],
-      });
-      return;
-    }
-  }
+  // Manual unique check removed as it is handled by validator
   const updated = await prisma.roles.update({
     where: { id: roleId },
     data: {
@@ -87,21 +87,19 @@ export async function deleteRole(req: Request, res: Response) {
 }
 
 export async function createPermission(req: Request, res: Response) {
-  const { name, slug, description } = req.body || {};
-  if (!name || !slug) {
-    sendError(res, 422, "Validation error", {
-      name: !name ? ["Nama permission wajib diisi"] : undefined,
-      slug: !slug ? ["Slug permission wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    name: "required|string|min:1",
+    slug: "required|string|min:1|unique:permissions,slug",
+    description: "string",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
-  const exists = await prisma.permissions.findUnique({ where: { slug } });
-  if (exists) {
-    sendError(res, 409, "Permission already exists", {
-      slug: ["Slug permission sudah digunakan"],
-    });
-    return;
-  }
+  const { name, slug, description } = await validator.validated();
+  // Manual unique check removed as it is handled by validator
+
   const permission = await prisma.permissions.create({
     data: {
       name,
@@ -124,7 +122,19 @@ export async function listPermissions(_req: Request, res: Response) {
 export async function updatePermission(req: Request, res: Response) {
   const { id } = req.params;
   const permissionId = BigInt(id);
-  const { name, slug, description } = req.body || {};
+
+  const validator = Validator.make(req.body || {}, {
+    name: "string",
+    slug: `string|unique:permissions,slug,${id}`,
+    description: "string",
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
+    return;
+  }
+  const { name, slug, description } = await validator.validated();
+
   const permission = await prisma.permissions.findUnique({
     where: { id: permissionId },
   });
@@ -132,20 +142,7 @@ export async function updatePermission(req: Request, res: Response) {
     sendError(res, 404, "Permission not found");
     return;
   }
-  if (slug) {
-    const exists = await prisma.permissions.findFirst({
-      where: {
-        slug,
-        NOT: { id: permissionId },
-      },
-    });
-    if (exists) {
-      sendError(res, 409, "Permission already exists", {
-        slug: ["Slug permission sudah digunakan"],
-      });
-      return;
-    }
-  }
+  // Manual unique check removed as it is handled by validator
   const updated = await prisma.permissions.update({
     where: { id: permissionId },
     data: {
@@ -179,14 +176,17 @@ export async function deletePermission(req: Request, res: Response) {
 }
 
 export async function assignRoleToUser(req: Request, res: Response) {
-  const { userId, roleId } = req.body || {};
-  if (!userId || !roleId) {
-    sendError(res, 422, "Validation error", {
-      userId: !userId ? ["userId wajib diisi"] : undefined,
-      roleId: !roleId ? ["roleId wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    userId: z.string().min(1, "userId wajib diisi"),
+    roleId: z.string().min(1, "roleId wajib diisi"),
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { userId, roleId } = await validator.validated();
+
   const user = await prisma.users.findUnique({
     where: { id: BigInt(userId) },
   });
@@ -219,14 +219,17 @@ export async function assignRoleToUser(req: Request, res: Response) {
 }
 
 export async function removeRoleFromUser(req: Request, res: Response) {
-  const { userId, roleId } = req.body || {};
-  if (!userId || !roleId) {
-    sendError(res, 422, "Validation error", {
-      userId: !userId ? ["userId wajib diisi"] : undefined,
-      roleId: !roleId ? ["roleId wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    userId: z.string().min(1, "userId wajib diisi"),
+    roleId: z.string().min(1, "roleId wajib diisi"),
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { userId, roleId } = await validator.validated();
+
   await prisma.user_roles.deleteMany({
     where: {
       user_id: BigInt(userId),
@@ -237,14 +240,17 @@ export async function removeRoleFromUser(req: Request, res: Response) {
 }
 
 export async function assignPermissionToRole(req: Request, res: Response) {
-  const { roleId, permissionId } = req.body || {};
-  if (!roleId || !permissionId) {
-    sendError(res, 422, "Validation error", {
-      roleId: !roleId ? ["roleId wajib diisi"] : undefined,
-      permissionId: !permissionId ? ["permissionId wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    roleId: z.string().min(1, "roleId wajib diisi"),
+    permissionId: z.string().min(1, "permissionId wajib diisi"),
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { roleId, permissionId } = await validator.validated();
+
   const role = await prisma.roles.findUnique({
     where: { id: BigInt(roleId) },
   });
@@ -277,14 +283,17 @@ export async function assignPermissionToRole(req: Request, res: Response) {
 }
 
 export async function removePermissionFromRole(req: Request, res: Response) {
-  const { roleId, permissionId } = req.body || {};
-  if (!roleId || !permissionId) {
-    sendError(res, 422, "Validation error", {
-      roleId: !roleId ? ["roleId wajib diisi"] : undefined,
-      permissionId: !permissionId ? ["permissionId wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    roleId: z.string().min(1, "roleId wajib diisi"),
+    permissionId: z.string().min(1, "permissionId wajib diisi"),
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { roleId, permissionId } = await validator.validated();
+
   await prisma.role_permissions.deleteMany({
     where: {
       role_id: BigInt(roleId),
@@ -295,14 +304,17 @@ export async function removePermissionFromRole(req: Request, res: Response) {
 }
 
 export async function assignPermissionToUser(req: Request, res: Response) {
-  const { userId, permissionId } = req.body || {};
-  if (!userId || !permissionId) {
-    sendError(res, 422, "Validation error", {
-      userId: !userId ? ["userId wajib diisi"] : undefined,
-      permissionId: !permissionId ? ["permissionId wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    userId: z.string().min(1, "userId wajib diisi"),
+    permissionId: z.string().min(1, "permissionId wajib diisi"),
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { userId, permissionId } = await validator.validated();
+
   const user = await prisma.users.findUnique({
     where: { id: BigInt(userId) },
   });
@@ -335,14 +347,17 @@ export async function assignPermissionToUser(req: Request, res: Response) {
 }
 
 export async function removePermissionFromUser(req: Request, res: Response) {
-  const { userId, permissionId } = req.body || {};
-  if (!userId || !permissionId) {
-    sendError(res, 422, "Validation error", {
-      userId: !userId ? ["userId wajib diisi"] : undefined,
-      permissionId: !permissionId ? ["permissionId wajib diisi"] : undefined,
-    });
+  const validator = Validator.make(req.body || {}, {
+    userId: z.string().min(1, "userId wajib diisi"),
+    permissionId: z.string().min(1, "permissionId wajib diisi"),
+  });
+
+  if (await validator.fails()) {
+    sendError(res, 422, "Validation error", validator.errors());
     return;
   }
+  const { userId, permissionId } = await validator.validated();
+
   await prisma.user_permissions.deleteMany({
     where: {
       user_id: BigInt(userId),
