@@ -37,6 +37,9 @@ async function upgradeProject() {
     '.env.example',
     '.vscode',
     'tsconfig.json',
+    'README.md',
+    'src/redis.ts', // Core framework file
+    'src/prisma.ts', // Core framework file
   ];
 
   // Helper to copy recursive
@@ -44,12 +47,34 @@ async function upgradeProject() {
     if (!fs.existsSync(src)) return;
     const stats = fs.statSync(src);
     if (stats.isDirectory()) {
-      if (!fs.existsSync(dest)) fs.mkdirSync(dest);
+      if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
       fs.readdirSync(src).forEach(childItemName => {
         copyRecursive(path.join(src, childItemName), path.join(dest, childItemName));
       });
     } else {
+      // Ensure destination directory exists
+      const destDir = path.dirname(dest);
+      if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
       fs.copyFileSync(src, dest);
+    }
+  }
+
+  // 1. Migration: Rename .model -> .prisma
+  const modelsDir = path.join(currentDir, 'src', 'models');
+  if (fs.existsSync(modelsDir)) {
+    console.log('🔄 Checking for legacy .model files...');
+    const files = fs.readdirSync(modelsDir);
+    let renamedCount = 0;
+    files.forEach(file => {
+      if (file.endsWith('.model')) {
+        const oldPath = path.join(modelsDir, file);
+        const newPath = path.join(modelsDir, file.replace('.model', '.prisma'));
+        fs.renameSync(oldPath, newPath);
+        renamedCount++;
+      }
+    });
+    if (renamedCount > 0) {
+      console.log(`✅ Migrated ${renamedCount} files from .model to .prisma`);
     }
   }
 

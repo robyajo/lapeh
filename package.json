@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "index.js",
   "bin": {
@@ -23,7 +23,8 @@
     "generate:jwt": "node scripts/generate-jwt-secret.js",
     "make:module": "node scripts/make-module.js",
     "make:model": "node scripts/make-model.js",
-    "make:controller": "node scripts/make-controller.js"
+    "make:controller": "node scripts/make-controller.js",
+    "config:clear": "node scripts/config-clear.js"
   },
   "keywords": [
     "express",

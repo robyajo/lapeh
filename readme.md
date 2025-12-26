@@ -162,7 +162,19 @@ npm run make:model NamaModel
 
 Ini akan membuat file `src/models/User.prisma`.
 
-### 3. Workflow Database (Prisma)
+### 3. Membuat Controller
+
+Membuat file Controller baru. Gunakan flag `-r` untuk membuat controller lengkap dengan method CRUD (index, show, store, update, destroy).
+
+```bash
+npm run make:controller NamaController
+# Contoh Basic: npm run make:controller PaymentController
+
+# Contoh Resource (CRUD Lengkap):
+npm run make:controller PaymentController -r
+```
+
+### 4. Workflow Database (Prisma)
 
 Karena framework ini menggunakan **Schema Terpisah** (split schema), Anda **TIDAK BOLEH** mengedit `prisma/schema.prisma` secara manual.
 
@@ -188,13 +200,26 @@ npm run prisma:deploy
 
 > **Catatan:** Script `compile-schema.js` akan otomatis berjalan sebelum perintah prisma di atas dieksekusi.
 
-### 4. Generate JWT Secret
+### 5. Generate JWT Secret
 
 Jika Anda perlu me-refresh secret key JWT:
 
 ```bash
 npm run generate:jwt
 ```
+
+### 6. Maintenance (Clear Config)
+
+Membersihkan cache framework, NPM, build artifacts, dan temporary files (sangat berguna jika mengalami isu cache aneh atau ingin reset environment development).
+
+```bash
+npm run config:clear
+```
+
+- Menghapus `node_modules/.cache`
+- Menghapus `dist/`
+- Menghapus `dump.rdb` (Redis Persistence)
+- Membersihkan `npm cache`
 
 ---
 
