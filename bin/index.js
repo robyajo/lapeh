@@ -191,27 +191,21 @@ function createProject() {
     const dbType = await selectOption("Database apa yang akan digunakan?", [
       { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" },
       { key: "mysql", label: "MySQL", provider: "mysql", defaultPort: "3306" },
-      { key: "mariadb", label: "MariaDB", provider: "mysql", defaultPort: "3306" },
-      { key: "sqlite", label: "SQLite", provider: "sqlite", defaultPort: "" },
     ]);
 
     let dbUrl = "";
     let dbProvider = dbType.provider;
 
-    if (dbType.key === "sqlite") {
-      dbUrl = "file:./dev.db";
-    } else {
-      const host = await ask("Database Host", "localhost");
-      const port = await ask("Database Port", dbType.defaultPort);
-      const user = await ask("Database User", "root");
-      const password = await ask("Database Password", "");
-      const dbName = await ask("Database Name", projectName.replace(/-/g, '_')); // Default db name based on project name
+    const host = await ask("Database Host", "localhost");
+    const port = await ask("Database Port", dbType.defaultPort);
+    const user = await ask("Database User", "root");
+    const password = await ask("Database Password", "");
+    const dbName = await ask("Database Name", projectName.replace(/-/g, '_')); // Default db name based on project name
 
-      if (dbType.key === "pgsql") {
-        dbUrl = `postgresql://${user}:${password}@${host}:${port}/${dbName}?schema=public`;
-      } else {
-        dbUrl = `mysql://${user}:${password}@${host}:${port}/${dbName}`;
-      }
+    if (dbType.key === "pgsql") {
+      dbUrl = `postgresql://${user}:${password}@${host}:${port}/${dbName}?schema=public`;
+    } else {
+      dbUrl = `mysql://${user}:${password}@${host}:${port}/${dbName}`;
     }
 
     rl.close();
