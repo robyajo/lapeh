@@ -1,33 +1,33 @@
 model cache {
-  key        String @id @db.VarChar(255)
-  value      String @db.Text
+  key        String @id
+  value      String
   expiration Int
 }
 
 model cache_locks {
-  key        String @id @db.VarChar(255)
-  owner      String @db.VarChar(255)
+  key        String @id
+  owner      String
   expiration Int
 }
 
 model failed_jobs {
   id         BigInt   @id @default(autoincrement())
-  uuid       String   @unique @db.VarChar(255)
-  connection String   @db.Text
-  queue      String   @db.Text
-  payload    String   @db.Text
-  exception  String   @db.Text
-  failed_at  DateTime @default(now()) @db.Timestamp(0)
+  uuid       String   @unique
+  connection String
+  queue      String
+  payload    String
+  exception  String
+  failed_at  DateTime @default(now())
 }
 
 model job_batches {
-  id             String @id @db.VarChar(255)
-  name           String @db.VarChar(255)
+  id             String @id
+  name           String
   total_jobs     Int
   pending_jobs   Int
   failed_jobs    Int
-  failed_job_ids String @db.Text
-  options        String? @db.Text
+  failed_job_ids String
+  options        String?
   cancelled_at   Int?
   created_at     Int
   finished_at    Int?
@@ -35,9 +35,9 @@ model job_batches {
 
 model jobs {
   id           BigInt @id @default(autoincrement())
-  queue        String @db.VarChar(255)
-  payload      String @db.Text
-  attempts     Int    @db.SmallInt
+  queue        String
+  payload      String
+  attempts     Int
   reserved_at  Int?
   available_at Int
   created_at   Int
@@ -47,38 +47,38 @@ model jobs {
 
 model migrations {
   id        Int    @id @default(autoincrement())
-  migration String @db.VarChar(255)
+  migration String
   batch     Int
 }
 
 model password_reset_tokens {
-  email      String    @id @db.VarChar(255)
-  token      String    @db.VarChar(255)
-  created_at DateTime? @db.Timestamp(0)
+  email      String    @id
+  token      String
+  created_at DateTime?
 }
 
 model personal_access_tokens {
   id             BigInt    @id @default(autoincrement())
-  tokenable_type String    @db.VarChar(255)
+  tokenable_type String
   tokenable_id   BigInt
-  name           String    @db.Text
-  token          String    @unique @db.VarChar(64)
-  abilities      String?   @db.Text
-  last_used_at   DateTime? @db.Timestamp(0)
-  expires_at     DateTime? @db.Timestamp(0)
-  created_at     DateTime? @db.Timestamp(0)
-  updated_at     DateTime? @db.Timestamp(0)
+  name           String
+  token          String    @unique
+  abilities      String?
+  last_used_at   DateTime?
+  expires_at     DateTime?
+  created_at     DateTime?
+  updated_at     DateTime?
 
   @@index([expires_at])
   @@index([tokenable_type, tokenable_id])
 }
 
 model sessions {
-  id            String  @id @db.VarChar(255)
+  id            String  @id
   user_id       BigInt?
-  ip_address    String? @db.VarChar(45)
-  user_agent    String? @db.Text
-  payload       String  @db.Text
+  ip_address    String?
+  user_agent    String?
+  payload       String
   last_activity Int
 
   @@index([last_activity])
@@ -87,16 +87,16 @@ model sessions {
 
 model users {
   id                BigInt    @id @default(autoincrement())
-  uuid              String    @unique @db.Uuid
-  name              String    @db.VarChar(255)
-  email             String    @unique @db.VarChar(255)
-  avatar            String?   @db.VarChar(255)
-  avatar_url        String?   @db.VarChar(255)
-  email_verified_at DateTime? @db.Timestamp(0)
-  password          String    @db.VarChar(255)
-  remember_token    String?   @db.VarChar(100)
-  created_at        DateTime? @db.Timestamp(0)
-  updated_at        DateTime? @db.Timestamp(0)
+  uuid              String    @unique
+  name              String
+  email             String    @unique
+  avatar            String?
+  avatar_url        String?
+  email_verified_at DateTime?
+  password          String
+  remember_token    String?
+  created_at        DateTime?
+  updated_at        DateTime?
 
   user_roles       user_roles[]
   user_permissions user_permissions[]
@@ -104,11 +104,11 @@ model users {
 
 model roles {
   id          BigInt    @id @default(autoincrement())
-  name        String    @db.VarChar(255)
-  slug        String    @unique @db.VarChar(255)
-  description String?   @db.Text
-  created_at  DateTime? @db.Timestamp(0)
-  updated_at  DateTime? @db.Timestamp(0)
+  name        String
+  slug        String    @unique
+  description String?
+  created_at  DateTime?
+  updated_at  DateTime?
 
   user_roles       user_roles[]
   role_permissions role_permissions[]
@@ -116,11 +116,11 @@ model roles {
 
 model permissions {
   id          BigInt    @id @default(autoincrement())
-  name        String    @db.VarChar(255)
-  slug        String    @unique @db.VarChar(255)
-  description String?   @db.Text
-  created_at  DateTime? @db.Timestamp(0)
-  updated_at  DateTime? @db.Timestamp(0)
+  name        String
+  slug        String    @unique
+  description String?
+  created_at  DateTime?
+  updated_at  DateTime?
 
   role_permissions role_permissions[]
   user_permissions user_permissions[]
@@ -130,7 +130,7 @@ model user_roles {
   id         BigInt    @id @default(autoincrement())
   user_id    BigInt
   role_id    BigInt
-  created_at DateTime? @db.Timestamp(0)
+  created_at DateTime?
 
   user users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   role roles @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -142,7 +142,7 @@ model role_permissions {
   id            BigInt    @id @default(autoincrement())
   role_id       BigInt
   permission_id BigInt
-  created_at    DateTime? @db.Timestamp(0)
+  created_at    DateTime?
 
   role       roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -154,7 +154,7 @@ model user_permissions {
   id            BigInt    @id @default(autoincrement())
   user_id       BigInt
   permission_id BigInt
-  created_at    DateTime? @db.Timestamp(0)
+  created_at    DateTime?
 
   user       users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
