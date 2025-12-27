@@ -12,9 +12,15 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
   - Mengubah logika escaping argumen pada `nodemon` di `bin/index.js` agar menggunakan _single quotes_ pada sistem berbasis Unix.
 
 - **Auto Prisma Generate (v2.4.2)**:
+
   - Memperbaiki error `Cannot find module '.prisma/client/default'` yang sering muncul setelah instalasi bersih.
   - Menambahkan eksekusi otomatis `npx prisma generate` saat menjalankan perintah `npm run dev` dan `npm run build`.
   - Memastikan Prisma Client selalu tersedia sebelum server berjalan, meningkatkan pengalaman pengguna baru.
+
+- **PM2 Ecosystem Config (v2.4.4)**:
+  - Menambahkan file `ecosystem.config.js` secara otomatis ke dalam proyek baru dan proyek yang di-upgrade.
+  - File ini berisi konfigurasi siap pakai untuk menjalankan aplikasi dalam mode **Cluster** (load balancing) di production menggunakan PM2.
+  - Memperbarui dokumentasi `doc/DEPLOYMENT.md` dengan instruksi penggunaan PM2 yang baru.
 
 ## [2025-12-27] - Code Quality & Standardization Update
 

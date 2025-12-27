@@ -23,6 +23,7 @@
     "scripts",
     "src",
     "storage",
+    "doc",
     "README.md",
     "LICENSE",
     "tsconfig.json",

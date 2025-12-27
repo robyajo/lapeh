@@ -46,12 +46,34 @@ npm run prisma:deploy
 
 ### 5. Jalankan dengan PM2
 
-Gunakan PM2 agar aplikasi jalan di background dan auto-restart jika crash.
+Lapeh kini menyertakan konfigurasi otomatis PM2 (`ecosystem.config.js`).
 
-```bash
-npm install -g pm2
-npm run start:prod # Atau: pm2 start dist/src/index.js --name "api-lapeh"
-```
+1.  **Install PM2 Global**:
+    ```bash
+    npm install -g pm2
+    ```
+
+2.  **Jalankan Aplikasi**:
+    ```bash
+    pm2 start ecosystem.config.js
+    ```
+
+    Perintah ini akan:
+    - Menjalankan aplikasi dalam mode **Cluster** (menggunakan semua core CPU yang tersedia).
+    - Mengatur `NODE_ENV` ke `production`.
+    - Mengaktifkan auto-restart jika aplikasi crash atau penggunaan memori melebihi 1GB.
+
+3.  **Cek Status**:
+    ```bash
+    pm2 status
+    pm2 logs
+    ```
+
+4.  **Simpan Config Startup (Agar jalan saat server reboot)**:
+    ```bash
+    pm2 save
+    pm2 startup
+    ```
 
 ### 6. Reverse Proxy (Nginx)
 
