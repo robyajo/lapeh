@@ -263,6 +263,7 @@ async function upgradeProject() {
     '.vscode',
     'tsconfig.json',
     'README.md',
+    'ecosystem.config.js',
     'src/redis.ts', // Core framework file
     'src/prisma.ts', // Core framework file
   ];

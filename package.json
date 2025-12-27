@@ -31,7 +31,8 @@
     ".env.example",
     "eslint.config.mjs",
     "prisma.config.ts",
-    "gitignore.template"
+    "gitignore.template",
+    "ecosystem.config.js"
   ],
   "scripts": {
     "dev": "node bin/index.js dev",
