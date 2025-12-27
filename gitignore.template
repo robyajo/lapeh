@@ -1,0 +1,40 @@
+# Node modules
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Build output
+dist
+build
+coverage
+
+# IDEs
+.vscode/sftp.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Prisma
+generated/prisma
+*.sqlite
+*.db
+*.db-journal
+dev.db
+
+# OS
+Thumbs.db
+
+# Logs
+testing/*
+# Logs
+storage/logs/*
+!storage/logs/.gitkeep

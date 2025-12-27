@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import moduleAlias from "module-alias";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -17,6 +18,11 @@ import { requestLogger } from "./middleware/requestLogger";
 import { sendSuccess } from "./utils/response";
 
 export async function bootstrap() {
+  // Register aliases for production runtime
+  // Since user code (compiled JS) uses require('@lapeh/...')
+  // We map '@lapeh' to the directory containing this file (lib/ or dist/lib/)
+  moduleAlias.addAlias("@lapeh", __dirname);
+
   // Validasi Environment Variables
   const requiredEnvs = ["DATABASE_URL", "JWT_SECRET"];
   const missingEnvs = requiredEnvs.filter((key) => !process.env[key]);
