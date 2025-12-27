@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "index.js",
   "bin": {
