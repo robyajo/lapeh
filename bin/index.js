@@ -47,7 +47,21 @@ function runDev() {
     const bootstrapPath = fs.existsSync(localBootstrapPath) ? localBootstrapPath : fallbackBootstrapPath;
 
     // We execute a script that requires ts-node to run lib/bootstrap.ts
-    execSync(`npx nodemon --watch src --watch lib --ext ts,json --exec "node -r ${tsNodePath} -r ${tsConfigPathsPath} ${bootstrapPath}"`, { stdio: 'inherit' });
+    // Use JSON.stringify to properly escape paths for the shell command
+    const nodeArgs = `-r ${JSON.stringify(tsNodePath)} -r ${JSON.stringify(tsConfigPathsPath)} ${JSON.stringify(bootstrapPath)}`;
+    const isWin = process.platform === 'win32';
+    
+    let cmd;
+    if (isWin) {
+      // On Windows, escape inner quotes
+      const escapedArgs = nodeArgs.replace(/"/g, '\\"');
+      cmd = `npx nodemon --watch src --watch lib --ext ts,json --exec "node ${escapedArgs}"`;
+    } else {
+      // On Linux/Mac, use single quotes for the outer wrapper
+      cmd = `npx nodemon --watch src --watch lib --ext ts,json --exec 'node ${nodeArgs}'`;
+    }
+    
+    execSync(cmd, { stdio: 'inherit' });
   } catch (error) {
     // Ignore error
   }
@@ -55,9 +69,121 @@ function runDev() {
 
 function runStart() {
   console.log('🚀 Starting Lapeh production server...');
-  const distPath = path.join(process.cwd(), 'dist/lib/bootstrap.js');
-  // For production, we assume built files
-  const cmd = `node -e "require('${distPath.replace(/\\/g, '/')}').bootstrap()"`;
+  
+  // In framework-as-dependency model, the bootstrap logic is inside node_modules/lapeh/dist/lib/bootstrap.js
+  // But wait, the user's project is compiled to `dist/` in their project root.
+  // The user's `dist` folder will contain their compiled code (src/*).
+  // But where is the framework code? 
+  // 1. If user builds their project, they build `src` -> `dist/src`.
+  // 2. The framework code resides in `node_modules/lapeh/dist` (if lapeh is installed as dependency) OR `node_modules/lapeh/lib` (if ts-node).
+  
+  // We need to resolve where `bootstrap` is.
+  // Since we are running `lapeh start` from the CLI package itself.
+  
+  let bootstrapPath;
+  try {
+     // Try to resolve from the project's node_modules
+     const projectNodeModules = path.join(process.cwd(), 'node_modules');
+     const lapehDist = path.join(projectNodeModules, 'lapeh', 'dist', 'lib', 'bootstrap.js');
+     const lapehLib = path.join(projectNodeModules, 'lapeh', 'lib', 'bootstrap.js');
+     
+     if (fs.existsSync(lapehDist)) {
+         bootstrapPath = lapehDist;
+     } else if (fs.existsSync(lapehLib)) {
+         // Fallback to lib if dist doesn't exist (e.g. in dev environment or simple install)
+         // But `start` implies production, so we should prefer compiled JS.
+         // If lapeh package.json "main" points to index.js (in root) or lib/bootstrap.ts?
+         // Actually, for `start` we usually run `node dist/src/index.js` or similar?
+         // No, Lapeh framework entry point is `bootstrap()`.
+         
+         // Let's rely on `require.resolve` relative to the CWD
+         // We want to require 'lapeh/lib/bootstrap' or 'lapeh/dist/lib/bootstrap'
+         
+         // If we are in `node_modules/lapeh/bin/index.js`, `..` is `node_modules/lapeh`.
+         // So we can require('../lib/bootstrap') directly?
+         // Yes, if we are running the CLI from the installed package.
+         bootstrapPath = path.resolve(__dirname, '../lib/bootstrap.js');
+         if (!fs.existsSync(bootstrapPath)) {
+            // Try typescript source? No, production run shouldn't use TS.
+             bootstrapPath = path.resolve(__dirname, '../dist/lib/bootstrap.js');
+         }
+     }
+     
+     // Correct approach:
+     // The CLI is running. We want to execute the bootstrap function.
+     // We can import it right here in this process!
+     // But `runStart` is inside `bin/index.js` which is likely a JS file.
+     // We can require('../lib/bootstrap') or '../dist/lib/bootstrap'.
+     
+     const frameworkBootstrap = require('../lib/bootstrap');
+     frameworkBootstrap.bootstrap();
+     return; // Exit this function, let the bootstrap take over
+     
+  } catch (e) {
+      // If direct require fails (maybe because of ESM/CJS mix or path issues), fallback to child process
+  }
+
+  // Fallback to previous logic if direct require fails, but fixed path
+  // The error showed: '.../dist/lib/bootstrap.js' not found.
+  // Because `lapeh` package structure might be:
+  // lapeh/
+  //   bin/index.js
+  //   lib/bootstrap.ts (and compiled .js?)
+  //   package.json
+  
+  // If we are running from `bin/index.js`, the bootstrap is at `../lib/bootstrap.js` (if compiled) or we need to compile it?
+  // "lapeh" framework is usually shipped as JS.
+  
+  const possiblePaths = [
+      path.join(__dirname, '../lib/bootstrap.js'),
+      path.join(__dirname, '../dist/lib/bootstrap.js'),
+      path.join(process.cwd(), 'node_modules/lapeh/lib/bootstrap.js')
+  ];
+  
+  bootstrapPath = possiblePaths.find(p => fs.existsSync(p));
+
+  if (!bootstrapPath) {
+      console.error('❌ Could not find Lapeh bootstrap file.');
+      console.error('   Searched in:', possiblePaths);
+      process.exit(1);
+  }
+
+  let cmd;
+  if (bootstrapPath.endsWith('.ts')) {
+      // If we found a TS file, we need to use ts-node
+      // Try to resolve ts-node/register from the framework's dependencies or project's
+      let tsNodePath;
+      let tsConfigPathsPath;
+      
+      try {
+          // Try to resolve from current project first
+          const projectNodeModules = path.join(process.cwd(), 'node_modules');
+          tsNodePath = require.resolve('ts-node/register', { paths: [projectNodeModules, __dirname] });
+          tsConfigPathsPath = require.resolve('tsconfig-paths/register', { paths: [projectNodeModules, __dirname] });
+      } catch (e) {
+          // Fallback to resolving relative to this script
+          try {
+             tsNodePath = require.resolve('ts-node/register');
+             tsConfigPathsPath = require.resolve('tsconfig-paths/register');
+          } catch (e2) {
+             console.warn('⚠️  Could not resolve ts-node/register. Trying npx...');
+          }
+      }
+      
+      if (tsNodePath && tsConfigPathsPath) {
+          const script = `require(${JSON.stringify(bootstrapPath)}).bootstrap()`;
+          cmd = `node -r ${JSON.stringify(tsNodePath)} -r ${JSON.stringify(tsConfigPathsPath)} -e ${JSON.stringify(script)}`;
+      } else {
+          // Fallback to npx if resolution fails
+          const script = `require(${JSON.stringify(bootstrapPath)}).bootstrap()`;
+          cmd = `npx ts-node -r tsconfig-paths/register -e ${JSON.stringify(script)}`;
+      }
+  } else {
+      // JS file, run with node
+      const script = `require(${JSON.stringify(bootstrapPath)}).bootstrap()`;
+      cmd = `node -e ${JSON.stringify(script)}`;
+  }
+
   execSync(cmd, { 
     stdio: 'inherit',
     env: { ...process.env, NODE_ENV: 'production' }
@@ -398,6 +524,12 @@ function createProject() {
 
     console.log('\n📂 Copying template files...');
     copyDir(templateDir, projectDir);
+
+    // Rename gitignore.template to .gitignore
+    const gitignoreTemplate = path.join(projectDir, 'gitignore.template');
+    if (fs.existsSync(gitignoreTemplate)) {
+        fs.renameSync(gitignoreTemplate, path.join(projectDir, '.gitignore'));
+    }
 
     // Update package.json
     console.log('📝 Updating package.json...');
