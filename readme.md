@@ -17,11 +17,43 @@ Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap:
 - **High Performance**: Mendukung Fast-Serialization (Fastify-style) untuk response JSON super cepat.
 - **Scalable**: Siap untuk deployment Cluster/Load Balancer dengan Redis Store.
 
+## 🔮 Roadmap (Rencana Masa Depan)
+
+Lapeh Framework akan terus berkembang menjadi solusi Enterprise yang lengkap. Kami memiliki rencana besar untuk fitur-fitur seperti **Job Queues**, **Storage Abstraction (S3)**, **Mailer**, dan **OpenAPI Generator**.
+
+Lihat detail rencana pengembangan di **[ROADMAP.md](doc/ROADMAP.md)**.
+
+## 🤝 Berkontribusi (Open Source)
+
+Lapeh adalah proyek Open Source dan kami sangat terbuka untuk kontribusi dari komunitas! Baik itu perbaikan bug, penambahan fitur, atau perbaikan dokumentasi.
+
+Ingin ikut berkontribusi? Silakan baca **[Panduan Kontribusi (CONTRIBUTING.md)](doc/CONTRIBUTING.md)** untuk memulai.
+
 ## 📚 Dokumentasi Lengkap
 
-- [Panduan Instalasi & CLI](doc/CLI.md) (Coming Soon)
-- [Panduan Performa & Scaling](doc/PERFORMANCE.md) ⚡ _(Baru)_
-- [Changelog](doc/CHANGELOG.md)
+Kami menyusun "Learning Path" agar Anda bisa memahami framework ini dari nol hingga mahir.
+
+### 🐣 Level 1: Pemula (Wajib Baca)
+
+- **[Pengenalan Framework](doc/INTRODUCTION.md)**: Mengapa framework ini ada? Apa bedanya dengan yang lain?
+- **[Getting Started](doc/GETTING_STARTED.md)**: Instalasi dan setup awal.
+- **[Bedah Struktur Folder](doc/STRUCTURE.md)**: Pahami fungsi setiap file dan direktori.
+- **[Referensi Package](doc/PACKAGES.md)**: Penjelasan kegunaan setiap library yang terinstall.
+- **[Cheatsheet (Contekan)](doc/CHEATSHEET.md)**: Daftar perintah & kode cepat.
+
+### 🔨 Level 2: Membangun Aplikasi
+
+- **[CLI Tools](doc/CLI.md)**: Percepat kerja dengan generator kode (`make:module`, dll).
+- **[Tutorial Studi Kasus](doc/TUTORIAL.md)**: Bikin API "Perpustakaan" dari nol sampai jadi.
+- **[Fitur & Konsep Inti](doc/FEATURES.md)**: Validasi, Auth, RBAC, dan Serializer.
+
+### 🚀 Level 3: Mahir & Production
+
+- **[Performance Guide](doc/PERFORMANCE.md)**: Tips optimasi high-scale app.
+- **[Security Best Practices](doc/SECURITY.md)**: Panduan mengamankan aplikasi.
+- **[Deployment Guide](doc/DEPLOYMENT.md)**: Cara deploy ke VPS, Docker, atau Cloud.
+- **[FAQ & Troubleshooting](doc/FAQ.md)**: Solusi masalah umum.
+- **[Changelog](doc/CHANGELOG.md)**: Riwayat versi.
 
 ## 📦 Instalasi & Penggunaan
 
