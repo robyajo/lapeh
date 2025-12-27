@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { prisma } from "@/core/database";
-import { sendSuccess, sendError, sendFastSuccess } from "@/utils/response";
-import { getPagination, buildPaginationMeta } from "@/utils/pagination";
-import { Validator } from "@/utils/validator";
+import { prisma } from "@lapeh/core/database";
+import { sendSuccess, sendError, sendFastSuccess } from "@lapeh/utils/response";
+import { getPagination, buildPaginationMeta } from "@lapeh/utils/pagination";
+import { Validator } from "@lapeh/utils/validator";
 import {
   getSerializer,
   createResponseSchema,
   createPaginatedResponseSchema,
-} from "@/core/serializer";
+} from "@lapeh/core/serializer";
 
 // 1. Definisikan Schema Output untuk performa tinggi
 const petSchema = {

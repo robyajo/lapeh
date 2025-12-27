@@ -13,10 +13,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
+      "@lapeh/*": ["./lib/*"],
       "@/*": ["./src/*"]
     }
   },
   "include": [
+    "lib",
     "src",
     "prisma",
     "generated"

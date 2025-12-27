@@ -13,8 +13,8 @@ import {
   updatePassword,
   updateProfile,
   updateAvatar,
-} from "../controllers/authController";
-import { requireAuth } from "../middleware/auth";
+} from "@/controllers/authController";
+import { requireAuth } from "@lapeh/middleware/auth";
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

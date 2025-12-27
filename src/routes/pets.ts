@@ -1,6 +1,6 @@
 import { Router } from "express";
-import * as PetController from "../controllers/petController";
-import { parseMultipart } from "../middleware/multipart";
+import * as PetController from "@/controllers/petController";
+import { parseMultipart } from "@lapeh/middleware/multipart";
 
 const router = Router();
 

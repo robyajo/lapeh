@@ -27,6 +27,11 @@ export function errorHandler(
       const fields = target.length > 0 ? target.join(", ") : "field";
       return sendError(res, 409, `Unique constraint failed on: ${fields}`);
     }
+    // P2003: Foreign key constraint failed
+    if (err.code === "P2003") {
+      const field = err.meta?.field_name || "unknown field";
+      return sendError(res, 400, `Foreign key constraint failed on: ${field}`);
+    }
     // P2025: Record not found
     if (err.code === "P2025") {
       return sendError(res, 404, "Record not found");

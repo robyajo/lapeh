@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authRouter } from "./auth";
-import { rbacRouter } from "./rbac";
-import petRouter from "./pets";
+import { authRouter } from "@/routes/auth";
+import { rbacRouter } from "@/routes/rbac";
+import petRouter from "@/routes/pets";
 
 export const apiRouter = Router();
 

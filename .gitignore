@@ -34,5 +34,7 @@ dev.db
 Thumbs.db
 
 # Logs
+testing/*
+# Logs
 storage/logs/*
 !storage/logs/.gitkeep

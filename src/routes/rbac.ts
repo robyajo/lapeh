@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAdmin } from "../middleware/auth";
+import { requireAdmin, requireAuth } from "@lapeh/middleware/auth";
 import {
   createRole,
   listRoles,
@@ -15,41 +15,28 @@ import {
   removePermissionFromRole,
   assignPermissionToUser,
   removePermissionFromUser,
-} from "../controllers/rbacController";
+} from "@/controllers/rbacController";
 
 export const rbacRouter = Router();
 
-rbacRouter.post("/roles", requireAdmin, createRole);
-rbacRouter.get("/roles", requireAdmin, listRoles);
-rbacRouter.put("/roles/:id", requireAdmin, updateRole);
-rbacRouter.delete("/roles/:id", requireAdmin, deleteRole);
+rbacRouter.use(requireAuth);
+rbacRouter.use(requireAdmin);
 
-rbacRouter.post("/permissions", requireAdmin, createPermission);
-rbacRouter.get("/permissions", requireAdmin, listPermissions);
-rbacRouter.put("/permissions/:id", requireAdmin, updatePermission);
-rbacRouter.delete("/permissions/:id", requireAdmin, deletePermission);
+rbacRouter.post("/roles", createRole);
+rbacRouter.get("/roles", listRoles);
+rbacRouter.put("/roles/:id", updateRole);
+rbacRouter.delete("/roles/:id", deleteRole);
 
-rbacRouter.post("/users/assign-role", requireAdmin, assignRoleToUser);
-rbacRouter.post("/users/remove-role", requireAdmin, removeRoleFromUser);
+rbacRouter.post("/permissions", createPermission);
+rbacRouter.get("/permissions", listPermissions);
+rbacRouter.put("/permissions/:id", updatePermission);
+rbacRouter.delete("/permissions/:id", deletePermission);
 
-rbacRouter.post(
-  "/roles/assign-permission",
-  requireAdmin,
-  assignPermissionToRole
-);
-rbacRouter.post(
-  "/roles/remove-permission",
-  requireAdmin,
-  removePermissionFromRole
-);
+rbacRouter.post("/users/assign-role", assignRoleToUser);
+rbacRouter.post("/users/remove-role", removeRoleFromUser);
 
-rbacRouter.post(
-  "/users/assign-permission",
-  requireAdmin,
-  assignPermissionToUser
-);
-rbacRouter.post(
-  "/users/remove-permission",
-  requireAdmin,
-  removePermissionFromUser
-);
+rbacRouter.post("/roles/assign-permission", assignPermissionToRole);
+rbacRouter.post("/roles/remove-permission", removePermissionFromRole);
+
+rbacRouter.post("/users/assign-permission", assignPermissionToUser);
+rbacRouter.post("/users/remove-permission", removePermissionFromUser);

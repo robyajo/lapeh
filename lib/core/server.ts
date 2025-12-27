@@ -1,9 +1,10 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { apiRouter } from "../routes"; // Import unified routes
+import compression from "compression";
+// import { apiRouter } from "@/routes"; // Routes are now loaded dynamically in bootstrap.ts
 import { visitorCounter } from "../middleware/visitor";
-import { errorHandler } from "../middleware/error";
+// import { errorHandler } from "../middleware/error";
 import { apiLimiter } from "../middleware/rateLimit";
 import { requestLogger } from "../middleware/requestLogger";
 import { sendSuccess } from "../utils/response";
@@ -11,6 +12,20 @@ import { sendSuccess } from "../utils/response";
 export const app = express();
 
 app.disable("x-powered-by");
+
+// Compression (Gzip)
+app.use(compression());
+
+// Request Timeout Middleware (30s)
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setTimeout(30000, () => {
+    res.status(408).send({
+      status: "error",
+      message: "Request Timeout (30s limit)",
+    });
+  });
+  next();
+});
 
 // Security Headers
 app.use(
@@ -48,8 +63,8 @@ app.get("/", (_req: Request, res: Response) => {
   });
 });
 
-// Routes
-app.use("/api", apiRouter);
+// Routes are loaded in bootstrap.ts via app.use('/api', userApiRouter)
 
 // Global Error Handler
-app.use(errorHandler);
+// Note: We don't attach error handler here because we want to attach it AFTER routes are loaded in bootstrap
+// app.use(errorHandler);

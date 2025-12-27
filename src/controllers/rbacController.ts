@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { prisma } from "@/core/database";
-import { sendSuccess, sendError, sendFastSuccess } from "@/utils/response";
-import { Validator } from "@/utils/validator";
+import { prisma } from "@lapeh/core/database";
+import { sendError, sendFastSuccess } from "@lapeh/utils/response";
+import { Validator } from "@lapeh/utils/validator";
 import { z } from "zod";
-import { getSerializer, createResponseSchema } from "@/core/serializer";
+import { getSerializer, createResponseSchema } from "@lapeh/core/serializer";
 
 // --- Serializers ---
 
@@ -44,6 +44,11 @@ const permissionSerializer = getSerializer(
 const permissionListSerializer = getSerializer(
   "permission-list",
   createResponseSchema({ type: "array", items: permissionSchema })
+);
+
+const voidSerializer = getSerializer(
+  "void",
+  createResponseSchema({ type: "null" })
 );
 
 // --- Controllers ---
@@ -140,7 +145,11 @@ export async function deleteRole(req: Request, res: Response) {
   await prisma.role_permissions.deleteMany({ where: { role_id: roleId } });
   await prisma.user_roles.deleteMany({ where: { role_id: roleId } });
   await prisma.roles.delete({ where: { id: roleId } });
-  sendSuccess(res, 200, "Role deleted", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Role deleted",
+    data: null,
+  });
 }
 
 export async function createPermission(req: Request, res: Response) {
@@ -245,7 +254,11 @@ export async function deletePermission(req: Request, res: Response) {
     where: { permission_id: permissionId },
   });
   await prisma.permissions.delete({ where: { id: permissionId } });
-  sendSuccess(res, 200, "Permission deleted", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Permission deleted",
+    data: null,
+  });
 }
 
 export async function assignRoleToUser(req: Request, res: Response) {
@@ -288,7 +301,11 @@ export async function assignRoleToUser(req: Request, res: Response) {
     },
     update: {},
   });
-  sendSuccess(res, 200, "Role assigned to user", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Role assigned to user",
+    data: null,
+  });
 }
 
 export async function removeRoleFromUser(req: Request, res: Response) {
@@ -309,7 +326,11 @@ export async function removeRoleFromUser(req: Request, res: Response) {
       role_id: BigInt(roleId),
     },
   });
-  sendSuccess(res, 200, "Role removed from user", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Role removed from user",
+    data: null,
+  });
 }
 
 export async function assignPermissionToRole(req: Request, res: Response) {
@@ -352,7 +373,11 @@ export async function assignPermissionToRole(req: Request, res: Response) {
     },
     update: {},
   });
-  sendSuccess(res, 200, "Permission assigned to role", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Permission assigned to role",
+    data: null,
+  });
 }
 
 export async function removePermissionFromRole(req: Request, res: Response) {
@@ -373,7 +398,11 @@ export async function removePermissionFromRole(req: Request, res: Response) {
       permission_id: BigInt(permissionId),
     },
   });
-  sendSuccess(res, 200, "Permission removed from role", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Permission removed from role",
+    data: null,
+  });
 }
 
 export async function assignPermissionToUser(req: Request, res: Response) {
@@ -416,7 +445,11 @@ export async function assignPermissionToUser(req: Request, res: Response) {
     },
     update: {},
   });
-  sendSuccess(res, 200, "Permission assigned to user", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Permission assigned to user",
+    data: null,
+  });
 }
 
 export async function removePermissionFromUser(req: Request, res: Response) {
@@ -437,5 +470,9 @@ export async function removePermissionFromUser(req: Request, res: Response) {
       permission_id: BigInt(permissionId),
     },
   });
-  sendSuccess(res, 200, "Permission removed from user", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Permission removed from user",
+    data: null,
+  });
 }

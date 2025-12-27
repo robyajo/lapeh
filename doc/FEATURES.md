@@ -6,12 +6,12 @@ Dokumen ini menjelaskan fitur-fitur utama Lapeh Framework dan cara penggunaannya
 
 Framework ini menyediakan utility `Validator` yang terinspirasi dari Laravel, menggunakan `zod` di belakang layar namun dengan API yang lebih string-based dan mudah dibaca.
 
-**Lokasi:** `@/utils/validator`
+**Lokasi:** `@lapeh/utils/validator`
 
 ### Penggunaan Dasar
 
 ```typescript
-import { Validator } from "@/utils/validator";
+import { Validator } from "@lapeh/utils/validator";
 
 export async function createProduct(req: Request, res: Response) {
   const validator = await Validator.make(req.body, {
@@ -79,7 +79,7 @@ Untuk endpoint yang membutuhkan performa tinggi (misalnya list data besar), guna
 3. **Kirim Response**
 
    ```typescript
-   import { sendFastSuccess } from "@/utils/response";
+   import { sendFastSuccess } from "@lapeh/utils/response";
 
    // Di dalam controller
    sendFastSuccess(res, 200, productSerializer, {

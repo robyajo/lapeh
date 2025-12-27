@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { sendError } from "../utils/response";
-import { ACCESS_TOKEN_EXPIRES_IN_SECONDS } from "../controllers/authController";
+// Note: We should ideally avoid importing from controllers in middleware
+// But for now we'll keep it to maintain functionality, but point to src if needed
+// However, authController is in src (user land) or lib?
+// Wait, authController was NOT moved to lib. It is in src/controllers.
+// So this import will fail if we use relative paths.
+// But we are in lib.
+// We should probably move ACCESS_TOKEN_EXPIRES_IN_SECONDS to a config or constants file in lib.
+const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 7 * 24 * 60 * 60;
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
@@ -35,7 +42,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     res.setHeader("x-access-expires-at", accessExpiresAt);
 
     next();
-  } catch {
+  } catch (err: any) {
     sendError(res, 401, "Invalid token");
   }
 }

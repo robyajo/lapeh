@@ -65,34 +65,34 @@ Anda dapat menginstall framework ini menggunakan versi terbaru atau versi spesif
 npx lapeh@latest nama-project-anda
 ```
 
-Atau gunakan flag `--full` untuk setup lengkap (termasuk seeding data default user & roles):
+Perintah di atas akan membuat proyek **bersih** (clean slate):
+
+- Struktur folder dibuat.
+- Dependensi diinstall.
+- Database dikonfigurasi & dimigrasi (hanya Schema, **tanpa data**).
+- Folder `bin` dan `lib` framework tersembunyi di `node_modules` agar root proyek Anda tetap rapi.
+
+### 2. Setup Lengkap dengan Demo Data (`--full`)
+
+Jika Anda ingin mencoba fitur lengkap dengan data demo (Users, Roles, Pets), gunakan flag `--full`:
 
 ```bash
 npx lapeh@latest nama-project-anda --full
 ```
 
-### 2. Menggunakan Versi Spesifik
+Apa bedanya?
 
-Jika Anda membutuhkan versi tertentu (misalnya untuk kompatibilitas):
-
-```bash
-npx lapeh@1.0.8 nama-project-anda
-```
-
-Atau dengan setup lengkap:
-
-```bash
-npx lapeh@1.0.8 nama-project-anda --full
-```
+- **Tanpa `--full`**: Database kosong (hanya tabel). Cocok untuk memulai proyek baru dari nol.
+- **Dengan `--full`**: Database otomatis di-seed dengan data User (Super Admin), Roles, Permissions, dan 50.000 data demo Pets.
 
 ### Apa yang terjadi otomatis?
 
-1. Struktur project dibuat.
+1. Struktur project dibuat (Core framework tersembunyi sebagai dependency).
 2. Dependencies diinstall.
 3. Database dipilih & dikonfigurasi secara interaktif.
 4. **Database** dibuat dan dimigrasi otomatis.
 5. **JWT Secret** di-generate otomatis.
-6. **Seeding Data** (jika menggunakan `--full`).
+6. **Seeding Data** (Hanya jika menggunakan `--full`).
 
 Masuk ke folder project dan jalankan:
 
@@ -101,7 +101,16 @@ cd nama-project-anda
 npm run dev
 ```
 
+> **Catatan**: Perintah `npm run dev` sekarang menggunakan CLI internal framework (`lapeh dev`), memberikan pengalaman development yang lebih stabil dan terstandarisasi. Core framework (`bin` dan `lib`) tidak lagi memenuhi root folder Anda, tetapi tersimpan aman sebagai dependency.
+
 Server akan berjalan di `http://localhost:4000`.
+
+### 🛡️ Keamanan & Pembaruan
+
+Framework ini didesain dengan memprioritaskan keamanan:
+
+- **Zero-Vulnerability Policy**: Kami secara rutin melakukan audit dependensi (`npm audit`) untuk memastikan tidak ada celah keamanan.
+- **Framework-as-Dependency**: Dengan menyembunyikan core logic di `node_modules`, pembaruan framework menjadi lebih mudah (cukup update versi `lapeh` di `package.json`) tanpa merusak kode aplikasi Anda.
 
 ### 🔑 Akun Default (Jika menggunakan `--full` atau `npm run db:seed`)
 

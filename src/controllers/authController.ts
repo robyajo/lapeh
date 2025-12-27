@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "@/core/database";
-import { sendSuccess, sendError, sendFastSuccess } from "@/utils/response";
-import { Validator } from "@/utils/validator";
-import { getSerializer, createResponseSchema } from "@/core/serializer";
+import { prisma } from "@lapeh/core/database";
+import { sendError, sendFastSuccess } from "@lapeh/utils/response";
+import { Validator } from "@lapeh/utils/validator";
+import { getSerializer, createResponseSchema } from "@lapeh/core/serializer";
 
 export const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 7 * 24 * 60 * 60;
 
@@ -74,6 +74,11 @@ const userProfileSerializer = getSerializer(
 const refreshTokenSerializer = getSerializer(
   "auth-refresh",
   createResponseSchema(refreshTokenSchema)
+);
+
+const voidSerializer = getSerializer(
+  "void",
+  createResponseSchema({ type: "null" })
 );
 
 // --- Controllers ---
@@ -246,7 +251,11 @@ export async function logout(_req: Request, res: Response) {
   // In a stateless JWT setup, logout is client-side (delete token).
   // If using a whitelist/blacklist in Redis, invalidate the token here.
   // For now, just return success.
-  sendSuccess(res, 200, "Logout successful", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Logout successful",
+    data: null,
+  });
 }
 
 export async function refreshToken(req: Request, res: Response) {
@@ -414,7 +423,11 @@ export async function updatePassword(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
-  sendSuccess(res, 200, "Password updated successfully", null);
+  sendFastSuccess(res, 200, voidSerializer, {
+    status: "success",
+    message: "Password updated successfully",
+    data: null,
+  });
 }
 
 export async function updateProfile(req: Request, res: Response) {

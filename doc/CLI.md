@@ -4,6 +4,39 @@ Lapeh Framework dilengkapi dengan berbagai script CLI untuk mempercepat proses d
 
 Semua perintah dijalankan menggunakan `npm run <command>`.
 
+> **Info:** Di balik layar, script `npm run` ini memanggil CLI internal framework (`lapeh`). Anda juga bisa menjalankan perintah ini secara langsung menggunakan `npx lapeh <command>`.
+
+## Core Commands
+
+Perintah utama untuk menjalankan aplikasi:
+
+### 1. Development Server (`dev`)
+Menjalankan server dalam mode development dengan fitur hot-reload.
+
+```bash
+npm run dev
+# atau
+npx lapeh dev
+```
+
+### 2. Production Server (`start`)
+Menjalankan server dalam mode production (pastikan sudah dibuild).
+
+```bash
+npm run start
+# atau
+npx lapeh start
+```
+
+### 3. Build Project (`build`)
+Mengompilasi kode TypeScript ke JavaScript di folder `dist`.
+
+```bash
+npm run build
+# atau
+npx lapeh build
+```
+
 ## Code Generators
 
 Gunakan perintah ini untuk membuat file boilerplate secara otomatis.
