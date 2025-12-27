@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.4.4",
+  "version": "2.4.5",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "dist/lib/bootstrap.js",
   "bin": {
