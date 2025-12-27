@@ -30,14 +30,14 @@ if (!fs.existsSync(avatarUploadDir)) {
 
 const storage = (multer as any).diskStorage({
   destination(
-    req: any,
-    file: any,
+    _req: any,
+    _file: any,
     cb: (error: Error | null, destination: string) => void
   ) {
     cb(null, avatarUploadDir);
   },
   filename(
-    req: any,
+    _req: any,
     file: any,
     cb: (error: Error | null, filename: string) => void
   ) {

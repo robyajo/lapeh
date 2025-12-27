@@ -34,6 +34,74 @@ Jika seeder dijalankan (via `npm run first` atau `npm run db:seed`), gunakan aku
 - **Admin**: `a@a.com` / `string`
 - **User**: `u@u.com` / `string`
 
+## Code Standards & Best Practices (Baru)
+
+### 1. Import Path Aliases
+Gunakan alias `@/` untuk mengimpor module dari folder `src/`. Hindari relative path yang panjang seperti `../../utils/response`.
+
+**Contoh:**
+```typescript
+// ✅ Benar (Recommended)
+import { prisma } from "@/core/database";
+import { sendSuccess } from "@/utils/response";
+
+// ❌ Salah (Legacy)
+import { prisma } from "../core/database";
+import { sendSuccess } from "../../utils/response";
+```
+
+### 2. Strict Linting (Dead Code Elimination)
+Framework ini menerapkan aturan linter yang ketat untuk menjaga kebersihan kode. Variabel, parameter, atau import yang tidak digunakan akan menyebabkan error.
+
+- **Variabel tidak terpakai**: Hapus atau beri prefix `_` (underscore).
+  ```typescript
+  // ✅ Benar
+  const _unusedVariable = 123;
+  function example(_req: Request, res: Response) { ... }
+  
+  // ❌ Error
+  const unusedVariable = 123;
+  function example(req: Request, res: Response) { ... } // jika req tidak dipakai
+  ```
+
+### 3. High Performance Response (Fastify-Style)
+Untuk endpoint dengan throughput tinggi (GET lists, data besar), gunakan `sendFastSuccess` dengan JSON Schema serializer. Ini 2-3x lebih cepat dari `res.json` standar Express.
+
+**Langkah-langkah:**
+
+1. **Definisikan Schema** (sesuai field Prisma):
+   ```typescript
+   const userSchema = {
+     type: "object",
+     properties: {
+       id: { type: "string" }, // BigInt otomatis dicovert ke string
+       name: { type: "string" },
+       email: { type: "string" }
+     }
+   };
+   ```
+
+2. **Buat Serializer**:
+   ```typescript
+   import { getSerializer, createResponseSchema } from "@/core/serializer";
+   
+   const userSerializer = getSerializer("user-detail", createResponseSchema(userSchema));
+   ```
+
+3. **Gunakan di Controller**:
+   ```typescript
+   import { sendFastSuccess } from "@/utils/response";
+   
+   export async function getUser(req, res) {
+     const user = await prisma.user.findFirst();
+     sendFastSuccess(res, 200, userSerializer, {
+       status: "success",
+       message: "User found",
+       data: user
+     });
+   }
+   ```
+
 ## Database Workflow (Prisma)
 
 Framework ini menggunakan **Prisma ORM** dengan struktur schema yang modular (dipecah per file). Berikut adalah panduan lengkap dari Development hingga Deployment.
@@ -98,16 +166,3 @@ Biasanya dilakukan otomatis saat `npm install` (karena `postinstall`), tapi jika
 ```bash
 npm run prisma:generate
 ```
-
----
-
-### Ringkasan Command
-
-| Command                   | Fungsi                                                   | Environment  |
-| ------------------------- | -------------------------------------------------------- | ------------ |
-| `npm run prisma:migrate`  | Compile schema + Create Migration + Apply to DB          | **Dev**      |
-| `npm run prisma:deploy`   | Compile schema + Apply Migration only                    | **Prod**     |
-| `npm run prisma:generate` | Compile schema + Update Prisma Client (Type Definitions) | Dev/Prod     |
-| `npm run db:seed`         | Menjalankan script `prisma/seed.ts`                      | Dev/Prod     |
-| `npm run db:reset`        | Hapus DB + Migrate ulang + Seed                          | **Dev Only** |
-| `npm run db:studio`       | Buka GUI database di browser                             | Dev          |

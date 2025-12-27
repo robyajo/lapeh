@@ -1,7 +1,6 @@
 import { prisma } from "../src/core/database";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import slugify from "slugify";
 
 async function main() {
   console.log("Start seeding...");

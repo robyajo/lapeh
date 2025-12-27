@@ -46,6 +46,27 @@ export function sendSuccess<T>(
   return res.status(statusCode).json(toJsonSafe(body));
 }
 
+/**
+ * Mengirim response sukses dengan performa tinggi menggunakan Schema Serialization (Fastify-style).
+ * Melewati proses JSON.stringify standar yang lambat.
+ *
+ * @param serializer Fungsi serializer yang sudah dicompile dari src/core/serializer
+ */
+export function sendFastSuccess(
+  res: Response,
+  statusCode: number,
+  serializer: (doc: any) => string,
+  data: any
+) {
+  // Set header manual karena kita mengirim raw string
+  res.setHeader("Content-Type", "application/json");
+  res.status(statusCode);
+
+  // Serializer mengembalikan string JSON
+  const jsonString = serializer(data);
+  return res.send(jsonString);
+}
+
 export function sendError<T = unknown>(
   res: Response,
   statusCode: number,

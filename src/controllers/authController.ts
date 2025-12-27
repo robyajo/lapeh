@@ -2,11 +2,81 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "../core/database";
-import { sendSuccess, sendError } from "../utils/response";
-import { Validator } from "../utils/validator";
+import { prisma } from "@/core/database";
+import { sendSuccess, sendError, sendFastSuccess } from "@/utils/response";
+import { Validator } from "@/utils/validator";
+import { getSerializer, createResponseSchema } from "@/core/serializer";
 
 export const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 7 * 24 * 60 * 60;
+
+// --- Serializers ---
+
+const registerSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    email: { type: "string" },
+    name: { type: "string" },
+    role: { type: "string" },
+  },
+};
+
+const loginSchema = {
+  type: "object",
+  properties: {
+    token: { type: "string" },
+    refreshToken: { type: "string" },
+    expiresIn: { type: "integer" },
+    expiresAt: { type: "string" },
+    name: { type: "string" },
+    role: { type: "string" },
+  },
+};
+
+const userProfileSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    email: { type: "string" },
+    role: { type: "string" },
+    avatar: { type: "string", nullable: true },
+    avatar_url: { type: "string", nullable: true },
+    email_verified_at: { type: "string", format: "date-time", nullable: true },
+    created_at: { type: "string", format: "date-time", nullable: true },
+    updated_at: { type: "string", format: "date-time", nullable: true },
+  },
+};
+
+const refreshTokenSchema = {
+  type: "object",
+  properties: {
+    token: { type: "string" },
+    expiresIn: { type: "integer" },
+    expiresAt: { type: "string" },
+    name: { type: "string" },
+    role: { type: "string" },
+  },
+};
+
+const registerSerializer = getSerializer(
+  "auth-register",
+  createResponseSchema(registerSchema)
+);
+const loginSerializer = getSerializer(
+  "auth-login",
+  createResponseSchema(loginSchema)
+);
+const userProfileSerializer = getSerializer(
+  "auth-profile",
+  createResponseSchema(userProfileSchema)
+);
+const refreshTokenSerializer = getSerializer(
+  "auth-refresh",
+  createResponseSchema(refreshTokenSchema)
+);
+
+// --- Controllers ---
 
 export async function register(req: Request, res: Response) {
   const validator = Validator.make(req.body || {}, {
@@ -47,11 +117,15 @@ export async function register(req: Request, res: Response) {
     });
   }
 
-  sendSuccess(res, 200, "Registration successful", {
-    id: user.id.toString(),
-    email: user.email,
-    name: user.name,
-    role: defaultRole ? defaultRole.slug : "user",
+  sendFastSuccess(res, 200, registerSerializer, {
+    status: "success",
+    message: "Registration successful",
+    data: {
+      id: user.id.toString(),
+      email: user.email,
+      name: user.name,
+      role: defaultRole ? defaultRole.slug : "user",
+    },
   });
 }
 
@@ -119,13 +193,17 @@ export async function login(req: Request, res: Response) {
     secret,
     { expiresIn: refreshExpiresInSeconds }
   );
-  sendSuccess(res, 200, "Login successful", {
-    token,
-    refreshToken,
-    expiresIn: accessExpiresInSeconds,
-    expiresAt: accessExpiresAt,
-    name: user.name,
-    role: primaryUserRole,
+  sendFastSuccess(res, 200, loginSerializer, {
+    status: "success",
+    message: "Login successful",
+    data: {
+      token,
+      refreshToken,
+      expiresIn: accessExpiresInSeconds,
+      expiresAt: accessExpiresAt,
+      name: user.name,
+      role: primaryUserRole,
+    },
   });
 }
 
@@ -150,17 +228,24 @@ export async function me(req: Request, res: Response) {
     return;
   }
   const { password, remember_token, ...rest } = user as any;
-  sendSuccess(res, 200, "User profile", {
-    ...rest,
-    id: user.id.toString(),
-    role:
-      user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
-        ? user.user_roles[0].role.slug
-        : "user",
+  sendFastSuccess(res, 200, userProfileSerializer, {
+    status: "success",
+    message: "User profile",
+    data: {
+      ...rest,
+      id: user.id.toString(),
+      role:
+        user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
+          ? user.user_roles[0].role.slug
+          : "user",
+    },
   });
 }
 
-export async function logout(req: Request, res: Response) {
+export async function logout(_req: Request, res: Response) {
+  // In a stateless JWT setup, logout is client-side (delete token).
+  // If using a whitelist/blacklist in Redis, invalidate the token here.
+  // For now, just return success.
   sendSuccess(res, 200, "Logout successful", null);
 }
 
@@ -217,12 +302,16 @@ export async function refreshToken(req: Request, res: Response) {
       secret,
       { expiresIn: accessExpiresInSeconds }
     );
-    sendSuccess(res, 200, "Token refreshed", {
-      token,
-      expiresIn: accessExpiresInSeconds,
-      expiresAt: accessExpiresAt,
-      name: user.name,
-      role: primaryUserRole,
+    sendFastSuccess(res, 200, refreshTokenSerializer, {
+      status: "success",
+      message: "Token refreshed",
+      data: {
+        token,
+        expiresIn: accessExpiresInSeconds,
+        expiresAt: accessExpiresAt,
+        name: user.name,
+        role: primaryUserRole,
+      },
     });
   } catch {
     sendError(res, 401, "Invalid refresh token");
@@ -268,9 +357,21 @@ export async function updateAvatar(req: Request, res: Response) {
     },
   });
   const { password, remember_token, ...rest } = updated as any;
-  sendSuccess(res, 200, "Avatar updated successfully", {
-    ...rest,
-    id: updated.id.toString(),
+  // Note: user_roles might not be fetched in update, so role defaults to "user" or fetched if needed.
+  // Ideally we should refetch or pass existing role.
+  // For now assuming role is preserved or handled by frontend state, but API should return it.
+  // Let's rely on nullable role or simple "user" fallback if not present in `updated`.
+  // Actually `update` returns what was updated. Relations are not included unless specified.
+  // For now we will return it compatible with userProfileSchema.
+
+  sendFastSuccess(res, 200, userProfileSerializer, {
+    status: "success",
+    message: "Avatar updated successfully",
+    data: {
+      ...rest,
+      id: updated.id.toString(),
+      role: payload.role, // Use role from JWT payload as it shouldn't change here
+    },
   });
 }
 
@@ -343,8 +444,13 @@ export async function updateProfile(req: Request, res: Response) {
     },
   });
   const { password, remember_token, ...rest } = updated as any;
-  sendSuccess(res, 200, "Profile updated successfully", {
-    ...rest,
-    id: updated.id.toString(),
+  sendFastSuccess(res, 200, userProfileSerializer, {
+    status: "success",
+    message: "Profile updated successfully",
+    data: {
+      ...rest,
+      id: updated.id.toString(),
+      role: payload.role, // Use role from JWT payload
+    },
   });
 }

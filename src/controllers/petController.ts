@@ -1,8 +1,39 @@
 import { Request, Response } from "express";
-import { prisma } from "../core/database";
-import { sendSuccess, sendError } from "../utils/response";
-import { getPagination, buildPaginationMeta } from "../utils/pagination";
-import { Validator } from "../utils/validator";
+import { prisma } from "@/core/database";
+import { sendSuccess, sendError, sendFastSuccess } from "@/utils/response";
+import { getPagination, buildPaginationMeta } from "@/utils/pagination";
+import { Validator } from "@/utils/validator";
+import {
+  getSerializer,
+  createResponseSchema,
+  createPaginatedResponseSchema,
+} from "@/core/serializer";
+
+// 1. Definisikan Schema Output untuk performa tinggi
+const petSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" }, // BigInt dikonversi ke string
+    name: { type: "string" },
+    species: { type: "string" },
+    age: { type: "integer" },
+    created_at: { type: "string", format: "date-time" },
+    updated_at: { type: "string", format: "date-time" },
+  },
+};
+
+// 2. Compile Serializer
+// Untuk Single Item
+const petSerializer = getSerializer(
+  "pet-single",
+  createResponseSchema(petSchema)
+);
+
+// Untuk List Item (Paginated)
+const petListSerializer = getSerializer(
+  "pet-list",
+  createPaginatedResponseSchema(petSchema)
+);
 
 export async function index(req: Request, res: Response) {
   const { page, perPage, skip, take } = getPagination(req.query);
@@ -26,6 +57,8 @@ export async function index(req: Request, res: Response) {
     prisma.pets.count({ where }),
   ]);
 
+  // Kita perlu convert BigInt ke string sebelum masuk serializer
+  // Karena fast-json-stringify mengharapkan tipe data yang sesuai dengan schema
   const serialized = data.map((item: any) => ({
     ...item,
     id: item.id.toString(),
@@ -33,9 +66,15 @@ export async function index(req: Request, res: Response) {
 
   const meta = buildPaginationMeta(page, perPage, total);
 
-  sendSuccess(res, 200, "Pets retrieved successfully", {
-    data: serialized,
-    meta,
+  // Gunakan sendFastSuccess untuk performa maksimal
+  // Struktur data disesuaikan dengan createPaginatedResponseSchema: { data: [], meta: {} }
+  sendFastSuccess(res, 200, petListSerializer, {
+    status: "success",
+    message: "Pets retrieved successfully",
+    data: {
+      data: serialized,
+      meta,
+    },
   });
 }
 
@@ -50,9 +89,14 @@ export async function show(req: Request, res: Response) {
     return;
   }
 
-  sendSuccess(res, 200, "Pet retrieved successfully", {
-    ...pet,
-    id: pet.id.toString(),
+  // Gunakan sendFastSuccess
+  sendFastSuccess(res, 200, petSerializer, {
+    status: "success",
+    message: "Pet retrieved successfully",
+    data: {
+      ...pet,
+      id: pet.id.toString(),
+    },
   });
 }
 
@@ -77,9 +121,14 @@ export async function store(req: Request, res: Response) {
     },
   });
 
-  sendSuccess(res, 201, "Pet created successfully", {
-    ...pet,
-    id: pet.id.toString(),
+  // Gunakan sendFastSuccess
+  sendFastSuccess(res, 201, petSerializer, {
+    status: "success",
+    message: "Pet created successfully",
+    data: {
+      ...pet,
+      id: pet.id.toString(),
+    },
   });
 }
 
@@ -114,9 +163,14 @@ export async function update(req: Request, res: Response) {
     },
   });
 
-  sendSuccess(res, 200, "Pet updated successfully", {
-    ...updated,
-    id: updated.id.toString(),
+  // Gunakan sendFastSuccess
+  sendFastSuccess(res, 200, petSerializer, {
+    status: "success",
+    message: "Pet updated successfully",
+    data: {
+      ...updated,
+      id: updated.id.toString(),
+    },
   });
 }
 

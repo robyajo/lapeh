@@ -14,6 +14,14 @@ Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap:
 - **Smart Caching**: Otomatis menggunakan Redis jika tersedia, fallback ke in-memory jika tidak.
 - **Secure by Default**: Dilengkapi Helmet, Rate Limiting, CORS, dan JWT Auth.
 - **Robust Validation**: Validasi request otomatis menggunakan Zod.
+- **High Performance**: Mendukung Fast-Serialization (Fastify-style) untuk response JSON super cepat.
+- **Scalable**: Siap untuk deployment Cluster/Load Balancer dengan Redis Store.
+
+## 📚 Dokumentasi Lengkap
+
+- [Panduan Instalasi & CLI](doc/CLI.md) (Coming Soon)
+- [Panduan Performa & Scaling](doc/PERFORMANCE.md) ⚡ _(Baru)_
+- [Changelog](doc/CHANGELOG.md)
 
 ## 📦 Instalasi & Penggunaan
 
@@ -251,6 +259,7 @@ MIT
 ## 🚀 Deployment Guide
 
 ### 1) Build & Generate Prisma Client (Otomatis)
+
 - Build: `npm run build`
 - Start (dev): `npm run start`
 - Start (prod): `npm run start:prod`
@@ -258,6 +267,7 @@ MIT
   - `prebuild`, `prestart`, dan `prestart:prod` akan memanggil `npm run prisma:generate` sehingga Prisma Client selalu tersedia tanpa error.
 
 ### 2) Production Environment
+
 - Pastikan `.env` berisi kredensial production:
   - `DATABASE_URL` dan `DATABASE_PROVIDER` (mysql/postgresql)
   - `JWT_SECRET` (gunakan `npm run generate:jwt` untuk mengganti)
@@ -268,6 +278,7 @@ npm run prisma:deploy
 ```
 
 ### 3) Menjalankan dengan PM2
+
 - Install PM2:
 
 ```bash
@@ -296,6 +307,7 @@ pm2 restart lapeh-api
 ```
 
 ### 4) Nginx Reverse Proxy (Recommended)
+
 - Buat server block `/etc/nginx/sites-available/lapeh`:
 
 ```nginx
@@ -329,6 +341,7 @@ sudo certbot --nginx -d example.com
 ```
 
 ### 5) Apache 2 Reverse Proxy (Alternatif)
+
 - Enable modul proxy:
 
 ```bash
@@ -362,6 +375,7 @@ sudo systemctl reload apache2
 ```
 
 ### 6) Checklist Produksi
+
 - `npm run prisma:deploy` sukses dan tabel terbentuk
 - `pm2 status` menunjukkan proses hidup
 - Proxy (Nginx/Apache) menuju port aplikasi (default 4000)

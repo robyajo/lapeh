@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { prisma } from "../core/database";
 import { sendError } from "../utils/response";
 import { ACCESS_TOKEN_EXPIRES_IN_SECONDS } from "../controllers/authController";
 

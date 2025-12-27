@@ -31,7 +31,7 @@ redis.on("ready", () => {
   // console.log("Redis connected!");
 });
 
-redis.on("error", (err) => {
+redis.on("error", (_err) => {
   // If connection fails and we haven't switched to mock yet
   if (!isRedisConnected && !(redis instanceof RedisMock)) {
     // console.log("Redis connection failed, switching to in-memory mock...");
@@ -98,9 +98,10 @@ export async function initRedis() {
 
 // Proxy handler to forward all calls to activeRedis
 const redisProxy = new Proxy({} as Redis, {
-  get: (target, prop) => {
-    // @ts-ignore
-    return activeRedis[prop];
+  get: (_target, prop) => {
+    // If accessing a property on the proxy, forward it to activeRedis
+    const value = (activeRedis as any)[prop];
+    return value;
   },
 });
 

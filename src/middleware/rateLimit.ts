@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { redis } from "../core/redis"; // Optional: Use Redis for distributed rate limiting
+// import { redis } from "../core/redis"; // Optional: Use Redis for distributed rate limiting
 
 // Rate limiting untuk mencegah brute force dan DDoS ringan
 export const apiLimiter = rateLimit({

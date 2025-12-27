@@ -1,8 +1,52 @@
 import { Request, Response } from "express";
-import { prisma } from "../core/database";
-import { sendSuccess, sendError } from "../utils/response";
-import { Validator } from "../utils/validator";
+import { prisma } from "@/core/database";
+import { sendSuccess, sendError, sendFastSuccess } from "@/utils/response";
+import { Validator } from "@/utils/validator";
 import { z } from "zod";
+import { getSerializer, createResponseSchema } from "@/core/serializer";
+
+// --- Serializers ---
+
+const roleSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    slug: { type: "string" },
+    description: { type: "string", nullable: true },
+    created_at: { type: "string", format: "date-time", nullable: true },
+    updated_at: { type: "string", format: "date-time", nullable: true },
+  },
+};
+
+const permissionSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    slug: { type: "string" },
+    description: { type: "string", nullable: true },
+    created_at: { type: "string", format: "date-time", nullable: true },
+    updated_at: { type: "string", format: "date-time", nullable: true },
+  },
+};
+
+const roleSerializer = getSerializer("role", createResponseSchema(roleSchema));
+const roleListSerializer = getSerializer(
+  "role-list",
+  createResponseSchema({ type: "array", items: roleSchema })
+);
+
+const permissionSerializer = getSerializer(
+  "permission",
+  createResponseSchema(permissionSchema)
+);
+const permissionListSerializer = getSerializer(
+  "permission-list",
+  createResponseSchema({ type: "array", items: permissionSchema })
+);
+
+// --- Controllers ---
 
 export async function createRole(req: Request, res: Response) {
   const validator = Validator.make(req.body || {}, {
@@ -28,14 +72,23 @@ export async function createRole(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
-  sendSuccess(res, 201, "Role created", role);
+  sendFastSuccess(res, 201, roleSerializer, {
+    status: "success",
+    message: "Role created",
+    data: { ...role, id: role.id.toString() },
+  });
 }
 
 export async function listRoles(_req: Request, res: Response) {
   const roles = await prisma.roles.findMany({
     orderBy: { id: "asc" },
   });
-  sendSuccess(res, 200, "Roles list", roles);
+  const serialized = roles.map((r: any) => ({ ...r, id: r.id.toString() }));
+  sendFastSuccess(res, 200, roleListSerializer, {
+    status: "success",
+    message: "Roles list",
+    data: serialized,
+  });
 }
 
 export async function updateRole(req: Request, res: Response) {
@@ -69,7 +122,11 @@ export async function updateRole(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
-  sendSuccess(res, 200, "Role updated", updated);
+  sendFastSuccess(res, 200, roleSerializer, {
+    status: "success",
+    message: "Role updated",
+    data: { ...updated, id: updated.id.toString() },
+  });
 }
 
 export async function deleteRole(req: Request, res: Response) {
@@ -109,14 +166,26 @@ export async function createPermission(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
-  sendSuccess(res, 201, "Permission created", permission);
+  sendFastSuccess(res, 201, permissionSerializer, {
+    status: "success",
+    message: "Permission created",
+    data: { ...permission, id: permission.id.toString() },
+  });
 }
 
 export async function listPermissions(_req: Request, res: Response) {
   const permissions = await prisma.permissions.findMany({
     orderBy: { id: "asc" },
   });
-  sendSuccess(res, 200, "Permissions list", permissions);
+  const serialized = permissions.map((p: any) => ({
+    ...p,
+    id: p.id.toString(),
+  }));
+  sendFastSuccess(res, 200, permissionListSerializer, {
+    status: "success",
+    message: "Permissions list",
+    data: serialized,
+  });
 }
 
 export async function updatePermission(req: Request, res: Response) {
@@ -152,7 +221,11 @@ export async function updatePermission(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
-  sendSuccess(res, 200, "Permission updated", updated);
+  sendFastSuccess(res, 200, permissionSerializer, {
+    status: "success",
+    message: "Permission updated",
+    data: { ...updated, id: updated.id.toString() },
+  });
 }
 
 export async function deletePermission(req: Request, res: Response) {
