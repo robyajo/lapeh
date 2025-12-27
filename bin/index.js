@@ -34,6 +34,23 @@ switch (command) {
 function runDev() {
   console.log('🚀 Starting Lapeh in development mode...');
   try {
+    // Generate Prisma Client before starting
+    console.log('🔄 Generating Prisma Client...');
+    const compileSchemaPath = path.join(process.cwd(), 'scripts/compile-schema.js');
+    if (fs.existsSync(compileSchemaPath)) {
+        try {
+            execSync('node scripts/compile-schema.js', { stdio: 'inherit' });
+        } catch (e) {
+            console.warn('⚠️  Failed to run compile-schema.js', e.message);
+        }
+    }
+    
+    try {
+        execSync('npx prisma generate', { stdio: 'inherit' });
+    } catch (e) {
+        console.warn('⚠️  Failed to run prisma generate. Continuing...', e.message);
+    }
+
     const tsNodePath = require.resolve('ts-node/register');
     const tsConfigPathsPath = require.resolve('tsconfig-paths/register');
     
@@ -192,8 +209,34 @@ function runStart() {
 
 function runBuild() {
   console.log('🛠️  Building Lapeh project...');
-  execSync('npm run prisma:generate', { stdio: 'inherit' });
-  execSync('npx tsc && npx tsc-alias', { stdio: 'inherit' });
+  
+  // Compile schema if script exists
+  const compileSchemaPath = path.join(process.cwd(), 'scripts/compile-schema.js');
+  if (fs.existsSync(compileSchemaPath)) {
+      try {
+          execSync('node scripts/compile-schema.js', { stdio: 'inherit' });
+      } catch (e) {
+          console.error('❌ Failed to compile schema.');
+          process.exit(1);
+      }
+  }
+
+  // Generate prisma client
+  try {
+      execSync('npx prisma generate', { stdio: 'inherit' });
+  } catch (e) {
+      console.error('❌ Failed to generate prisma client.');
+      process.exit(1);
+  }
+
+  // Compile TS
+  try {
+      execSync('npx tsc && npx tsc-alias', { stdio: 'inherit' });
+  } catch (e) {
+      console.error('❌ Build failed.');
+      process.exit(1);
+  }
+  
   console.log('✅ Build complete.');
 }
 
