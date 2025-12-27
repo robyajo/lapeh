@@ -2,6 +2,20 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-28] - Minggu, 28 Desember 2025 - Perbaikan Kompatibilitas & Automasi
+
+### 🛠️ Perbaikan Bug (Bug Fixes)
+
+- **Linux/Mac Path Compatibility (v2.4.1)**:
+
+  - Memperbaiki masalah `MODULE_NOT_FOUND` pada sistem operasi Linux dan macOS ketika path proyek mengandung spasi (misalnya: `/Folder Saya/Proyek Lapeh`).
+  - Mengubah logika escaping argumen pada `nodemon` di `bin/index.js` agar menggunakan _single quotes_ pada sistem berbasis Unix.
+
+- **Auto Prisma Generate (v2.4.2)**:
+  - Memperbaiki error `Cannot find module '.prisma/client/default'` yang sering muncul setelah instalasi bersih.
+  - Menambahkan eksekusi otomatis `npx prisma generate` saat menjalankan perintah `npm run dev` dan `npm run build`.
+  - Memastikan Prisma Client selalu tersedia sebelum server berjalan, meningkatkan pengalaman pengguna baru.
+
 ## [2025-12-27] - Code Quality & Standardization Update
 
 ### 🚀 Fitur & Standarisasi
