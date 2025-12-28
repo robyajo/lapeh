@@ -410,6 +410,13 @@ async function upgradeProject() {
       }
   }
 
+  // Ensure prisma config exists for seed
+  if (!currentPackageJson.prisma) {
+      currentPackageJson.prisma = {
+          seed: "npx ts-node -r tsconfig-paths/register prisma/seed.ts"
+      };
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(currentPackageJson, null, 2));
 
   console.log('🔧 Configuring tsconfig.json...');
