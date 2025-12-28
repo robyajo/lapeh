@@ -4,6 +4,14 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Release v2.6.5: CLI Upgrade Fixes and MongoDB Support](./release-v2.6.5)
+
+_December 29, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Bug fixes for CLI upgrade command, dependency adjustments, and Prisma Client data type compatibility fixes for MongoDB. [Read more →](./release-v2.6.5)
+
+---
+
 ## 🚀 [Lapeh v2.4.11 Release: Multi-Database Support & Clean Architecture](./release-v2.4.11)
 
 _December 28, 2025_ • 👤 robyajo • 🏷️ _Release_
