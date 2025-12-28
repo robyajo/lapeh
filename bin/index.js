@@ -606,6 +606,7 @@ function createProject(skipFirstArg = false) {
     
     packageJson.version = '1.0.0';
     delete packageJson.bin;
+    delete packageJson.peerDependencies;
     
     packageJson.scripts = {
       ...packageJson.scripts,
