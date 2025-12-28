@@ -4,6 +4,14 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
+## 🚀 [Rilis Lapeh v2.4.12: Stabilitas Database & Kompatibilitas SQL](./release-v2.4.12)
+
+_28 Desember 2025_ • 👤 robyajo • 🏷️ _Release_
+
+Perbaikan penting pada versi Prisma (lock ke v5.22.0) dan peningkatan kompatibilitas skema otomatis untuk pengguna PostgreSQL/MySQL, serta pembersihan paket distribusi. [Baca selengkapnya →](./release-v2.4.12)
+
+---
+
 ## 🚀 [Rilis Lapeh v2.4.11: Multi-Database Support & Clean Architecture](./release-v2.4.11)
 
 _28 Desember 2025_ • 👤 robyajo • 🏷️ _Release_

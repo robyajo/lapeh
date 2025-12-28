@@ -2,6 +2,33 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-28] - Minggu, 28 Desember 2025 - Stabilitas Database (v2.4.12)
+
+### 🛠️ Perbaikan & Stabilitas
+
+- **Prisma Version Lock (v5.22.0)**:
+  - Mengunci versi Prisma CLI ke 5.22.0 pada proyek baru untuk mencegah konflik dengan runtime framework.
+  - Memperbaiki error `P1019` dan masalah kompatibilitas engine lainnya.
+
+- **SQL Schema Compatibility**:
+  - Update `scripts/compile-schema.js` untuk secara otomatis membersihkan sintaks MongoDB (`@db.ObjectId`, `@map("_id")`) saat menggunakan PostgreSQL atau MySQL.
+  - Memungkinkan transisi mulus antara NoSQL dan SQL tanpa refactoring model manual.
+
+- **Package Cleanup**:
+  - Menghapus folder `pengujian`, `init`, dan file development lainnya dari paket NPM.
+  - Menambahkan file `LICENSE` (MIT) ke dalam paket distribusi.
+
+## [2025-12-28] - Minggu, 28 Desember 2025 - Multi-Database Support (v2.4.11)
+
+### 🚀 Fitur Baru
+
+- **Multi-Database Support**:
+  - Dukungan penuh untuk inisialisasi proyek dengan **MongoDB** dan **MySQL** via CLI (`--db-type=mongo`).
+  - Penyesuaian otomatis command migrasi (`prisma db push` vs `migrate dev`).
+
+- **Clean Architecture**:
+  - Pembersihan struktur paket dan penambahan lisensi eksplisit.
+
 ## [2025-12-28] - Minggu, 28 Desember 2025 - Perbaikan Upgrade & Testing (v2.4.9)
 
 ### 🚀 Fitur & Perbaikan
