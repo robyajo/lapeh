@@ -4,6 +4,14 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Lapeh v2.4.11 Release: Multi-Database Support & Clean Architecture](./release-v2.4.11)
+
+_December 28, 2025_ • 👤 robyajo • 🏷️ _Release_
+
+Lapeh v2.4.11 introduces full support for MongoDB & MySQL in the CLI, along with a much cleaner and lighter distribution package. [Read more →](./release-v2.4.11)
+
+---
+
 ## 🚀 [Lapeh v2.4.9 Release: Smart Upgrade & Testing Suite](./release-v2.4.9)
 
 _December 28, 2025_ • 👤 robyajo • 🏷️ _Release_
