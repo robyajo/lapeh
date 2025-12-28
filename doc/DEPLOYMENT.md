@@ -49,21 +49,25 @@ npm run prisma:deploy
 Lapeh kini menyertakan konfigurasi otomatis PM2 (`ecosystem.config.js`).
 
 1.  **Install PM2 Global**:
+
     ```bash
     npm install -g pm2
     ```
 
 2.  **Jalankan Aplikasi**:
+
     ```bash
     pm2 start ecosystem.config.js
     ```
 
     Perintah ini akan:
+
     - Menjalankan aplikasi dalam mode **Cluster** (menggunakan semua core CPU yang tersedia).
     - Mengatur `NODE_ENV` ke `production`.
     - Mengaktifkan auto-restart jika aplikasi crash atau penggunaan memori melebihi 1GB.
 
 3.  **Cek Status**:
+
     ```bash
     pm2 status
     pm2 logs
@@ -75,7 +79,104 @@ Lapeh kini menyertakan konfigurasi otomatis PM2 (`ecosystem.config.js`).
     pm2 startup
     ```
 
-### 6. Reverse Proxy (Nginx)
+### ❓ FAQ: Mengapa Aplikasi Saya Muncul Ganda di PM2?
+
+Jika Anda menjalankan `pm2 list` dan melihat nama aplikasi Anda muncul lebih dari satu kali (misal: `my-app` ada 2 atau 4 baris), **JANGAN KHAWATIR**. Ini adalah fitur, bukan bug.
+
+- **Penyebab**: Konfigurasi `instances: "max"` dan `exec_mode: "cluster"` di `ecosystem.config.js`.
+- **Fungsi**: PM2 mendeteksi jumlah inti CPU (Core) di VPS Anda dan membuat 1 proses worker untuk setiap core.
+  - Jika VPS punya 2 vCPU -> Muncul 2 proses.
+  - Jika VPS punya 4 vCPU -> Muncul 4 proses.
+- **Keuntungan**: Aplikasi Anda menjadi **Multi-Threaded**. Request yang masuk akan dibagi rata ke semua proses, meningkatkan performa 2x-4x lipat dibanding mode biasa.
+
+**Cara mengubah ke Single Instance (Hemat RAM):**
+Jika RAM server Anda terbatas (misal 512MB/1GB) dan ingin menghemat resource, ubah `ecosystem.config.js`:
+
+```javascript
+module.exports = {
+  apps: [
+    {
+      name: "my-app",
+      // ...
+      instances: 1, // Ubah "max" menjadi 1
+      // ...
+    },
+  ],
+};
+```
+
+Lalu jalankan `pm2 reload ecosystem.config.js`.
+
+### 7. Advanced: Menjalankan Beberapa Aplikasi (Multi-App)
+
+Jika Anda memiliki beberapa aplikasi Node.js dalam satu VPS (misalnya: Backend API, Frontend React SSR, dan API Lapeh), Anda bisa menggabungkannya dalam satu file `ecosystem.config.js`.
+
+Berikut adalah contoh konfigurasi **Real World** untuk menjalankan 3 aplikasi sekaligus:
+
+```javascript
+module.exports = {
+  apps: [
+    // 1. APLIKASI LAIN (Contoh: Backend MERN)
+    {
+      name: "api-mern-news",
+      cwd: "/var/www/html/node/api-mern-news",
+      script: "dist/src/index.js",
+      env: {
+        NODE_ENV: "production",
+        PORT: 4000,
+      },
+    },
+
+    // 2. APLIKASI LAIN (Contoh: Frontend React/Next.js)
+    {
+      name: "web-mern-news",
+      cwd: "/var/www/html/node/web-mern-news",
+      script: "npm",
+      args: "start", // Menjalankan 'npm start'
+      env: {
+        NODE_ENV: "production",
+        PORT: 3001,
+      },
+    },
+
+    // 3. APLIKASI LAPEH FRAMEWORK
+    {
+      name: "api-lapeh-project",
+      cwd: "/var/www/html/node/my-lapeh-project",
+
+      // PENTING: Gunakan binary Lapeh dari node_modules lokal
+      script: "./node_modules/lapeh/bin/index.js",
+
+      // Argument 'start' untuk mode produksi
+      args: "start",
+
+      // Mode Cluster (Gunakan semua Core CPU)
+      instances: "max",
+      exec_mode: "cluster",
+
+      // Restart jika memori bocor > 1GB
+      max_memory_restart: "1G",
+
+      // Matikan watch di production
+      watch: false,
+
+      env: {
+        NODE_ENV: "production",
+        PORT: 8001,
+      },
+    },
+  ],
+};
+```
+
+**Tips:**
+
+1.  Sesuaikan `cwd` (Current Working Directory) dengan lokasi folder proyek Anda di VPS.
+2.  Pastikan port tidak bentrok antar aplikasi (contoh di atas: 4000, 3001, 8001).
+3.  Simpan file ini di root folder proyek utama atau di folder khusus konfigurasi server Anda.
+4.  Jalankan semua aplikasi sekaligus dengan: `pm2 start ecosystem.config.js`.
+
+### 8. Reverse Proxy (Nginx)
 
 Jangan expose port 4000 langsung. Gunakan Nginx di depannya.
 Config Nginx block:
