@@ -1,0 +1,4 @@
+{
+  "outputDirectory": ".vitepress/dist",
+  "framework": "vitepress"
+}
