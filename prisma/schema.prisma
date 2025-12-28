@@ -3,27 +3,27 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 
 model cache {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(uuid())  
   key        String @unique
   value      String
   expiration Int
 }
 
 model cache_locks {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(uuid())  
   key        String @unique
   owner      String
   expiration Int
 }
 
 model failed_jobs {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String   @id @default(uuid())  
   uuid       String   @unique
   connection String
   queue      String
@@ -33,7 +33,7 @@ model failed_jobs {
 }
 
 model job_batches {
-  id             String @id @map("_id")
+  id             String @id 
   name           String
   total_jobs     Int
   pending_jobs   Int
@@ -46,7 +46,7 @@ model job_batches {
 }
 
 model jobs {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  id           String @id @default(uuid())  
   queue        String
   payload      String
   attempts     Int
@@ -58,20 +58,20 @@ model jobs {
 }
 
 model migrations {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(uuid())  
   migration String
   batch     Int
 }
 
 model password_reset_tokens {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(uuid())  
   email      String    @unique
   token      String
   created_at DateTime?
 }
 
 model personal_access_tokens {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  id             String    @id @default(uuid())  
   tokenable_type String
   tokenable_id   String
   name           String
@@ -87,7 +87,7 @@ model personal_access_tokens {
 }
 
 model sessions {
-  id            String  @id @map("_id")
+  id            String  @id 
   user_id       String?
   ip_address    String?
   user_agent    String?
@@ -99,7 +99,7 @@ model sessions {
 }
 
 model users {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  id                String    @id @default(uuid())  
   uuid              String    @unique
   name              String
   email             String    @unique
@@ -115,7 +115,7 @@ model users {
 
 
 model pets {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(uuid())  
   name       String
   species    String
   age        Int
