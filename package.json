@@ -88,8 +88,10 @@
   "author": "robyajo <robyfull.dev@gmail.com>",
   "license": "MIT",
   "type": "commonjs",
+  "peerDependencies": {
+    "@prisma/client": "^7.2.0"
+  },
   "dependencies": {
-    "@prisma/client": "7.2.0",
     "@types/bcryptjs": "2.4.6",
     "@types/compression": "^1.8.1",
     "@types/cors": "2.8.19",
