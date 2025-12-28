@@ -380,7 +380,16 @@ async function upgradeProject() {
     ...templatePackageJson.devDependencies
   };
 
-  currentPackageJson.dependencies["lapeh"] = "file:../"; 
+  const frameworkPackageJson = require(path.join(templateDir, 'package.json'));
+  if (__dirname.includes('node_modules')) {
+     currentPackageJson.dependencies["lapeh"] = `^${frameworkPackageJson.version}`;
+  } else {
+     const lapehPath = path.resolve(__dirname, '..').replace(/\\/g, '/');
+     // Only use file path if we are in local dev environment
+     // But for upgrade, we might want to keep existing unless we are sure
+     // For now, let's assume if not in node_modules, we want to link to this CLI's source
+     currentPackageJson.dependencies["lapeh"] = `file:${lapehPath}`;
+  }
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(currentPackageJson, null, 2));
 
@@ -389,7 +398,7 @@ async function upgradeProject() {
   if (fs.existsSync(tsconfigPath)) {
     const tsconfig = require(tsconfigPath);
     if (tsconfig.compilerOptions && tsconfig.compilerOptions.paths) {
-      tsconfig.compilerOptions.paths["@lapeh/*"] = ["./node_modules/lapeh/lib/*"];
+      tsconfig.compilerOptions.paths["@lapeh/*"] = ["./node_modules/lapeh/dist/lib/*"];
     }
     tsconfig["ts-node"] = {
       "ignore": ["node_modules/(?!lapeh)"]

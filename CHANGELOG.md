@@ -7,7 +7,18 @@ All notable changes to this project will be documented in this file.
 - **CLI**: Fixed `tsconfig.build.json` not being included in the published package, causing `lapeh build` to fail in generated projects.
 - **Prisma**: Updated seed command to use `tsconfig-paths/register` to support path aliases in `prisma/seed.ts`.
 
-## [2.6.2] - 2025-12-29
+### Fixed
+
+- **Core**: Removed explicit `datasources` configuration in `PrismaClient` initialization to prevent validation errors in generated projects. `PrismaClient` now relies on the environment variable defined in `schema.prisma`.
+
+## [2.6.5] - 2025-12-29
+
+### Fixed
+
+- **CLI**: Fixed `upgrade` command correctly handling `lapeh` dependency version (uses version number instead of local file path when installed via npm).
+- **CLI**: Fixed `upgrade` command updating `tsconfig.json` paths to point to `dist/lib` instead of `lib`.
+
+## [2.6.4] - 2025-12-29
 
 ### Fixed
 
