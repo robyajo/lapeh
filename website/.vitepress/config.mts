@@ -129,7 +129,7 @@ export default defineConfig({
         ],
         footer: {
           message: "Dirilis di bawah lisensi MIT.",
-          copyright: "Copyright © 2025-sekarang Roby Karti S",
+          copyright: "Copyright © 2025-sekarang robyajo",
         },
         docFooter: {
           prev: "Halaman Sebelumnya",
@@ -223,7 +223,7 @@ export default defineConfig({
         ],
         footer: {
           message: "Released under the MIT License.",
-          copyright: "Copyright © 2025-present Roby Karti S",
+          copyright: "Copyright © 2025-present robyajo",
         },
         docFooter: {
           prev: "Previous Page",
