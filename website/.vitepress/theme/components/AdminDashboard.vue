@@ -251,7 +251,6 @@ const chartOptions = {
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Tab: Crash Reports -->
       <div v-if="activeTab === 'crash'" class="space-y-6">
