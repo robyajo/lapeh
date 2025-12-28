@@ -9,7 +9,8 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 - **Perintah CLI `init`**:
   - **Prisma Client Generation**: Memperbaiki error `MODULE_NOT_FOUND` untuk `.prisma/client/default` saat seeding dengan memaksa eksekusi `npx prisma generate` sebelum proses seed.
   - **Parsing Nama Project**: Memperbaiki bug kritis di mana menjalankan `npx lapeh init <nama-project>` akan salah menafsirkan `init` sebagai nama proyek.
-  - **Manajemen Dependensi**: Memindahkan `@prisma/client` ke `peerDependencies` di core framework dan memastikannya ditambahkan secara eksplisit ke `dependencies` proyek baru. Ini mencegah konflik dan memastikan client yang digenerate ditemukan dengan benar.
+  - **Manajemen Dependensi**: Mengembalikan versi ke **Prisma v6** (`^6.0.0`) dan menghapus `prisma.config.ts` untuk mengatasi error `PrismaClientConstructorValidationError` ("engine type client") di lingkungan Windows. Ini mengembalikan konfigurasi standar `schema.prisma` dengan `url = env("DATABASE_URL")`.
+  - **Peer Dependencies**: Menghapus `peerDependencies` dari project yang digenerate untuk mencegah konflik package manager.
 
 ## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan CLI Upgrade & Dukungan MongoDB (v2.6.6)
 

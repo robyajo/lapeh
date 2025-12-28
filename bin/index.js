@@ -601,7 +601,7 @@ function createProject(skipFirstArg = false) {
 
     // Ensure @prisma/client is in dependencies for the new project
     if (usePrisma) {
-       packageJson.dependencies["@prisma/client"] = "^7.2.0";
+       packageJson.dependencies["@prisma/client"] = "^6.0.0";
     }
     
     packageJson.version = '1.0.0';

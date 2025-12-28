@@ -35,7 +35,6 @@
     "docker-compose.yml",
     ".env.example",
     "eslint.config.mjs",
-    "prisma.config.ts",
     "gitignore.template",
     "ecosystem.config.js",
     "tsconfig.build.json"
@@ -89,7 +88,7 @@
   "license": "MIT",
   "type": "commonjs",
   "peerDependencies": {
-    "@prisma/client": "^7.2.0"
+    "@prisma/client": "^6.0.0"
   },
   "dependencies": {
     "@types/bcryptjs": "2.4.6",
@@ -133,7 +132,7 @@
     "eslint": "^9.39.2",
     "globals": "^16.5.0",
     "jest": "^30.2.0",
-    "prisma": "7.2.0",
+    "prisma": "^6.0.0",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.6",
     "typescript-eslint": "^8.50.1"
