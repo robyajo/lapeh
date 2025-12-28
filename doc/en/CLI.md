@@ -1,139 +1,101 @@
 # CLI Tools & Scripts
 
-Lapeh Framework dilengkapi dengan berbagai script CLI untuk mempercepat proses development, mulai dari generate code hingga manajemen database.
+Lapeh Framework comes with various CLI scripts to speed up the development process, ranging from code generation to database management.
 
-Semua perintah dijalankan menggunakan `npm run <command>`.
+All commands are executed using `npm run <command>`.
 
-> **Info:** Di balik layar, script `npm run` ini memanggil CLI internal framework (`lapeh`). Anda juga bisa menjalankan perintah ini secara langsung menggunakan `npx lapeh <command>`.
+> **Info:** Behind the scenes, these `npm run` scripts call the internal framework CLI (`lapeh`). You can also run these commands directly using `npx lapeh <command>`.
 
 ## Core Commands
 
-Perintah utama untuk menjalankan aplikasi:
+Main commands to run the application:
 
 ### 1. Development Server (`dev`)
-Menjalankan server dalam mode development dengan fitur hot-reload.
+Runs the server in development mode with hot-reload feature.
 
 ```bash
 npm run dev
-# atau
+# or
 npx lapeh dev
 ```
 
 ### 2. Production Server (`start`)
-Menjalankan server dalam mode production (pastikan sudah dibuild).
+Runs the server in production mode (ensure it has been built).
 
 ```bash
 npm run start
-# atau
+# or
 npx lapeh start
 ```
 
 ### 3. Build Project (`build`)
-Mengompilasi kode TypeScript ke JavaScript di folder `dist`.
+Compiles TypeScript code to JavaScript in the `dist` folder.
 
 ```bash
 npm run build
-# atau
+# or
 npx lapeh build
 ```
 
 ## Code Generators
 
-Gunakan perintah ini untuk membuat file boilerplate secara otomatis.
+Use these commands to create boilerplate files automatically.
 
-### 1. Membuat Module Lengkap (`make:module`)
-Membuat Controller, Route, dan Model (Schema) sekaligus.
+### 1. Create Complete Module (`make:module`)
+Creates Controller, Route, and Model (Schema) at once.
 
 ```bash
-npm run make:module <nama-module>
+npm run make:module <module-name>
 ```
-**Contoh:** `npm run make:module Product`
+**Example:** `npm run make:module Product`
 
 Output:
 - `src/controllers/productController.ts`
 - `src/routes/product.ts`
 - `src/models/product.prisma`
 
-### 2. Membuat Controller (`make:controller`)
-Hanya membuat file controller dengan method CRUD dasar.
+### 2. Create Controller (`make:controller`)
+Only creates a controller file with basic CRUD methods.
 
 ```bash
-npm run make:controller <nama-controller>
+npm run make:controller <controller-name>
 ```
-**Contoh:** `npm run make:controller Order` (Akan membuat `src/controllers/orderController.ts`)
+**Example:** `npm run make:controller Order` (Will create `src/controllers/orderController.ts`)
 
-### 3. Membuat Model Database (`make:model`)
-Hanya membuat file schema Prisma baru.
+### 3. Create Database Model (`make:model`)
+Only creates a new Prisma schema file.
 
 ```bash
-npm run make:model <nama-model>
+npm run make:model <model-name>
 ```
-**Contoh:** `npm run make:model Transaction` (Akan membuat `src/models/transaction.prisma`)
+**Example:** `npm run make:model Transaction` (Will create `src/models/transaction.prisma`)
 
 ## Database Management (Prisma)
 
-Framework ini menggunakan sistem **Multi-File Schema**. Anda tidak mengedit `schema.prisma` secara langsung, melainkan mengedit file kecil di `src/models/*.prisma`.
+This framework uses a **Multi-File Schema** system. You don't edit `schema.prisma` directly, but instead edit small files in `src/models/*.prisma`.
 
-### 1. Migrasi Database (`prisma:migrate`)
-Jalankan setiap kali Anda mengubah definisi model di `src/models/*.prisma`.
+### 1. Database Migration (`prisma:migrate`)
+Run this every time you change a model definition in `src/models/*.prisma`.
 
 ```bash
 npm run prisma:migrate
 ```
-Perintah ini akan:
-1. Menggabungkan semua file `.prisma` di `src/models/` menjadi satu `prisma/schema.prisma`.
-2. Membuat file migrasi SQL.
-3. Menerapkan perubahan ke database lokal.
-4. Men-generate ulang Prisma Client (Type Definitions).
+This command will:
+1. Merge all `.prisma` files in `src/models/` into one `prisma/schema.prisma`.
+2. Create SQL migration files.
+3. Apply changes to the local database.
+4. Regenerate Prisma Client (Type Definitions).
 
-### 2. Deploy ke Production (`prisma:deploy`)
-Gunakan di server production. Hanya menerapkan migrasi yang sudah ada tanpa reset data.
+### 2. Deploy to Production (`prisma:deploy`)
+Use in production server. Only applies existing migrations without resetting data.
 
 ```bash
 npm run prisma:deploy
 ```
 
 ### 3. Database Studio (`db:studio`)
-Membuka GUI di browser untuk melihat dan mengedit data database.
+Opens a GUI in the browser to view and edit database data.
 
 ```bash
 npm run db:studio
-```
-
-### 4. Seeding Data (`db:seed`)
-Mengisi database dengan data awal yang didefinisikan di `prisma/seed.ts`.
-
-```bash
-npm run db:seed
-```
-
-### 5. Reset Database (`db:reset`)
-**PERINGATAN:** Menghapus semua data dan tabel, lalu menjalankan migrasi dari awal.
-
-```bash
-npm run db:reset
-```
-
-## Code Quality & Utilities
-
-### 1. Linting (`lint`)
-Memeriksa kode dari error, variabel tidak terpakai, dan gaya penulisan.
-
-```bash
-npm run lint
-```
-Gunakan `npm run lint:fix` untuk memperbaiki error otomatis.
-
-### 2. Type Check (`typecheck`)
-Memeriksa error tipe data TypeScript tanpa melakukan compile.
-
-```bash
-npm run typecheck
-```
-
-### 3. Generate JWT Secret (`generate:jwt`)
-Membuat random string aman untuk `JWT_SECRET` di file `.env`.
-
-```bash
-npm run generate:jwt
 ```

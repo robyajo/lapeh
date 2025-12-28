@@ -1,14 +1,14 @@
-# Fitur & Konsep Inti
+# Features & Core Concepts
 
-Dokumen ini menjelaskan fitur-fitur utama Lapeh Framework dan cara penggunaannya secara mendalam.
+This document explains the key features of Lapeh Framework and how to use them in depth.
 
-## 1. Validasi Data (Laravel-Style)
+## 1. Data Validation (Laravel-Style)
 
-Framework ini menyediakan utility `Validator` yang terinspirasi dari Laravel, menggunakan `zod` di belakang layar namun dengan API yang lebih string-based dan mudah dibaca.
+The framework provides a `Validator` utility inspired by Laravel, using `zod` behind the scenes but with an API that is more string-based and readable.
 
-**Lokasi:** `@lapeh/utils/validator`
+**Location:** `@lapeh/utils/validator`
 
-### Penggunaan Dasar
+### Basic Usage
 
 ```typescript
 import { Validator } from "@lapeh/utils/validator";
@@ -17,9 +17,9 @@ export async function createProduct(req: Request, res: Response) {
   const validator = await Validator.make(req.body, {
     name: "required|string|min:3",
     price: "required|number|min:1000",
-    email: "required|email|unique:user,email", // Cek unik di tabel user kolom email
-    category_id: "required|exists:category,id", // Cek exist di tabel category kolom id
-    photo: "required|image|max:2048", // Validasi file upload (Max 2MB)
+    email: "required|email|unique:user,email", // Check unique in user table email column
+    category_id: "required|exists:category,id", // Check exists in category table id column
+    photo: "required|image|max:2048", // Validate file upload (Max 2MB)
   });
 
   if (validator.fails()) {
@@ -27,45 +27,45 @@ export async function createProduct(req: Request, res: Response) {
   }
 
   const data = validator.validated();
-  // Lanjut proses simpan...
+  // Continue saving process...
 }
 ```
 
-### Aturan Tersedia (Rules)
+### Available Rules
 
-- `required`: Wajib diisi.
-- `string`, `number`, `boolean`: Tipe data.
-- `email`: Format email valid.
-- `min:X`, `max:X`: Panjang string atau nilai number.
-- `unique:table,column`: Pastikan nilai belum ada di database (Async).
-- `exists:table,column`: Pastikan nilai ada di database (Async).
-- `image`: File harus berupa gambar (jpg, png, webp, dll).
-- `mimes:types`: File harus tipe tertentu (misal: `mimes:pdf,docx`).
+- `required`: Must be filled.
+- `string`, `number`, `boolean`: Data type.
+- `email`: Valid email format.
+- `min:X`, `max:X`: String length or number value.
+- `unique:table,column`: Ensure value does not exist in database (Async).
+- `exists:table,column`: Ensure value exists in database (Async).
+- `image`: File must be an image (jpg, png, webp, etc).
+- `mimes:types`: File must be a specific type (e.g., `mimes:pdf,docx`).
 
 ## 2. High Performance Response (Fastify-Style)
 
-Untuk endpoint yang membutuhkan performa tinggi (misalnya list data besar), gunakan serialisasi berbasis schema. Ini jauh lebih cepat daripada `res.json` standar Express.
+For endpoints requiring high performance (e.g., large data lists), use schema-based serialization. This is much faster than standard Express `res.json`.
 
-**Lokasi:** `@/utils/response`, `@/core/serializer`
+**Location:** `@/utils/response`, `@/core/serializer`
 
-### Langkah Implementasi
+### Implementation Steps
 
-1. **Definisikan Schema Output**
-   Sesuaikan dengan field yang ingin ditampilkan ke user.
+1. **Define Output Schema**
+   Match with the fields you want to show to the user.
 
    ```typescript
    const productSchema = {
      type: "object",
      properties: {
-       id: { type: "string" }, // BigInt otomatis jadi string
+       id: { type: "string" }, // BigInt automatically becomes string
        name: { type: "string" },
        price: { type: "number" },
      },
    };
    ```
 
-2. **Buat Serializer (Cached)**
-   Simpan di luar handler function agar dicompile sekali saja.
+2. **Create Serializer (Cached)**
+   Store outside the handler function so it compiles only once.
 
    ```typescript
    import { getSerializer, createResponseSchema } from "@/core/serializer";
@@ -76,12 +76,12 @@ Untuk endpoint yang membutuhkan performa tinggi (misalnya list data besar), guna
    );
    ```
 
-3. **Kirim Response**
+3. **Send Response**
 
    ```typescript
    import { sendFastSuccess } from "@lapeh/utils/response";
 
-   // Di dalam controller
+   // Inside controller
    sendFastSuccess(res, 200, productSerializer, {
      status: "success",
      message: "Data retrieved",
@@ -91,75 +91,9 @@ Untuk endpoint yang membutuhkan performa tinggi (misalnya list data besar), guna
 
 ## 3. Authentication & Authorization (RBAC)
 
-Sistem autentikasi menggunakan JWT (JSON Web Token) dan mendukung Role-Based Access Control.
+The authentication system uses JWT (JSON Web Token) and supports Role-Based Access Control.
 
-### Middleware Auth
+### Auth Middleware
 
-- `requireAuth`: Memastikan user login (mengirim header `Authorization: Bearer <token>`).
-- `requireAdmin`: Memastikan user login DAN memiliki role `admin` atau `super_admin`.
-
-**Contoh di Route:**
-
-```typescript
-import { requireAuth, requireAdmin } from "@/middleware/auth";
-
-router.get("/profile", requireAuth, getProfile); // Login only
-router.delete("/users/:id", requireAuth, requireAdmin, deleteUser); // Admin only
-```
-
-### Helper RBAC (Role Based Access Control)
-
-Anda bisa mengecek permission secara granular di dalam controller:
-
-```typescript
-// (Contoh implementasi, logic ada di AuthController/RbacController)
-if (req.user.role !== "manager") {
-  return sendError(res, 403, "Forbidden");
-}
-```
-
-## 4. Caching & Redis
-
-Framework ini memiliki integrasi Redis "Zero-Config".
-
-- Jika `REDIS_URL` ada di `.env` dan server Redis berjalan, framework akan connect.
-- Jika tidak ada atau gagal connect, framework otomatis fallback ke **In-Memory Mock**. Ini membuat development di local tidak wajib install Redis.
-
-**Mengakses Redis:**
-
-```typescript
-import { redis } from "@/core/redis";
-
-// Set cache (1 jam)
-await redis.set("my-key", "value", "EX", 3600);
-
-// Get cache
-const val = await redis.get("my-key");
-```
-
-## 5. Keamanan (Security)
-
-Secara default, framework sudah menerapkan:
-
-- **Helmet**: Mengamankan HTTP headers.
-- **CORS**: Mengizinkan akses lintas domain (configurable).
-- **Rate Limiting**: Membatasi jumlah request per IP untuk mencegah DDoS/Brute Force.
-  - Konfigurasi ada di `src/middleware/rateLimit.ts`.
-  - Default: 100 request / 15 menit.
-
-## 6. Import Path Aliases
-
-Gunakan `@/` untuk import module agar kode lebih bersih.
-
-- `@/core` -> `src/core`
-- `@/controllers` -> `src/controllers`
-- `@/utils` -> `src/utils`
-- `@/middleware` -> `src/middleware`
-
-**Contoh:**
-
-```typescript
-import { prisma } from "@/core/database"; // ✅ Rapi
-// vs
-import { prisma } from "../../../core/database"; // ❌ Berantakan
-```
+- `requireAuth`: Ensures user is logged in (sends header `Authorization: Bearer <token>`).
+- `requireAdmin`: Ensures user is logged in AND has role `admin` or `super_admin`.

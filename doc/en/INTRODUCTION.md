@@ -1,60 +1,60 @@
-# Pengenalan Lapeh Framework
+# Introduction to Lapeh Framework
 
-## Apa itu Lapeh?
+## What is Lapeh?
 
-**Lapeh** adalah framework Backend untuk Node.js yang dibangun di atas **Express** dan **TypeScript**.
+**Lapeh** is a Backend Framework for Node.js built on top of **Express** and **TypeScript**.
 
-Jika Anda pernah menggunakan **Laravel** (PHP) atau **NestJS** (Node.js), Anda akan merasa sangat familiar. Lapeh mengambil filosofi kemudahan & struktur rapi dari Laravel, namun tetap mempertahankan fleksibilitas dan kecepatan Express.
+If you have ever used **Laravel** (PHP) or **NestJS** (Node.js), you will feel very familiar. Lapeh adopts the philosophy of ease-of-use & clean structure from Laravel, while maintaining the flexibility and speed of Express.
 
-Nama "Lapeh" diambil dari bahasa Minang yang berarti "Lepas" atau "Bebas", melambangkan kebebasan developer untuk membangun aplikasi dengan cepat tanpa terbebani konfigurasi yang rumit.
+The name "Lapeh" comes from the Minang language which means "Loose" or "Free", symbolizing the freedom for developers to build applications quickly without being burdened by complicated configurations.
 
-## Mengapa Lapeh Dibuat?
+## Why was Lapeh Created?
 
-Di ekosistem Node.js, developer sering mengalami "Decision Fatigue" (Kelelahan memilih):
-- "Pakai ORM apa? Prisma, TypeORM, atau Drizzle?"
-- "Validasi pakai Joi, Zod, atau express-validator?"
-- "Struktur foldernya gimana? MVC? Clean Architecture?"
-- "Auth-nya gimana?"
+In the Node.js ecosystem, developers often experience "Decision Fatigue":
+- "Which ORM to use? Prisma, TypeORM, or Drizzle?"
+- "Validation using Joi, Zod, or express-validator?"
+- "How about the folder structure? MVC? Clean Architecture?"
+- "How to handle Auth?"
 
-Lapeh menjawab semua itu dengan **Opinionated Defaults**:
-1.  **ORM**: Prisma (Standar industri saat ini).
-2.  **Validasi**: Zod (dengan wrapper syntax ala Laravel).
-3.  **Struktur**: MVC Modular (Controller, Model, Route terpisah tapi kohesif).
-4.  **Auth**: JWT + RBAC (Role Based Access Control) siap pakai.
+Lapeh answers all of that with **Opinionated Defaults**:
+1.  **ORM**: Prisma (Current industry standard).
+2.  **Validation**: Zod (with Laravel-style wrapper syntax).
+3.  **Structure**: Modular MVC (Controller, Model, Route separated but cohesive).
+4.  **Auth**: Ready-to-use JWT + RBAC (Role Based Access Control).
 
-## Perbandingan dengan Framework Lain
+## Comparison with Other Frameworks
 
-| Fitur | Express (Raw) | NestJS | Lapeh Framework |
+| Feature | Express (Raw) | NestJS | Lapeh Framework |
 | :--- | :--- | :--- | :--- |
-| **Learning Curve** | Rendah (tapi bingung struktur) | Tinggi (Angular-style, Decorators) | **Sedang** (Express + Struktur Jelas) |
-| **Boilerplate** | Kosong | Sangat Banyak | **Pas (Ready to use)** |
-| **Type Safety** | Manual | Strict | **Strict (TypeScript Native)** |
-| **Kecepatan Dev** | Lambat (setup manual) | Sedang | **Cepat (CLI Generator)** |
-| **Fleksibilitas** | Sangat Tinggi | Kaku | **Tinggi** |
+| **Learning Curve** | Low (but confusing structure) | High (Angular-style, Decorators) | **Medium** (Express + Clear Structure) |
+| **Boilerplate** | Empty | Very Heavy | **Just Right (Ready to use)** |
+| **Type Safety** | Manual | Strict | **Strict (Native TypeScript)** |
+| **Dev Speed** | Slow (manual setup) | Medium | **Fast (CLI Generator)** |
+| **Flexibility** | Very High | Rigid | **High** |
 
-## Filosofi "The Lapeh Way"
+## "The Lapeh Way" Philosophy
 
-1.  **Developer Experience (DX) First**: CLI tools, error message yang jelas, dan hot-reload adalah prioritas.
-2.  **Performance by Default**: Serialisasi JSON cepat (Fastify-style) dan Redis caching terintegrasi.
-3.  **Explicit is Better than Implicit**: Tidak ada "sihir" yang terlalu gelap. Kode controller Anda adalah kode Express biasa yang Anda mengerti.
-4.  **Production Ready**: Security (Helmet, Rate Limit) dan Scalability (Docker, Cluster) bukan pikiran belakangan, tapi bawaan.
+1.  **Developer Experience (DX) First**: CLI tools, clear error messages, and hot-reload are priorities.
+2.  **Performance by Default**: Fast JSON serialization (Fastify-style) and integrated Redis caching.
+3.  **Explicit is Better than Implicit**: No "magic" that is too dark. Your controller code is standard Express code that you understand.
+4.  **Production Ready**: Security (Helmet, Rate Limit) and Scalability (Docker, Cluster) are not afterthoughts, but built-in.
 
-## Siklus Hidup Request (Request Lifecycle)
+## Request Lifecycle
 
-Bagaimana Lapeh menangani satu permintaan dari user?
+How does Lapeh handle a single request from a user?
 
-1.  **Request Masuk** (`GET /api/users`)
+1.  **Incoming Request** (`GET /api/users`)
 2.  **Security Middleware**: Helmet (Headers), CORS, Rate Limiter.
 3.  **Global Middleware**: Request Logger, Body Parser (JSON).
-4.  **Routing**: Mencocokkan URL di `src/routes/`.
-5.  **Auth Middleware** (Opsional): Cek token JWT & Role.
-6.  **Validator** (Opsional): Validasi input body/query.
-7.  **Controller**: Logika bisnis utama dijalankan.
-    - Panggil Database (Prisma).
-    - Panggil Cache (Redis).
-8.  **Serializer**: Data diformat & disanitasi (misal: hide password).
-9.  **Response**: JSON dikirim kembali ke user.
+4.  **Routing**: Matching URL in `src/routes/`.
+5.  **Auth Middleware** (Optional): Check JWT token & Role.
+6.  **Validator** (Optional): Validate body/query input.
+7.  **Controller**: Main business logic executed.
+    - Call Database (Prisma).
+    - Call Cache (Redis).
+8.  **Serializer**: Data formatted & sanitized (e.g., hide password).
+9.  **Response**: JSON sent back to user.
 
 ---
 
-**Selanjutnya:** Pelajari struktur folder di [Struktur Proyek](STRUCTURE.md).
+**Next:** Learn about the folder structure in [Project Structure](structure.md).

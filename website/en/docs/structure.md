@@ -1,90 +1,90 @@
-# Bedah Struktur Proyek
+# Project Structure Breakdown
 
-Untuk memahami Lapeh Framework sepenuhnya, Anda perlu tahu apa fungsi setiap file dan folder. Berikut adalah "Tour" lengkap ke dalam direktori proyek.
+To fully understand Lapeh Framework, you need to know what each file and folder does. Here is a complete "Tour" of the project directory.
 
 ## Root Directory
 
-| File/Folder          | Deskripsi                                                                     |
-| :------------------- | :---------------------------------------------------------------------------- |
-| `bin/`               | Berisi script eksekusi untuk CLI (`npx lapeh`). Anda jarang menyentuh ini.    |
-| `doc/`               | Dokumentasi proyek ini berada.                                                |
-| `lib/`               | **Framework Core**. Bagian internal framework yang jarang Anda sentuh.        |
-| `prisma/`            | Jantung konfigurasi Database.                                                 |
-| `scripts/`           | Kumpulan script Node.js untuk utility (generator, compiler schema, dll).      |
-| `src/`               | **Source Code Utama**. 99% kodingan Anda ada di sini.                         |
-| `.env`               | Variabel rahasia (Database URL, API Keys). **Jangan commit file ini ke Git!** |
-| `docker-compose.yml` | Konfigurasi Docker untuk menjalankan Database & Redis lokal.                  |
-| `nodemon.json`       | Konfigurasi auto-restart saat development.                                    |
-| `package.json`       | Daftar library (dependencies) dan perintah (`npm run ...`).                   |
-| `tsconfig.json`      | Konfigurasi TypeScript.                                                       |
+| File/Folder          | Description                                                                    |
+| :------------------- | :----------------------------------------------------------------------------- |
+| `bin/`               | Contains execution scripts for CLI (`npx lapeh`). You rarely touch this.       |
+| `doc/`               | Project documentation resides here.                                            |
+| `lib/`               | **Framework Core**. Internal parts of the framework you rarely touch.          |
+| `prisma/`            | The heart of Database configuration.                                           |
+| `scripts/`           | Collection of Node.js utility scripts (generators, schema compilers, etc).     |
+| `src/`               | **Main Source Code**. 99% of your coding happens here.                         |
+| `.env`               | Secret variables (Database URL, API Keys). **Do not commit this file to Git!** |
+| `docker-compose.yml` | Docker configuration for running local Database & Redis.                       |
+| `nodemon.json`       | Auto-restart configuration during development.                                 |
+| `package.json`       | List of libraries (dependencies) and commands (`npm run ...`).                 |
+| `tsconfig.json`      | TypeScript configuration.                                                      |
 
-## Folder `src/` (Source Code - User Space)
+## `src/` Folder (Source Code - User Space)
 
-Ini adalah tempat Anda bekerja setiap hari.
+This is where you work every day.
 
 ### `src/controllers/`
 
-Berisi logika aplikasi. Controller menerima Request, memprosesnya, dan mengembalikan Response.
+Contains application logic. Controllers receive Requests, process them, and return Responses.
 
-- **Contoh**: `authController.ts` menangani login/register.
-- **Tips**: Jangan taruh _business logic_ yang terlalu kompleks di sini. Gunakan Service (opsional) jika controller sudah terlalu gemuk.
+- **Example**: `authController.ts` handles login/register.
+- **Tip**: Do not put overly complex _business logic_ here. Use Services (optional) if the controller gets too fat.
 
 ### `src/models/`
 
-Berisi definisi tabel database (Schema Prisma).
+Contains database table definitions (Prisma Schema).
 
-- **Unik di Lapeh**: Kami memecah `schema.prisma` yang besar menjadi file-file kecil per fitur (misal `user.prisma`, `product.prisma`) agar mudah di-manage. Script `prisma:migrate` akan menggabungkannya nanti.
+- **Unique in Lapeh**: We break down the large `schema.prisma` into small files per feature (e.g., `user.prisma`, `product.prisma`) for easier management. The `prisma:migrate` script will merge them later.
 
 ### `src/routes/`
 
-Mendefinisikan URL endpoint.
+Defines endpoint URLs.
 
-- Menghubungkan URL (misal `/api/login`) ke fungsi di Controller.
-- Menempelkan Middleware (misal `requireAuth`).
+- Connects URLs (e.g., `/api/login`) to functions in Controllers.
+- Attaches Middleware (e.g., `requireAuth`).
 
-## Folder `lib/` (Framework Internals)
+## `lib/` Folder (Framework Internals)
 
-Bagian ini mirip dengan `node_modules` atau folder `.next` di Next.js. Ini adalah mesin framework.
+This part is similar to `node_modules` or the `.next` folder in Next.js. This is the framework engine.
 
 ### `lib/core/`
 
-Bagian "Mesin" framework.
+The "Engine" part of the framework.
 
-- `server.ts`: Setup Express App.
-- `database.ts`: Instance Prisma Client.
-- `redis.ts`: Koneksi Redis.
-- `serializer.ts`: Logic caching JSON Schema.
+- `server.ts`: Express App setup.
+- `database.ts`: Prisma Client instance.
+- `redis.ts`: Redis connection.
+- `serializer.ts`: JSON Schema caching logic.
 
 ### `lib/middleware/`
 
-Middleware bawaan framework.
+Built-in framework middleware.
 
-- `auth.ts`: Cek JWT Token.
-- `rateLimit.ts`: Batasi jumlah request.
-- `requestLogger.ts`: Log setiap request yang masuk.
+- `auth.ts`: Check JWT Token.
+- `rateLimit.ts`: Limit request count.
+- `requestLogger.ts`: Log every incoming request.
 
 ### `lib/utils/`
 
-Fungsi bantuan (Helper) bawaan.
+Built-in Helper functions.
 
-- `validator.ts`: Validasi input ala Laravel.
-- `response.ts`: Standar format JSON response (`sendFastSuccess`, `sendError`).
-- `logger.ts`: Sistem logging (Winston).
+- `validator.ts`: Laravel-style input validation.
+- `response.ts`: Standard JSON response format (`sendFastSuccess`, `sendError`).
+- `logger.ts`: Logging system (Winston).
 
-## Folder `prisma/`
+## `prisma/` Folder
 
-- `migrations/`: History perubahan database (SQL file). Jangan diedit manual.
-- `base.prisma.template`: Header dari schema database (berisi konfigurasi datasource db).
-- `seed.ts`: Script untuk mengisi data awal (Data Seeding).
+- `migrations/`: Database change history (SQL files). Do not edit manually.
+- `base.prisma.template`: Header of the database schema (contains db datasource config).
+- `seed.ts`: Script for populating initial data (Data Seeding).
 
-## Folder `scripts/`
+## `scripts/` Folder
 
-Script-script "Magic" yang dijalankan `npm run`.
+"Magic" scripts executed by `npm run`.
 
-- `make-controller.js`: Generator controller.
-- `compile-schema.js`: Penggabung file `.prisma`.
-- `init-project.js`: Wizard setup awal.
+- `make-controller.js`: Controller generator.
+- `compile-schema.js`: `.prisma` file merger.
+- `init-project.js`: Initial setup wizard.
 
 ---
 
-Dengan memahami struktur ini, Anda tidak akan tersesat saat ingin menambah fitur baru atau mencari bug.
+By understanding this structure, you won't get lost when adding new features or debugging.

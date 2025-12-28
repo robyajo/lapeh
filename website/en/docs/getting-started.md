@@ -1,108 +1,101 @@
 # Getting Started with Lapeh Framework
 
-Selamat datang di dokumentasi resmi **Lapeh Framework**. Panduan ini akan membantu Anda memulai instalasi, konfigurasi, dan pemahaman dasar tentang struktur proyek.
+Welcome to the official documentation for **Lapeh Framework**. This guide will help you get started with installation, configuration, and understanding the basic project structure.
 
-## Persyaratan Sistem
+## System Requirements
 
-Sebelum memulai, pastikan sistem Anda memenuhi persyaratan berikut:
+Before you begin, ensure your system meets the following requirements:
 
-- **Node.js**: Versi 18.x atau lebih baru.
-- **Database**: PostgreSQL (Recommended) atau MySQL/MariaDB.
-- **Package Manager**: NPM (bawaan Node.js).
+- **Node.js**: Version 18.x or newer.
+- **Database**: PostgreSQL (Recommended) or MySQL/MariaDB.
+- **Package Manager**: NPM (bundled with Node.js).
 
-## Instalasi
+## Installation
 
-Cara termudah untuk memulai adalah menggunakan CLI generator `npx`.
+The easiest way to start is by using the `npx` CLI generator.
 
-### 1. Buat Project Baru
+### 1. Create a New Project
 
-Jalankan perintah berikut di terminal Anda:
+Run the following command in your terminal:
 
 ```bash
-npx lapeh@latest nama-project-anda
+npx lapeh@latest your-project-name
 ```
 
-Atau untuk setup lengkap (dengan data dummy user & role):
+Or for a full setup (with dummy user & role data):
 
 ```bash
-npx lapeh@latest nama-project-anda --full
+npx lapeh@latest your-project-name --full
 ```
 
-### 2. Setup Awal
+### 2. Initial Setup
 
-Setelah project dibuat, masuk ke direktori project dan jalankan setup wizard:
+Once the project is created, navigate into the project directory and run the setup wizard:
 
 ```bash
-cd nama-project-anda
+cd your-project-name
 npm run first
 ```
 
-Script ini akan melakukan hal-hal berikut secara otomatis:
+This script will automatically perform the following:
 
-1.  Menyalin `.env.example` ke `.env`.
-2.  Menginstall semua dependency (`npm install`).
-3.  Membuat **JWT Secret** yang aman.
-4.  Menjalankan migrasi database (membuat tabel).
-5.  Menjalankan seeder (mengisi data awal).
+1.  Copy `.env.example` to `.env`.
+2.  Install all dependencies (`npm install`).
+3.  Generate a secure **JWT Secret**.
+4.  Run database migrations (create tables).
+5.  Run the seeder (populate initial data).
 
-### 3. Jalankan Server Development
+### 3. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-Server akan berjalan di `http://localhost:4000` (atau port yang Anda tentukan di `.env`).
+The server will run at `http://localhost:4000` (or the port specified in `.env`).
 
-## Struktur Direktori
+## Directory Structure
 
-Berikut adalah struktur folder standar Lapeh Framework:
+Here is the standard folder structure of Lapeh Framework:
 
 ```
 my-app/
-├── bin/                  # Script CLI untuk npx
-├── doc/                  # Dokumentasi proyek
-├── prisma/               # Konfigurasi Database & Schema
-│   ├── migrations/       # File history migrasi database
-│   ├── base.prisma.template # Template konfigurasi database
-│   ├── schema.prisma     # File schema gabungan (Auto-generated)
-│   └── seed.ts           # Script untuk mengisi data awal
-├── scripts/              # Script utility (Generator, Compiler)
-├── src/                  # Source code utama aplikasi
-│   ├── controllers/      # Logika bisnis (Handler request)
-│   ├── core/             # Konfigurasi inti (DB, Redis, Server)
-│   ├── middleware/       # Middleware Express (Auth, RateLimit)
-│   ├── models/           # Definisi Schema Prisma per-fitur
-│   ├── routes/           # Definisi routing API
-│   ├── utils/            # Helper function (Response, Validator)
-│   └── index.ts          # Entry point aplikasi
-├── .env                  # Variabel lingkungan (Rahasia)
-├── package.json          # Dependensi & Script NPM
-└── tsconfig.json         # Konfigurasi TypeScript
+├── bin/                  # CLI scripts for npx
+├── doc/                  # Project documentation
+├── prisma/               # Database Configuration & Schema
+│   ├── migrations/       # Database migration history files
+│   ├── base.prisma.template # Database configuration template
+│   ├── schema.prisma     # Combined schema file (Auto-generated)
+│   └── seed.ts           # Script for populating initial data
+├── scripts/              # Utility scripts (Generator, Compiler)
+├── src/                  # Main application source code
+│   ├── controllers/      # Business logic (Request handlers)
+│   ├── core/             # Core configuration (DB, Redis, Server)
+│   ├── middleware/       # Express Middleware (Auth, RateLimit)
+│   ├── models/           # Prisma Schema definitions per feature
+│   ├── routes/           # API routing definitions
+│   ├── utils/            # Helper functions (Response, Validator)
+│   └── index.ts          # Application entry point
+├── .env                  # Environment variables (Secrets)
+├── package.json          # NPM Dependencies & Scripts
+└── tsconfig.json         # TypeScript Configuration
 ```
 
-## Konfigurasi Environment (.env)
+## Environment Configuration (.env)
 
-File `.env` menyimpan konfigurasi penting. Berikut adalah variabel kunci:
+The `.env` file stores important configurations. Here are the key variables:
 
 ```ini
 # Server
 PORT=4000
 NODE_ENV=development
 
-# Database (Ganti sesuai kredensial Anda)
+# Database (Change according to your credentials)
 DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
 
 # Security
-JWT_SECRET="rahasia-super-panjang-dan-acak"
-ACCESS_TOKEN_EXPIRES_IN=3600 # 1 jam
+JWT_SECRET="super-long-and-random-secret"
+ACCESS_TOKEN_EXPIRES_IN=3600 # 1 hour
 
-# Redis (Opsional - otomatis mock jika tidak ada)
+# Redis (Optional - automatically mocked if absent)
 REDIS_URL="redis://localhost:6379"
-NO_REDIS=false # Set true untuk memaksa mode mock
 ```
-
-## Langkah Selanjutnya
-
-- Pelajari cara menggunakan **[CLI Tools](CLI.md)** untuk mempercepat development.
-- Pahami **[Fitur & Konsep Inti](FEATURES.md)** framework.
-- Ikuti **[Tutorial Studi Kasus](TUTORIAL.md)** untuk membangun fitur nyata.
