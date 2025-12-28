@@ -2,6 +2,25 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-28] - Minggu, 28 Desember 2025 - Multi-Database & Cleanup (v2.4.10)
+
+### 🚀 Fitur & Perbaikan
+
+- **Dukungan Multi-Database (CLI)**:
+  - Menambahkan dukungan penuh untuk inisialisasi proyek dengan **MongoDB** dan **MySQL** selain **PostgreSQL**.
+  - Memperbaiki logika penggantian provider database pada template `schema.prisma` agar lebih akurat.
+  - Menambahkan argumen CLI `--db-type=mongo|pgsql|mysql` untuk otomatisasi instalasi tanpa interaksi.
+  - Mengatasi masalah migrasi pada MongoDB dengan menggunakan `prisma db push` secara kondisional.
+
+- **Pembersihan Paket (Cleanup)**:
+  - Menghapus file dan folder development yang tidak diperlukan (`test-local-run`, `init`, `framework.md`, dll) dari paket publik NPM.
+  - Menambahkan file `LICENSE` (MIT) secara eksplisit ke dalam paket.
+  - Memastikan folder `dist` di-generate ulang dengan bersih saat publikasi.
+
+- **Dokumentasi & Website**:
+  - Menambahkan struktur dasar dashboard admin pada dokumentasi website.
+  - Menambahkan skrip simulasi API telemetri lokal untuk pengembangan website.
+
 ## [2025-12-28] - Minggu, 28 Desember 2025 - Perbaikan Upgrade & Testing (v2.4.9)
 
 ### 🚀 Fitur & Perbaikan
