@@ -1,0 +1,62 @@
+
+A. kita lakukan perubahan besar 
+1. dalam foder src hanya ada app dan route dan midlleware
+2. hilangkan perithan make:controller ganti dengan make:modul untuk membuat controller dan yang dibutuhkan seperti nestjs (contoh npx lapeh make:modul User maka akan generate semua kebutuhan untuk user controller dll)
+3. Tidak ada lagi perintah untuk membuat model
+4. Tambahkan juga folder config untuk configurasi yang akan daigunakan di framework seperti
+    - setting cors
+    - setting waktu
+    - dan semua configurasi lainya dari yang aktif basic dan lain 
+
+B.Dimana untuk orm untuk opsi user create projet dengan npm , peratama  buat pilihan menggunakan orm 
+1. Jika (YA)
+- saya ingin menyertakan config prisma v7
+- user memilih database yang digunakan postgresql (default) dan mysql dan terjadi proses (create configurasi untuk database dari host,port,username dan password)
+- lakukan seeder untuk configurasi yang sekarang User brac dan pets
+- berika pilihan untuk (sertakan seder jika tidak maka jangan jalankan seder)
+2. Jika (TIDAK)
+- Maka set framework tampa prisma (biarkan user yang memilih orm kebutuhannya )
+
+C. Saya ingin framework ini siapakai dan aman maka lakukan pengujian dan berikan masukan dan tambahan jika ada yang kurang agar semua terasa sempurna 
+
+D. configurasi yang mungkin dibutuhkan untuk uji coba
+ untuk data base mysql di local saya 
+ user: root
+ password :123
+
+ untuk database postgresql
+ user: roby
+ port: 5432
+ password: 12341234
+
+database traking aksi user untuk (mongodb+srv://roby:Tiram@1993@cluster0.aokm4ww.mongodb.net/?appName=Cluster0)
+Catatan Penting: Saat ini, Dashboard menggunakan Mock Data (data simulasi) karena Anda belum memiliki server database backend yang aktif untuk menampung data telemetry ini. Kode di CLI ( bin/index.js ) sudah siap mengirim data ke https://lapeh-doc.vercel.app/api/telemetry .
+
+Langkah selanjutnya untuk membuat ini "Live":
+
+1. Buat API Route di Vercel ( api/telemetry.js ) atau server backend terpisah.
+
+2. Hubungkan ke database (seperti Supabase/PostgreSQL).
+
+3. Update URL di bin/index.js dan AdminDashboard.vue ke API asli Anda.
+
+Untuk sekarang, Anda bisa membuka /admin di website lokal atau setelah deploy untuk melihat bentuk visual dashboard tersebut.
+
+E. Lakukan testing (Folder pengujian local dan npm) dan pengujian framework selesai itu lanjutkan yang dibawah
+1. Perbaharui CHANGELOG.md dengan perbaikan terbaru
+2. Naikan versi di package.json (bumppp version)
+3. jalankan npm publish (atau perintah final)
+4. Buat postingan blog baru di website tentang rilis ini
+5. commit ke github
+6. perbahrui juga doc id dan en
+
+D. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu dalam folder pengjujian) pastikan semua berjalan lancar
+ 1. npx lapeh@latest nama-project-anda
+ 2. npx lapeh@latest nama-project-anda --full
+ 3. npx lapeh@latest nama-project-anda --default
+ 4. npx lapeh@latest nama-project-anda --y
+ 5. npx lapeh@latest upgrade
+ 6. npm run dev
+ 7. npm run build
+ 8. npm run start
+ 9. bersihkan semua project ujicoba setelah semuanya selesai
