@@ -81,7 +81,7 @@ export async function index(req: Request, res: Response) {
 export async function show(req: Request, res: Response) {
   const { id } = req.params;
   const pet = await prisma.pets.findUnique({
-    where: { id: BigInt(id) },
+    where: { id: id },
   });
 
   if (!pet) {
@@ -146,7 +146,7 @@ export async function update(req: Request, res: Response) {
   }
 
   const existing = await prisma.pets.findUnique({
-    where: { id: BigInt(id) },
+    where: { id: id },
   });
 
   if (!existing) {
@@ -156,7 +156,7 @@ export async function update(req: Request, res: Response) {
 
   const validatedData = await validator.validated();
   const updated = await prisma.pets.update({
-    where: { id: BigInt(id) },
+    where: { id: id },
     data: {
       ...validatedData,
       updated_at: new Date(),
@@ -178,7 +178,7 @@ export async function destroy(req: Request, res: Response) {
   const { id } = req.params;
 
   const existing = await prisma.pets.findUnique({
-    where: { id: BigInt(id) },
+    where: { id: id },
   });
 
   if (!existing) {
@@ -187,7 +187,7 @@ export async function destroy(req: Request, res: Response) {
   }
 
   await prisma.pets.delete({
-    where: { id: BigInt(id) },
+    where: { id: id },
   });
 
   sendSuccess(res, 200, "Pet deleted successfully", null);

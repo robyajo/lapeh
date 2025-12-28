@@ -274,14 +274,14 @@ export async function assignRoleToUser(req: Request, res: Response) {
   const { userId, roleId } = await validator.validated();
 
   const user = await prisma.users.findUnique({
-    where: { id: BigInt(userId) },
+    where: { id: userId },
   });
   if (!user) {
     sendError(res, 404, "User not found");
     return;
   }
   const role = await prisma.roles.findUnique({
-    where: { id: BigInt(roleId) },
+    where: { id: roleId },
   });
   if (!role) {
     sendError(res, 404, "Role not found");
@@ -290,13 +290,13 @@ export async function assignRoleToUser(req: Request, res: Response) {
   await prisma.user_roles.upsert({
     where: {
       user_id_role_id: {
-        user_id: BigInt(userId),
-        role_id: BigInt(roleId),
+        user_id: userId,
+        role_id: roleId,
       },
     },
     create: {
-      user_id: BigInt(userId),
-      role_id: BigInt(roleId),
+      user_id: userId,
+      role_id: roleId,
       created_at: new Date(),
     },
     update: {},
@@ -322,8 +322,8 @@ export async function removeRoleFromUser(req: Request, res: Response) {
 
   await prisma.user_roles.deleteMany({
     where: {
-      user_id: BigInt(userId),
-      role_id: BigInt(roleId),
+      user_id: userId,
+      role_id: roleId,
     },
   });
   sendFastSuccess(res, 200, voidSerializer, {
@@ -346,14 +346,14 @@ export async function assignPermissionToRole(req: Request, res: Response) {
   const { roleId, permissionId } = await validator.validated();
 
   const role = await prisma.roles.findUnique({
-    where: { id: BigInt(roleId) },
+    where: { id: roleId },
   });
   if (!role) {
     sendError(res, 404, "Role not found");
     return;
   }
   const permission = await prisma.permissions.findUnique({
-    where: { id: BigInt(permissionId) },
+    where: { id: permissionId },
   });
   if (!permission) {
     sendError(res, 404, "Permission not found");
@@ -362,13 +362,13 @@ export async function assignPermissionToRole(req: Request, res: Response) {
   await prisma.role_permissions.upsert({
     where: {
       role_id_permission_id: {
-        role_id: BigInt(roleId),
-        permission_id: BigInt(permissionId),
+        role_id: roleId,
+        permission_id: permissionId,
       },
     },
     create: {
-      role_id: BigInt(roleId),
-      permission_id: BigInt(permissionId),
+      role_id: roleId,
+      permission_id: permissionId,
       created_at: new Date(),
     },
     update: {},
@@ -394,8 +394,8 @@ export async function removePermissionFromRole(req: Request, res: Response) {
 
   await prisma.role_permissions.deleteMany({
     where: {
-      role_id: BigInt(roleId),
-      permission_id: BigInt(permissionId),
+      role_id: roleId,
+      permission_id: permissionId,
     },
   });
   sendFastSuccess(res, 200, voidSerializer, {
@@ -418,14 +418,14 @@ export async function assignPermissionToUser(req: Request, res: Response) {
   const { userId, permissionId } = await validator.validated();
 
   const user = await prisma.users.findUnique({
-    where: { id: BigInt(userId) },
+    where: { id: userId },
   });
   if (!user) {
     sendError(res, 404, "User not found");
     return;
   }
   const permission = await prisma.permissions.findUnique({
-    where: { id: BigInt(permissionId) },
+    where: { id: permissionId },
   });
   if (!permission) {
     sendError(res, 404, "Permission not found");
@@ -434,13 +434,13 @@ export async function assignPermissionToUser(req: Request, res: Response) {
   await prisma.user_permissions.upsert({
     where: {
       user_id_permission_id: {
-        user_id: BigInt(userId),
-        permission_id: BigInt(permissionId),
+        user_id: userId,
+        permission_id: permissionId,
       },
     },
     create: {
-      user_id: BigInt(userId),
-      permission_id: BigInt(permissionId),
+      user_id: userId,
+      permission_id: permissionId,
       created_at: new Date(),
     },
     update: {},
@@ -466,8 +466,8 @@ export async function removePermissionFromUser(req: Request, res: Response) {
 
   await prisma.user_permissions.deleteMany({
     where: {
-      user_id: BigInt(userId),
-      permission_id: BigInt(permissionId),
+      user_id: userId,
+      permission_id: permissionId,
     },
   });
   sendFastSuccess(res, 200, voidSerializer, {
