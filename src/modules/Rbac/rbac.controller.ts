@@ -98,7 +98,7 @@ export async function listRoles(_req: Request, res: Response) {
 
 export async function updateRole(req: Request, res: Response) {
   const { id } = req.params;
-  const roleId = BigInt(id);
+  const roleId = id;
 
   const validator = Validator.make(req.body || {}, {
     name: "string",
@@ -136,7 +136,7 @@ export async function updateRole(req: Request, res: Response) {
 
 export async function deleteRole(req: Request, res: Response) {
   const { id } = req.params;
-  const roleId = BigInt(id);
+  const roleId = id;
   const role = await prisma.roles.findUnique({ where: { id: roleId } });
   if (!role) {
     sendError(res, 404, "Role not found");
@@ -199,7 +199,7 @@ export async function listPermissions(_req: Request, res: Response) {
 
 export async function updatePermission(req: Request, res: Response) {
   const { id } = req.params;
-  const permissionId = BigInt(id);
+  const permissionId = id;
 
   const validator = Validator.make(req.body || {}, {
     name: "string",
@@ -239,7 +239,7 @@ export async function updatePermission(req: Request, res: Response) {
 
 export async function deletePermission(req: Request, res: Response) {
   const { id } = req.params;
-  const permissionId = BigInt(id);
+  const permissionId = id;
   const permission = await prisma.permissions.findUnique({
     where: { id: permissionId },
   });

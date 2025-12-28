@@ -263,7 +263,7 @@ async function main() {
   console.log("Seeded resource permissions");
 
   // 4. Assign permissions to roles
-  const rolePermPairs: { roleId: bigint; permId: bigint }[] = [
+  const rolePermPairs: { roleId: string; permId: string }[] = [
     // super_admin gets all users permissions + other management permissions
     { roleId: superAdminRole.id, permId: manageUsers.id },
     { roleId: superAdminRole.id, permId: manageUsersCreate.id },
@@ -316,7 +316,7 @@ async function main() {
   console.log("Assigned permissions to roles");
 
   // 5. Assign roles to users
-  const userRolePairs: { userId: bigint; roleId: bigint }[] = [
+  const userRolePairs: { userId: string; roleId: string }[] = [
     { userId: superAdmin.id, roleId: superAdminRole.id },
     { userId: admin.id, roleId: adminRole.id },
     { userId: user.id, roleId: userRole.id },

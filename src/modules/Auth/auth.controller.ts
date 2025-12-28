@@ -219,7 +219,7 @@ export async function me(req: Request, res: Response) {
     return;
   }
   const user = await prisma.users.findUnique({
-    where: { id: BigInt(payload.userId) },
+    where: { id: payload.userId },
     include: {
       user_roles: {
         include: {
@@ -285,7 +285,7 @@ export async function refreshToken(req: Request, res: Response) {
       return;
     }
     const user = await prisma.users.findUnique({
-      where: { id: BigInt(decoded.userId) },
+      where: { id: decoded.userId },
       include: {
         user_roles: {
           include: {
@@ -353,7 +353,7 @@ export async function updateAvatar(req: Request, res: Response) {
     sendError(res, 400, "Avatar file is required");
     return;
   }
-  const userId = BigInt(payload.userId);
+  const userId = payload.userId;
   const avatar = file.filename;
   const avatar_url =
     process.env.AVATAR_BASE_URL || `/uploads/avatars/${file.filename}`;
@@ -401,7 +401,7 @@ export async function updatePassword(req: Request, res: Response) {
   }
   const { currentPassword, newPassword } = await validator.validated();
   const user = await prisma.users.findUnique({
-    where: { id: BigInt(payload.userId) },
+    where: { id: payload.userId },
   });
   if (!user) {
     sendError(res, 404, "User not found");
@@ -445,7 +445,7 @@ export async function updateProfile(req: Request, res: Response) {
     return;
   }
   const { name, email } = await validator.validated();
-  const userId = BigInt(payload.userId);
+  const userId = payload.userId;
   // Manual unique check removed as it is handled by validator
 
   const updated = await prisma.users.update({

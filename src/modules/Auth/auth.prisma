@@ -101,6 +101,6 @@ model users {
   created_at        DateTime?
   updated_at        DateTime?
 
-  user_roles       user_roles[]
-  user_permissions user_permissions[]
+  user_roles        user_roles[]
+  user_permissions  user_permissions[]
 }
