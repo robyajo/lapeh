@@ -1,0 +1,17 @@
+{
+  "name": "lapeh-docs",
+  "version": "1.0.0",
+  "description": "Documentation website for Lapeh Framework",
+  "scripts": {
+    "dev": "node scripts/sync-docs.js && vitepress dev",
+    "build": "node scripts/sync-docs.js && vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "vitepress": "^1.5.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  }
+}
