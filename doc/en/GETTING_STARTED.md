@@ -19,14 +19,21 @@ The easiest way to start is by using the `npx` CLI generator.
 Run the following command in your terminal:
 
 ```bash
-npx lapeh@latest your-project-name
+# Standard Interactive Setup
+npx lapeh@latest init your-project-name
 ```
 
-Or for a full setup (with dummy user & role data):
+**Alternative Quick Setup Flags:**
 
-```bash
-npx lapeh@latest your-project-name --full
-```
+- **Full Setup** (Includes dummy data, recommended for learning):
+  ```bash
+  npx lapeh@latest init your-project-name --full
+  ```
+
+- **Default Setup** (Skips questions, uses PostgreSQL):
+  ```bash
+  npx lapeh@latest init your-project-name --y
+  ```
 
 ### 2. Initial Setup
 

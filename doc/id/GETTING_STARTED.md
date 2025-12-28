@@ -19,14 +19,21 @@ Cara termudah untuk memulai adalah menggunakan CLI generator `npx`.
 Jalankan perintah berikut di terminal Anda:
 
 ```bash
-npx lapeh@latest nama-project-anda
+# Setup Interaktif Standar
+npx lapeh@latest init nama-project-anda
 ```
 
-Atau untuk setup lengkap (dengan data dummy user & role):
+**Opsi Setup Cepat (Flags):**
 
-```bash
-npx lapeh@latest nama-project-anda --full
-```
+- **Setup Lengkap** (Termasuk data dummy, disarankan untuk belajar):
+  ```bash
+  npx lapeh@latest init nama-project-anda --full
+  ```
+
+- **Setup Default** (Melewati pertanyaan, menggunakan PostgreSQL):
+  ```bash
+  npx lapeh@latest init nama-project-anda --y
+  ```
 
 ### 2. Setup Awal
 

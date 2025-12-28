@@ -10,7 +10,42 @@ All commands are executed using `npm run <command>`.
 
 Main commands to run the application:
 
-### 1. Development Server (`dev`)
+### 1. Initialize Project (`init`)
+Creates a new project from scratch.
+
+```bash
+npx lapeh@latest init <project-name> [flags]
+```
+
+**Available Flags:**
+- `--full`: Initialize with full setup (includes dummy users, roles, permissions).
+- `--default`: Initialize with default configuration (PostgreSQL) skipping interactive prompts.
+- `--y`: Alias for `--default`.
+
+**Examples:**
+```bash
+# Interactive Mode
+npx lapeh init my-app
+
+# Full Setup (Recommended for learning)
+npx lapeh init my-app --full
+
+# Fast Setup (Default Postgres)
+npx lapeh init my-app --y
+```
+
+### 2. Upgrade Framework (`upgrade`)
+Upgrades the Lapeh framework to the latest version in your existing project.
+
+```bash
+npx lapeh upgrade
+```
+**Features:**
+- Automatically updates `package.json` dependencies.
+- Syncs core framework files while preserving your custom code.
+- **Smart Dependency Handling**: Preserves local `file:` dependencies if you are developing the framework locally, otherwise updates to the latest npm version.
+
+### 3. Development Server (`dev`)
 Runs the server in development mode with hot-reload feature.
 
 ```bash

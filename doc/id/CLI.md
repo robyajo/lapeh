@@ -10,7 +10,42 @@ Semua perintah dijalankan menggunakan `npm run <command>`.
 
 Perintah utama untuk menjalankan aplikasi:
 
-### 1. Development Server (`dev`)
+### 1. Inisialisasi Project (`init`)
+Membuat project baru dari awal.
+
+```bash
+npx lapeh@latest init <nama-project> [flags]
+```
+
+**Flag Tersedia:**
+- `--full`: Inisialisasi dengan setup lengkap (termasuk dummy user, role, permission).
+- `--default`: Inisialisasi dengan konfigurasi default (PostgreSQL) melewati prompt interaktif.
+- `--y`: Alias untuk `--default`.
+
+**Contoh:**
+```bash
+# Mode Interaktif
+npx lapeh init my-app
+
+# Setup Lengkap (Disarankan untuk belajar)
+npx lapeh init my-app --full
+
+# Setup Cepat (Default Postgres)
+npx lapeh init my-app --y
+```
+
+### 2. Upgrade Framework (`upgrade`)
+Memperbarui framework Lapeh ke versi terbaru di project yang sudah ada.
+
+```bash
+npx lapeh upgrade
+```
+**Fitur:**
+- Secara otomatis memperbarui dependensi `package.json`.
+- Menyinkronkan file inti framework sambil menjaga kode kustom Anda.
+- **Smart Dependency Handling**: Mempertahankan dependensi `file:` lokal jika Anda mengembangkan framework secara lokal, jika tidak akan mengupdate ke versi npm terbaru.
+
+### 3. Development Server (`dev`)
 Menjalankan server dalam mode development dengan fitur hot-reload.
 
 ```bash
