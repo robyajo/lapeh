@@ -2,9 +2,11 @@
 
 Dokumen ini menjelaskan fitur-fitur utama Lapeh Framework dan cara penggunaannya secara mendalam.
 
-## 1. Validasi Data (Laravel-Style)
+3. **Explicit is Better than Implicit**: Tidak ada "sihir" yang terlalu gelap. Kode controller Anda adalah kode Express biasa yang Anda mengerti.
 
-Framework ini menyediakan utility `Validator` yang terinspirasi dari Laravel, menggunakan `zod` di belakang layar namun dengan API yang lebih string-based dan mudah dibaca.
+## 1. Validasi Data (Simple & Powerful)
+
+Framework ini menyediakan utility `Validator` yang terinspirasi dari gaya validasi modern yang ekspresif, menggunakan `zod` di belakang layar namun dengan API yang lebih string-based dan mudah dibaca.
 
 **Lokasi:** `@lapeh/utils/validator`
 
@@ -42,7 +44,7 @@ export async function createProduct(req: Request, res: Response) {
 - `image`: File harus berupa gambar (jpg, png, webp, dll).
 - `mimes:types`: File harus tipe tertentu (misal: `mimes:pdf,docx`).
 
-## 2. High Performance Response (Fastify-Style)
+## 2. High Performance Response (Fastify-Like)
 
 Untuk endpoint yang membutuhkan performa tinggi (misalnya list data besar), gunakan serialisasi berbasis schema. Ini jauh lebih cepat daripada `res.json` standar Express.
 

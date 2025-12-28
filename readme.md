@@ -9,7 +9,7 @@ Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap:
 - **Production Ready**: Struktur folder modular (MVC) yang mudah dikembangkan.
 - **TypeScript First**: Full type-safety untuk mengurangi runtime error.
 - **Prisma ORM Integration**: Database modern dengan dukungan PostgreSQL dan MySQL.
-- **Laravel-style Structure**: Controller, Service, dan Route yang terpisah rapi.
+- **Standardized Structure**: Controller, Service, dan Route yang terpisah rapi.
 - **Auto CLI Generator**: Buat modul, model, dan controller dengan satu perintah.
 - **Smart Caching**: Otomatis menggunakan Redis jika tersedia, fallback ke in-memory jika tidak.
 - **Secure by Default**: Dilengkapi Helmet, Rate Limiting, CORS, dan JWT Auth.

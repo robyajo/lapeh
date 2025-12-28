@@ -28,8 +28,8 @@ export class Validator {
   /**
    * Create a new Validator instance
    * @param data The input data to validate
-   * @param schema Zod schema or object of Zod schemas / Laravel-style rules
-   * @param messages Optional custom error messages (Laravel style: 'field.rule' => 'message')
+   * @param schema Zod schema or object of Zod schemas / string-based rules
+   * @param messages Optional custom error messages (style: 'field.rule' => 'message')
    */
   static make(
     data: any,
@@ -58,7 +58,7 @@ export class Validator {
           }
         }
 
-        parsedSchema[key] = Validator.parseLaravelRule(rule);
+        parsedSchema[key] = Validator.parseStringRule(rule);
       } else {
         parsedSchema[key] = rule as ZodSchema;
       }
@@ -83,7 +83,7 @@ export class Validator {
     return new Validator(data, objectSchema, messages);
   }
 
-  private static parseLaravelRule(rule: string | string[]): ZodSchema {
+  private static parseStringRule(rule: string | string[]): ZodSchema {
     const rules = Array.isArray(rule)
       ? rule
       : rule.split("|").map((r) => r.trim());

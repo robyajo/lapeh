@@ -61,8 +61,8 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 
 ### 🚀 Fitur Baru
 
-- **Laravel-style Validator**:
-  - Implementasi utility `Validator` baru di `src/utils/validator.ts` yang meniru gaya validasi Laravel.
+- **Expressive Validator**:
+  - Implementasi utility `Validator` baru di `src/utils/validator.ts` dengan gaya validasi yang lebih ekspresif.
   - Mendukung rule string seperti `required|string|min:3|email`.
   - Penambahan rule `unique` untuk pengecekan database otomatis (Prisma).
   - Penambahan rule `mimes`, `image`, `max` (file size) untuk validasi upload file.
