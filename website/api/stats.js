@@ -86,13 +86,14 @@ module.exports = async function handler(req, res) {
       }));
 
       // 4. Lapeh CLI Version Distribution
+      // Handle potential null/undefined values safely
       const cliVersionsRaw = await prisma.telemetry.groupBy({
         by: ['cliVersion'],
         _count: { cliVersion: true }
       });
 
       const cliVersions = cliVersionsRaw.map((item) => ({
-        version: item.cliVersion,
+        version: item.cliVersion || 'unknown',
         count: item._count.cliVersion,
       }));
 

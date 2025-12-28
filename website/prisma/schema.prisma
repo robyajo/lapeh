@@ -11,10 +11,10 @@ model Telemetry {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   command     String
   nodeVersion String
-  cliVersion  String   @default("unknown")
+  cliVersion  String?  @default("unknown")
   osPlatform  String
   osRelease   String
-  timestamp   DateTime @default(now())
+  timestamp   DateTime? @default(now())
   
   @@map("telemetry")
 }
