@@ -14,11 +14,28 @@ if (!fs.existsSync(modelsDir)) {
 // Read base schema (datasource & generator)
 let schemaContent = fs.readFileSync(baseFile, 'utf8');
 
+// Detect provider
+const providerMatch = schemaContent.match(/provider\s*=\s*"([^"]+)"/);
+const provider = providerMatch ? providerMatch[1] : 'postgresql';
+const isMongo = provider === 'mongodb';
+
 // Read all .prisma files in src/models
 const modelFiles = fs.readdirSync(modelsDir).filter(file => file.endsWith('.prisma'));
 
 modelFiles.forEach(file => {
-  const content = fs.readFileSync(path.join(modelsDir, file), 'utf8');
+  let content = fs.readFileSync(path.join(modelsDir, file), 'utf8');
+  
+  if (!isMongo) {
+    // Transform MongoDB specific syntax to SQL compatible syntax
+    content = content
+      // Remove @db.ObjectId
+      .replace(/@db\.ObjectId/g, '')
+      // Remove @map("_id")
+      .replace(/@map\("_id"\)/g, '')
+      // Replace @default(auto()) with @default(uuid()) for Strings
+      .replace(/@default\(auto\(\)\)/g, '@default(uuid())');
+  }
+
   schemaContent += '\n\n' + content;
 });
 

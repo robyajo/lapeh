@@ -733,7 +733,7 @@ function createProject() {
     
     // Ensure prisma CLI is available in devDependencies for the new project
     packageJson.devDependencies = packageJson.devDependencies || {};
-    packageJson.devDependencies["prisma"] = "7.2.0";
+    packageJson.devDependencies["prisma"] = "5.22.0";
     packageJson.devDependencies["dotenv"] = "^16.4.5"; // Ensure dotenv is available for seed script
     
     // Add missing types for dev

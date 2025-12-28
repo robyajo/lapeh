@@ -38,3 +38,6 @@ testing/*
 # Logs
 storage/logs/*
 !storage/logs/.gitkeep
+
+# Testing Area
+pengujian/
