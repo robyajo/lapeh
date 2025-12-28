@@ -126,5 +126,14 @@ export async function delCache(key: string) {
   } catch {}
 }
 
+export async function delCachePattern(pattern: string) {
+  try {
+    const keys = await activeRedis.keys(pattern);
+    if (keys.length > 0) {
+      await activeRedis.del(...keys);
+    }
+  } catch {}
+}
+
 // Export the proxy as 'redis' so consumers use it transparently
 export { redisProxy as redis };

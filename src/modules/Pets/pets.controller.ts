@@ -8,6 +8,12 @@ import {
   createResponseSchema,
   createPaginatedResponseSchema,
 } from "@lapeh/core/serializer";
+import {
+  getCache,
+  setCache,
+  delCache,
+  delCachePattern,
+} from "../../../lib/core/redis";
 
 // 1. Definisikan Schema Output untuk performa tinggi
 const petSchema = {
@@ -39,6 +45,15 @@ export async function index(req: Request, res: Response) {
   const { page, perPage, skip, take } = getPagination(req.query);
   const search = req.query.search as string;
 
+  // Cache Strategy: Cache list based on query params
+  const cacheKey = `pets:list:${JSON.stringify(req.query)}`;
+  const cached = await getCache(cacheKey);
+
+  if (cached) {
+    sendFastSuccess(res, 200, petListSerializer, cached);
+    return;
+  }
+
   const where: any = {};
   if (search) {
     where.OR = [
@@ -66,20 +81,33 @@ export async function index(req: Request, res: Response) {
 
   const meta = buildPaginationMeta(page, perPage, total);
 
-  // Gunakan sendFastSuccess untuk performa maksimal
-  // Struktur data disesuaikan dengan createPaginatedResponseSchema: { data: [], meta: {} }
-  sendFastSuccess(res, 200, petListSerializer, {
+  const responseData = {
     status: "success",
     message: "Pets retrieved successfully",
     data: {
       data: serialized,
       meta,
     },
-  });
+  };
+
+  // Cache for 60 seconds
+  await setCache(cacheKey, responseData, 60);
+
+  // Gunakan sendFastSuccess untuk performa maksimal
+  // Struktur data disesuaikan dengan createPaginatedResponseSchema: { data: [], meta: {} }
+  sendFastSuccess(res, 200, petListSerializer, responseData);
 }
 
 export async function show(req: Request, res: Response) {
   const { id } = req.params;
+  const cacheKey = `pets:${id}`;
+
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    sendFastSuccess(res, 200, petSerializer, cached);
+    return;
+  }
+
   const pet = await prisma.pets.findUnique({
     where: { id: id },
   });
@@ -89,15 +117,20 @@ export async function show(req: Request, res: Response) {
     return;
   }
 
-  // Gunakan sendFastSuccess
-  sendFastSuccess(res, 200, petSerializer, {
+  const responseData = {
     status: "success",
     message: "Pet retrieved successfully",
     data: {
       ...pet,
       id: pet.id.toString(),
     },
-  });
+  };
+
+  // Cache for 5 minutes
+  await setCache(cacheKey, responseData, 300);
+
+  // Gunakan sendFastSuccess
+  sendFastSuccess(res, 200, petSerializer, responseData);
 }
 
 export async function store(req: Request, res: Response) {
@@ -120,6 +153,9 @@ export async function store(req: Request, res: Response) {
       updated_at: new Date(),
     },
   });
+
+  // Invalidate list cache
+  await delCachePattern("pets:list:*");
 
   // Gunakan sendFastSuccess
   sendFastSuccess(res, 201, petSerializer, {
@@ -163,6 +199,10 @@ export async function update(req: Request, res: Response) {
     },
   });
 
+  // Invalidate specific cache and list cache
+  await delCache(`pets:${id}`);
+  await delCachePattern("pets:list:*");
+
   // Gunakan sendFastSuccess
   sendFastSuccess(res, 200, petSerializer, {
     status: "success",
@@ -189,6 +229,10 @@ export async function destroy(req: Request, res: Response) {
   await prisma.pets.delete({
     where: { id: id },
   });
+
+  // Invalidate specific cache and list cache
+  await delCache(`pets:${id}`);
+  await delCachePattern("pets:list:*");
 
   sendSuccess(res, 200, "Pet deleted successfully", null);
 }
