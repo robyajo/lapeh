@@ -15,7 +15,7 @@ import {
   removePermissionFromRole,
   assignPermissionToUser,
   removePermissionFromUser,
-} from "@/controllers/rbacController";
+} from "@/modules/Rbac/rbac.controller";
 
 export const rbacRouter = Router();
 

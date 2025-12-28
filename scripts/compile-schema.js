@@ -2,16 +2,16 @@ const fs = require('fs');
 const path = require('path');
 
 const prismaDir = path.join(__dirname, '..', 'prisma');
-const modelsDir = path.join(__dirname, '..', 'src', 'models');
+const modulesDir = path.join(__dirname, '..', 'src', 'modules');
 const schemaFile = path.join(prismaDir, 'schema.prisma');
 const baseFile = path.join(prismaDir, 'base.prisma.template');
 
-// Ensure models directory exists
-if (!fs.existsSync(modelsDir)) {
-  fs.mkdirSync(modelsDir, { recursive: true });
+// Read base schema (datasource & generator)
+if (!fs.existsSync(baseFile)) {
+    console.error(`❌ Base schema template not found at ${baseFile}`);
+    process.exit(1);
 }
 
-// Read base schema (datasource & generator)
 let schemaContent = fs.readFileSync(baseFile, 'utf8');
 
 // Detect provider from datasource block
@@ -19,11 +19,28 @@ const providerMatch = schemaContent.match(/datasource\s+\w+\s+\{[\s\S]*?provider
 const provider = providerMatch ? providerMatch[1] : 'postgresql';
 const isMongo = provider === 'mongodb';
 
-// Read all .prisma files in src/models
-const modelFiles = fs.readdirSync(modelsDir).filter(file => file.endsWith('.prisma'));
+// Helper to find all .prisma files recursively
+function findPrismaFiles(dir, fileList = []) {
+  if (!fs.existsSync(dir)) return fileList;
+  const files = fs.readdirSync(dir);
+  files.forEach(file => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat.isDirectory()) {
+      findPrismaFiles(filePath, fileList);
+    } else {
+      if (file.endsWith('.prisma')) {
+        fileList.push(filePath);
+      }
+    }
+  });
+  return fileList;
+}
 
-modelFiles.forEach(file => {
-  let content = fs.readFileSync(path.join(modelsDir, file), 'utf8');
+const modelFiles = findPrismaFiles(modulesDir);
+
+modelFiles.forEach(filePath => {
+  let content = fs.readFileSync(filePath, 'utf8');
   
   if (!isMongo) {
     // Transform MongoDB specific syntax to SQL compatible syntax
@@ -33,6 +50,7 @@ modelFiles.forEach(file => {
       // Remove @map("_id")
       .replace(/@map\("_id"\)/g, '')
       // Replace @default(auto()) with @default(uuid()) for Strings
+      // Note: This is a simple replacement, check your schema if you use auto() for Int
       .replace(/@default\(auto\(\)\)/g, '@default(uuid())');
   }
 
@@ -43,4 +61,4 @@ modelFiles.forEach(file => {
 fs.writeFileSync(schemaFile, schemaContent);
 
 console.log('✅ Prisma schema compiled successfully!');
-console.log(`   Merged ${modelFiles.length} model files from src/models/ into prisma/schema.prisma`);
+console.log(`   Merged ${modelFiles.length} model files from src/modules/ into prisma/schema.prisma`);

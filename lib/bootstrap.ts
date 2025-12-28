@@ -23,17 +23,45 @@ export async function createApp() {
   // We map '@lapeh' to the directory containing this file (lib/ or dist/lib/)
   moduleAlias.addAlias("@lapeh", __dirname);
 
+  // LOAD USER CONFIG
+  const isProduction = process.env.NODE_ENV === "production";
+  const configPath = isProduction
+      ? path.join(process.cwd(), "dist", "src", "config")
+      : path.join(process.cwd(), "src", "config");
+
+  let appConfig: any = { timeout: 30000, jsonLimit: "10mb" };
+  let corsConfig: any = { 
+      origin: process.env.CORS_ORIGIN || "*", 
+      credentials: true,
+      exposedHeaders: ["x-access-token", "x-access-expires-at"],
+  };
+
+  try {
+      const appConfModule = require(path.join(configPath, "app"));
+      if (appConfModule.appConfig) appConfig = { ...appConfig, ...appConfModule.appConfig };
+  } catch (e) {
+      // ignore
+  }
+
+  try {
+      const corsConfModule = require(path.join(configPath, "cors"));
+      if (corsConfModule.corsConfig) corsConfig = { ...corsConfig, ...corsConfModule.corsConfig };
+  } catch (e) {
+      // ignore
+  }
+
   const app = express();
 
   app.disable("x-powered-by");
   app.use(compression());
 
-  // Request Timeout Middleware (30s)
+  // Request Timeout Middleware
   app.use((_req: Request, res: Response, next: NextFunction) => {
-    res.setTimeout(30000, () => {
+    const timeout = appConfig.timeout || 30000;
+    res.setTimeout(timeout, () => {
       res.status(408).send({
         status: "error",
-        message: "Request Timeout (30s limit)",
+        message: `Request Timeout (${timeout/1000}s limit)`,
       });
     });
     next();
@@ -46,18 +74,11 @@ export async function createApp() {
     })
   );
 
-  const corsOrigin = process.env.CORS_ORIGIN || "*";
-  app.use(
-    cors({
-      origin: corsOrigin,
-      credentials: true,
-      exposedHeaders: ["x-access-token", "x-access-expires-at"],
-    })
-  );
+  app.use(cors(corsConfig));
 
   app.use(requestLogger);
-  app.use(express.json({ limit: "10mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+  app.use(express.json({ limit: appConfig.jsonLimit || "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: appConfig.jsonLimit || "10mb" }));
   app.use(apiLimiter);
   app.use(visitorCounter);
 

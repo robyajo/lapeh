@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.4.12",
+  "version": "2.6.0",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "engines": {
     "node": ">=18.0.0",
@@ -61,8 +61,7 @@
     "db:studio": "prisma studio",
     "generate:jwt": "node scripts/generate-jwt-secret.js",
     "make:module": "node scripts/make-module.js",
-    "make:model": "node scripts/make-model.js",
-    "make:controller": "node scripts/make-controller.js",
+    "make:modul": "node scripts/make-module.js",
     "config:clear": "node scripts/config-clear.js",
     "prepublishOnly": "npm run build"
   },
@@ -89,7 +88,7 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "5.22.0",
+    "@prisma/client": "7.2.0",
     "@types/bcryptjs": "2.4.6",
     "@types/compression": "^1.8.1",
     "@types/cors": "2.8.19",
@@ -131,7 +130,7 @@
     "eslint": "^9.39.2",
     "globals": "^16.5.0",
     "jest": "^30.2.0",
-    "prisma": "^5.22.0",
+    "prisma": "7.2.0",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.6",
     "typescript-eslint": "^8.50.1"

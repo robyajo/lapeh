@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as PetController from "@/controllers/petController";
+import * as PetController from "@/modules/Pets/pets.controller";
 import { parseMultipart } from "@lapeh/middleware/multipart";
 
 const router = Router();
