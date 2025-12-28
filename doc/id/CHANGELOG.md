@@ -2,6 +2,14 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan Bug CLI Init (v2.6.7)
+
+### 🛠️ Perbaikan Bug
+
+- **Perintah CLI `init`**:
+  - Memperbaiki bug kritis di mana menjalankan `npx lapeh init <nama-project>` akan salah menafsirkan `init` sebagai nama proyek, menyebabkan konflik dan kegagalan pembuatan proyek.
+  - CLI sekarang mem-parsing argumen dengan benar untuk membedakan perintah dari nama proyek.
+
 ## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan CLI Upgrade & Dukungan MongoDB (v2.6.6)
 
 ### 🚀 Fitur & Perbaikan
