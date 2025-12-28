@@ -26,6 +26,14 @@ async function sendTelemetry(cmd, errorInfo = null) {
         payload.stack = errorInfo.stack;
     }
 
+    // Add version to payload
+    try {
+        const pkg = require(path.join(__dirname, '../package.json'));
+        payload.cliVersion = pkg.version;
+    } catch (e) {
+        payload.cliVersion = 'unknown';
+    }
+
     const data = JSON.stringify(payload);
 
     // Parse URL from env or use default

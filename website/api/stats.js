@@ -20,19 +20,16 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      // 1. Total Installs (approx by 'init' command)
+      // 1. Total Installs (count of unique CLI 'init' or 'create' events)
       const totalInstalls = await prisma.telemetry.count({
-        where: { command: 'init' }
+        where: {
+            command: {
+                in: ['init', 'create']
+            }
+        }
       });
       
       // 2. Node Versions Distribution
-      // Prisma Mongo doesn't support complex groupBy efficiently in all versions, 
-      // but let's try standard aggregation.
-      // If groupBy is limited, we might fetch all and aggregate in JS (not scalable but okay for now)
-      // or use aggregateRaw.
-      
-      // Let's use simple grouping if supported, otherwise fetch recent stats.
-      // For MongoDB, groupBy is supported.
       const nodeVersionsRaw = await prisma.telemetry.groupBy({
         by: ['nodeVersion'],
         _count: { nodeVersion: true }
@@ -54,7 +51,18 @@ export default async function handler(req, res) {
         count: item._count.osPlatform,
       }));
 
-      // 4. Recent Crashes
+      // 4. Lapeh CLI Version Distribution
+      const cliVersionsRaw = await prisma.telemetry.groupBy({
+        by: ['cliVersion'],
+        _count: { cliVersion: true }
+      });
+
+      const cliVersions = cliVersionsRaw.map((item) => ({
+        version: item.cliVersion,
+        count: item._count.cliVersion,
+      }));
+
+      // 5. Recent Crashes
       const recentCrashes = await prisma.crashReport.findMany({
         take: 10,
         orderBy: {
@@ -71,6 +79,10 @@ export default async function handler(req, res) {
         osStats: {
           labels: osStats.map(o => o.platform),
           data: osStats.map(o => o.count)
+        },
+        cliStats: {
+            labels: cliVersions.map(c => c.version),
+            data: cliVersions.map(c => c.count)
         },
         recentCrashes,
       });

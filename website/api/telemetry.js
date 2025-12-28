@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { command, nodeVersion, osPlatform, osRelease, error, stack } = req.body;
+    const { command, nodeVersion, cliVersion, osPlatform, osRelease, error, stack } = req.body;
 
     try {
       if (error) {
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
           data: {
             command: command || 'unknown',
             nodeVersion: nodeVersion || 'unknown',
+            cliVersion: cliVersion || 'unknown',
             osPlatform: osPlatform || 'unknown',
             error,
             stack,
@@ -40,6 +41,7 @@ export default async function handler(req, res) {
           data: {
             command,
             nodeVersion,
+            cliVersion: cliVersion || 'unknown',
             osPlatform,
             osRelease: osRelease || '',
             timestamp: new Date()

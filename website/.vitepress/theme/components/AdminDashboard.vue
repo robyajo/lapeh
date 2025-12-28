@@ -46,6 +46,7 @@ const authenticate = () => {
 // Reactive Data Containers
 const realCliData = ref(null)
 const realOsData = ref(null)
+const realCliVersionData = ref(null)
 const crashReports = ref([])
 const totalInstalls = ref(0)
 
@@ -79,6 +80,19 @@ const fetchStats = async () => {
                 datasets: [{
                     backgroundColor: colors.slice(0, data.osStats.labels.length),
                     data: data.osStats.data
+                }]
+            }
+        }
+
+        // Update CLI Version Chart
+        if (data.cliStats && data.cliStats.labels.length > 0) {
+             const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#2ecc71', '#1abc9c'];
+             realCliVersionData.value = {
+                labels: data.cliStats.labels,
+                datasets: [{
+                    label: 'Lapeh Version Usage',
+                    backgroundColor: '#10b981',
+                    data: data.cliStats.data
                 }]
             }
         }
@@ -228,10 +242,19 @@ const chartOptions = {
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Crash Reports -->
-        <div v-if="activeTab === 'crash'" class="tab-content">
+          <div class="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">Lapeh Version Usage</h3>
+            <div class="h-64 flex items-center justify-center">
+                 <Bar v-if="realCliVersionData" :data="realCliVersionData" :options="chartOptions" />
+                 <div v-else class="text-zinc-400">Loading data...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Crash Reports -->
+      <div v-if="activeTab === 'crash'" class="space-y-6">
            <div class="card full-width">
              <h3>Laporan Crash Terakhir</h3>
              <table class="crash-table">
