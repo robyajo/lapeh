@@ -25,10 +25,10 @@ fs.mkdirSync(moduleDir, { recursive: true });
 
 // Controller
 const controllerContent = `import { Request, Response } from "express";
-import { sendSuccess, sendError } from "@/utils/response";
+import { sendSuccess } from "@lapeh/utils/response";
 // import * as ${name}Service from "./${lowerName}.service";
 
-export async function index(req: Request, res: Response) {
+export async function index(_req: Request, res: Response) {
   sendSuccess(res, 200, "Index ${name}");
 }
 
@@ -37,7 +37,7 @@ export async function show(req: Request, res: Response) {
   sendSuccess(res, 200, "Show ${name} " + id);
 }
 
-export async function create(req: Request, res: Response) {
+export async function create(_req: Request, res: Response) {
   sendSuccess(res, 201, "Create ${name}");
 }
 
@@ -55,13 +55,13 @@ export async function destroy(req: Request, res: Response) {
 fs.writeFileSync(path.join(moduleDir, `${lowerName}.controller.ts`), controllerContent);
 
 // Service (Optional but good for NestJS style)
-const serviceContent = `import { prisma } from "@/core/database";
+const serviceContent = `// import { prisma } from "@lapeh/core/database";
 
 export async function findAll() {
   return [];
 }
 
-export async function findOne(id: number) {
+export async function findOne(_id: number) {
   return null;
 }
 `;

@@ -412,7 +412,7 @@ async function upgradeProject() {
 function createProject() {
   const projectName = args.find(arg => !arg.startsWith('-'));
   const isFull = args.includes('--full');
-  const useDefaults = args.includes('--defaults') || args.includes('-y');
+  const useDefaults = args.includes('--defaults') || args.includes('--default') || args.includes('-y');
 
   if (!projectName) {
     console.error('❌ Please specify the project name:');
@@ -590,6 +590,23 @@ function createProject() {
     };
     
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+    // Update tsconfig.json for aliases
+    const tsconfigPath = path.join(projectDir, 'tsconfig.json');
+    if (fs.existsSync(tsconfigPath)) {
+      try {
+        const tsconfig = require(tsconfigPath);
+        if (!tsconfig.compilerOptions) tsconfig.compilerOptions = {};
+        if (!tsconfig.compilerOptions.paths) tsconfig.compilerOptions.paths = {};
+        
+        // Ensure @lapeh/* points to the installed package
+        tsconfig.compilerOptions.paths["@lapeh/*"] = ["./node_modules/lapeh/dist/lib/*"];
+        
+        fs.writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2));
+      } catch (e) {
+        console.warn('⚠️  Failed to update tsconfig.json aliases.');
+      }
+    }
 
     const prismaBaseFile = path.join(projectDir, "prisma", "base.prisma.template");
     if (usePrisma && fs.existsSync(prismaBaseFile)) {

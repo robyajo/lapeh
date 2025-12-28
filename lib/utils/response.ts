@@ -7,7 +7,7 @@ type ErrorStatus = "error";
 type SuccessBody<T> = {
   status: SuccessStatus;
   message: string;
-  data: T;
+  data?: T;
 };
 
 type ErrorBody<T = unknown> = {
@@ -36,13 +36,13 @@ function toJsonSafe(value: unknown): unknown {
   return value;
 }
 
-export function sendSuccess<T>(
+export function sendSuccess<T = any>(
   res: Response,
   statusCode: number,
   message: string,
-  data: T
+  data?: T
 ) {
-  const body: SuccessBody<T> = { status: "success", message, data };
+  const body: SuccessBody<T | undefined> = { status: "success", message, data };
   return res.status(statusCode).json(toJsonSafe(body));
 }
 
