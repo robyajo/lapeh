@@ -2,9 +2,9 @@
 
 Lapeh Framework comes with various CLI scripts to speed up the development process, ranging from code generation to database management.
 
-All commands are executed using `npm run <command>`.
+All commands are executed using `npm run <command>` within a project, or `lapeh <command>` if installed globally.
 
-> **Info:** Behind the scenes, these `npm run` scripts call the internal framework CLI (`lapeh`). You can also run these commands directly using `npx lapeh <command>`.
+> **Info:** Behind the scenes, these `npm run` scripts call the internal framework CLI (`lapeh`). You can also run these commands directly using `npx lapeh <command>` or by installing the CLI globally via `npm install -g lapeh@latest`.
 
 ## Core Commands
 

@@ -12,18 +12,34 @@ Sebelum memulai, pastikan sistem Anda memenuhi persyaratan berikut:
 
 ## Instalasi
 
-Cara termudah untuk memulai adalah menggunakan CLI generator `npx`.
+Anda dapat menggunakan `npx` (tanpa instalasi) atau menginstall CLI secara global.
 
-### 1. Buat Project Baru
+### Opsi 1: Menggunakan npx (Direkomendasikan)
 
-Jalankan perintah berikut di terminal Anda:
+Cara termudah untuk memulai tanpa menginstall apapun.
 
 ```bash
 # Setup Interaktif Standar
 npx lapeh@latest init nama-project-anda
 ```
 
-**Opsi Setup Cepat (Flags):**
+### Opsi 2: Instalasi Global CLI
+
+Jika Anda sering membuat project Lapeh, Anda bisa menginstall CLI secara global:
+
+```bash
+npm install -g lapeh@latest
+```
+
+Setelah terinstall, Anda bisa menggunakan perintah `lapeh` langsung:
+
+```bash
+lapeh init nama-project-anda
+```
+
+### Pilihan Setup Project
+
+Saat membuat project (baik via `npx` atau global), Anda bisa menggunakan flags berikut:
 
 - **Setup Lengkap** (Termasuk data dummy, disarankan untuk belajar):
   ```bash

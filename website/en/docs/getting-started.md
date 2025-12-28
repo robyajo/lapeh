@@ -12,18 +12,34 @@ Before you begin, ensure your system meets the following requirements:
 
 ## Installation
 
-The easiest way to start is by using the `npx` CLI generator.
+You can use `npx` (zero-install) or install the CLI globally.
 
-### 1. Create a New Project
+### Option 1: Using npx (Recommended)
 
-Run the following command in your terminal:
+The easiest way to start without installing anything.
 
 ```bash
 # Standard Interactive Setup
 npx lapeh@latest init your-project-name
 ```
 
-**Alternative Quick Setup Flags:**
+### Option 2: Global CLI Installation
+
+If you frequently create Lapeh projects, you can install the CLI globally:
+
+```bash
+npm install -g lapeh@latest
+```
+
+Once installed, you can use the `lapeh` command directly:
+
+```bash
+lapeh init your-project-name
+```
+
+### Project Setup Options
+
+When creating a project (via `npx` or global), you can use the following flags:
 
 - **Full Setup** (Includes dummy data, recommended for learning):
   ```bash

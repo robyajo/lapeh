@@ -1,37 +1,54 @@
 ---
-title: Rilis v2.6.14 - Perbaikan Telemetry & Project Structure
+title: Rilis v2.6.14 - Perbaikan Telemetry & Struktur Project
 date: 2025-12-29
 author: Roby Ajo
 ---
 
 # Rilis v2.6.14
 
-Kami telah merilis versi terbaru **Lapeh v2.6.14** dengan fokus pada perbaikan pengalaman pengguna dan pemantauan sistem.
+Kami telah merilis versi terbaru **Lapeh v2.6.14** dengan fokus pada perbaikan pengalaman pengguna, struktur project yang lebih bersih, dan pemantauan sistem yang lebih akurat.
 
-## 🛠 Perbaikan (Fixes)
+## Apa yang Baru?
 
 ### 1. Struktur Project Lebih Bersih
 
-Kami mendengar masukan Anda! Sekarang saat Anda membuat project baru menggunakan `lapeh create` atau `npx lapeh create`, folder dokumentasi (`doc/`) **tidak akan lagi disertakan** ke dalam project Anda. Ini membuat project awal Anda lebih bersih dan ringan.
+Mulai versi ini, folder `doc/` tidak akan lagi disertakan secara otomatis ke dalam project baru pengguna saat menggunakan perintah `init` atau `create`. Ini membuat struktur awal project Anda lebih ringkas dan fokus pada kode aplikasi Anda.
 
-### 2. Admin Dashboard Realtime
+### 2. Perbaikan Telemetry Admin Dashboard
 
-Dashboard admin sekarang terhubung langsung dengan database MongoDB secara realtime. Anda dapat melihat statistik penggunaan CLI, versi Node.js, dan sistem operasi pengguna secara akurat.
+Kami telah memperbarui sistem telemetry untuk memberikan data yang lebih akurat di Admin Dashboard.
 
-### 3. Telemetry CLI
+- **Real-time Data**: Dashboard kini terhubung langsung dengan data MongoDB Atlas untuk statistik yang akurat.
+- **Versi CLI**: Memperbaiki pelaporan versi CLI agar sesuai dengan registry NPM.
+- **Autentikasi**: Menambahkan fitur login/logout dasar untuk keamanan akses dashboard admin.
 
-Kami memperbaiki logika pengiriman telemetry di CLI. Sekarang versi CLI yang Anda gunakan akan terekam dengan benar di sistem, membantu kami memahami sebaran versi pengguna.
+### 3. Perbaikan Bug & Stabilitas
+
+- Memperbaiki error `Invalid end tag` pada komponen Vue di dashboard admin.
+- Memperbaiki isu 500 Internal Server Error pada endpoint statistik API di Vercel dengan memastikan kompatibilitas modul CommonJS dan HTTPS.
+- Menangani peringatan depresiasi NPM dari dependensi transitif.
 
 ## Cara Update
 
-Untuk mendapatkan fitur terbaru ini, silakan update CLI Lapeh Anda secara global:
+### Untuk Pengguna Baru
+
+Anda dapat langsung membuat project dengan versi terbaru:
+
+```bash
+npx lapeh@latest init nama-project-anda
+```
+
+Atau instal CLI secara global untuk akses lebih cepat:
 
 ```bash
 npm install -g lapeh@latest
+lapeh init nama-project-anda
 ```
 
-Atau gunakan npx secara langsung:
+### Untuk Pengguna Lama
+
+Untuk project yang sudah ada, Anda dapat melakukan upgrade framework:
 
 ```bash
-npx lapeh create nama-project
+npx lapeh upgrade
 ```
