@@ -14,8 +14,8 @@ if (!fs.existsSync(modelsDir)) {
 // Read base schema (datasource & generator)
 let schemaContent = fs.readFileSync(baseFile, 'utf8');
 
-// Detect provider
-const providerMatch = schemaContent.match(/provider\s*=\s*"([^"]+)"/);
+// Detect provider from datasource block
+const providerMatch = schemaContent.match(/datasource\s+\w+\s+\{[\s\S]*?provider\s*=\s*"([^"]+)"/);
 const provider = providerMatch ? providerMatch[1] : 'postgresql';
 const isMongo = provider === 'mongodb';
 
