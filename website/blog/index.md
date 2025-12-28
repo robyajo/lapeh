@@ -4,6 +4,14 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
+## 🚀 [Era Baru Lapeh: Identitas Baru & Standarisasi Global](./new-identity-docs-standard)
+
+_28 Desember 2025_ • 👤 robyajo • 🏷️ _Announcement_
+
+Hari ini menandai langkah penting dalam evolusi Lapeh Framework. Identitas baru, dokumentasi Bahasa Inggris, dan terminologi yang lebih profesional. [Baca selengkapnya →](./new-identity-docs-standard)
+
+---
+
 ## 🚀 [Rilis Lapeh v2.4.6: Lebih Stabil dan Dokumentasi Lengkap](./release-v2.4.6)
 
 _28 Desember 2025_ • 👤 robyajo • 🏷️ _Release_
