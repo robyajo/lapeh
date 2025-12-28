@@ -60,11 +60,16 @@ const logout = () => {
 }
 
 const fetchStats = async () => {
-  isLoading.value = true
-  try {
-    const res = await fetch('/api/stats')
-    if (res.ok) {
-        const data = await res.json()
+          isLoading.value = true
+          try {
+            // Use localhost:3000 for local development, relative path for production
+            const apiUrl = window.location.hostname === 'localhost' 
+                ? 'http://localhost:3000/api/stats' 
+                : '/api/stats';
+                
+            const res = await fetch(apiUrl)
+            if (res.ok) {
+                const data = await res.json()
         
         totalInstalls.value = data.totalInstalls || 0
         totalCommands.value = data.totalCommands || 0

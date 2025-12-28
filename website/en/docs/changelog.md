@@ -2,6 +2,56 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-29] - Monday, December 29, 2025 - CLI Init Bug Fix (v2.6.7)
+
+### 🛠️ Bug Fixes
+
+- **CLI `init` Command**:
+  - **Prisma Client Generation**: Fixed `MODULE_NOT_FOUND` error for `.prisma/client/default` during seeding by forcing `npx prisma generate` before the seed process.
+  - **Project Name Parsing**: Fixed a critical bug where running `npx lapeh init <project-name>` would incorrectly interpret `init` as the project name.
+  - **Dependency Management**: Reverted to **Prisma v6** (`^6.0.0`) and removed `prisma.config.ts` to resolve `PrismaClientConstructorValidationError` ("engine type client" error) on Windows environments. This restores standard `schema.prisma` configuration with `url = env("DATABASE_URL")`.
+  - **Peer Dependencies**: Removed `peerDependencies` from generated projects to prevent package manager conflicts.
+
+## [2025-12-29] - Monday, December 29, 2025 - Upgrade CLI Improvements & MongoDB Support (v2.6.6)
+
+### 🚀 Features & Improvements
+
+- **Enhanced CLI `upgrade` Command**:
+
+  - The `upgrade` command now intelligently detects and preserves local `file:` dependencies in `package.json`. This is critical for framework contributors and local testing, ensuring that upgrading doesn't overwrite local links with npm versions.
+  - Standard users will still receive the latest npm version updates automatically.
+
+- **MongoDB & Prisma Compatibility**:
+
+  - **BigInt Fixes**: Resolved serialization issues where `BigInt` IDs (common in SQL) caused crashes in MongoDB environments. All IDs in `auth` and `rbac` controllers now safely convert to `String` before response.
+  - **RBAC Schema**: Added missing RBAC models (`roles`, `permissions`, `user_roles`, `role_permissions`) to the core `prisma/schema.prisma` generation pipeline. This ensures `npx prisma generate` works flawlessly without manual schema adjustments.
+
+- **CLI Initialization Flags**:
+  - Added new flags to `npx lapeh init` for faster setup:
+    - `--full`: Sets up a complete project with dummy data (users/roles).
+    - `--default` (or `--y`): Skips interactive prompts and uses default settings (PostgreSQL).
+
+## [2025-12-28] - Sunday, December 28, 2025 - Multi-Database & Cleanup (v2.4.10)
+
+### 🚀 Features & Improvements
+
+- **Multi-Database Support (CLI)**:
+
+  - Added full support for project initialization with **MongoDB** and **MySQL**, alongside **PostgreSQL**.
+  - Fixed database provider replacement logic in `schema.prisma` templates for better accuracy.
+  - Added `--db-type=mongo|pgsql|mysql` CLI argument for zero-interaction automated installation.
+  - Handled MongoDB migration differences by conditionally using `prisma db push`.
+
+- **Package Cleanup**:
+
+  - Removed unnecessary development files/folders (`test-local-run`, `init`, `framework.md`, etc.) from the public NPM package.
+  - Explicitly added the `LICENSE` (MIT) file to the package.
+  - Ensured `dist` folder is cleanly regenerated during publication.
+
+- **Documentation & Website**:
+  - Added basic admin dashboard structure to the website documentation.
+  - Added local telemetry API simulation script for website development.
+
 ## [2025-12-28] - Sunday, December 28, 2025 - Upgrade & Testing Improvements (v2.4.9)
 
 ### 🚀 Features & Fixes

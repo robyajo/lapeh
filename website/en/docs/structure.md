@@ -22,18 +22,14 @@ To fully understand Lapeh Framework, you need to know what each file and folder 
 
 This is where you work every day.
 
-### `src/controllers/`
+### `src/modules/` (Modular Architecture)
 
-Contains application logic. Controllers receive Requests, process them, and return Responses.
+Lapeh uses a **Modular** approach. Each feature is grouped into a single module folder to keep the code organized.
 
-- **Example**: `authController.ts` handles login/register.
-- **Tip**: Do not put overly complex _business logic_ here. Use Services (optional) if the controller gets too fat.
+Example `Auth` module structure:
 
-### `src/models/`
-
-Contains database table definitions (Prisma Schema).
-
-- **Unique in Lapeh**: We break down the large `schema.prisma` into small files per feature (e.g., `user.prisma`, `product.prisma`) for easier management. The `prisma:migrate` script will merge them later.
+- `Auth/auth.controller.ts`: Application logic (Controller).
+- `Auth/auth.prisma`: Database table definition (Model).
 
 ### `src/routes/`
 
@@ -41,6 +37,13 @@ Defines endpoint URLs.
 
 - Connects URLs (e.g., `/api/login`) to functions in Controllers.
 - Attaches Middleware (e.g., `requireAuth`).
+
+### `src/config/`
+
+Static application configuration.
+
+- `app.ts`: General application configuration.
+- `cors.ts`: CORS (Cross-Origin Resource Sharing) configuration.
 
 ## `lib/` Folder (Framework Internals)
 
@@ -81,9 +84,10 @@ Built-in Helper functions.
 
 "Magic" scripts executed by `npm run`.
 
-- `make-controller.js`: Controller generator.
-- `compile-schema.js`: `.prisma` file merger.
+- `make-module.js`: New module generator (Controller + Prisma Model).
+- `compile-schema.js`: Merges `.prisma` files from each module into a single `schema.prisma`.
 - `init-project.js`: Initial setup wizard.
+- `generate-jwt-secret.js`: Automatic JWT secret key generator.
 
 ---
 

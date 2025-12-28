@@ -2,32 +2,55 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
-## [2025-12-28] - Minggu, 28 Desember 2025 - Stabilitas Database (v2.4.12)
+## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan Bug CLI Init (v2.6.7)
 
-### 🛠️ Perbaikan & Stabilitas
+### 🛠️ Perbaikan Bug
 
-- **Prisma Version Lock (v5.22.0)**:
-  - Mengunci versi Prisma CLI ke 5.22.0 pada proyek baru untuk mencegah konflik dengan runtime framework.
-  - Memperbaiki error `P1019` dan masalah kompatibilitas engine lainnya.
+- **Perintah CLI `init`**:
+  - **Prisma Client Generation**: Memperbaiki error `MODULE_NOT_FOUND` untuk `.prisma/client/default` saat seeding dengan memaksa eksekusi `npx prisma generate` sebelum proses seed.
+  - **Parsing Nama Project**: Memperbaiki bug kritis di mana menjalankan `npx lapeh init <nama-project>` akan salah menafsirkan `init` sebagai nama proyek.
+  - **Manajemen Dependensi**: Mengembalikan versi ke **Prisma v6** (`^6.0.0`) dan menghapus `prisma.config.ts` untuk mengatasi error `PrismaClientConstructorValidationError` ("engine type client") di lingkungan Windows. Ini mengembalikan konfigurasi standar `schema.prisma` dengan `url = env("DATABASE_URL")`.
+  - **Peer Dependencies**: Menghapus `peerDependencies` dari project yang digenerate untuk mencegah konflik package manager.
 
-- **SQL Schema Compatibility**:
-  - Update `scripts/compile-schema.js` untuk secara otomatis membersihkan sintaks MongoDB (`@db.ObjectId`, `@map("_id")`) saat menggunakan PostgreSQL atau MySQL.
-  - Memungkinkan transisi mulus antara NoSQL dan SQL tanpa refactoring model manual.
+## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan CLI Upgrade & Dukungan MongoDB (v2.6.6)
 
-- **Package Cleanup**:
-  - Menghapus folder `pengujian`, `init`, dan file development lainnya dari paket NPM.
-  - Menambahkan file `LICENSE` (MIT) ke dalam paket distribusi.
+### 🚀 Fitur & Perbaikan
 
-## [2025-12-28] - Minggu, 28 Desember 2025 - Multi-Database Support (v2.4.11)
+- **Peningkatan Perintah CLI `upgrade`**:
 
-### 🚀 Fitur Baru
+  - Perintah `upgrade` sekarang secara cerdas mendeteksi dan mempertahankan dependensi lokal (`file:`) di `package.json`. Ini sangat penting bagi kontributor framework dan pengujian lokal, memastikan proses upgrade tidak menimpa link lokal dengan versi npm.
+  - Pengguna standar tetap akan mendapatkan pembaruan versi npm terbaru secara otomatis.
 
-- **Multi-Database Support**:
-  - Dukungan penuh untuk inisialisasi proyek dengan **MongoDB** dan **MySQL** via CLI (`--db-type=mongo`).
-  - Penyesuaian otomatis command migrasi (`prisma db push` vs `migrate dev`).
+- **Kompatibilitas MongoDB & Prisma**:
 
-- **Clean Architecture**:
-  - Pembersihan struktur paket dan penambahan lisensi eksplisit.
+  - **Perbaikan BigInt**: Mengatasi masalah serialisasi di mana ID bertipe `BigInt` (umum di SQL) menyebabkan crash di lingkungan MongoDB. Semua ID di controller `auth` dan `rbac` kini dikonversi menjadi `String` sebelum dikirim sebagai respons.
+  - **Schema RBAC**: Menambahkan model RBAC yang hilang (`roles`, `permissions`, `user_roles`, `role_permissions`) ke dalam pipeline generasi `prisma/schema.prisma`. Ini memastikan `npx prisma generate` berjalan lancar tanpa perlu penyesuaian schema manual.
+
+- **Flag Inisialisasi CLI**:
+  - Menambahkan flag baru pada `npx lapeh init` untuk setup yang lebih cepat:
+    - `--full`: Menyiapkan proyek lengkap dengan data dummy (user/role).
+    - `--default` (atau `--y`): Melewati pertanyaan interaktif dan menggunakan pengaturan default (PostgreSQL).
+
+## [2025-12-28] - Minggu, 28 Desember 2025 - Multi-Database & Cleanup (v2.4.10)
+
+### 🚀 Fitur & Perbaikan
+
+- **Dukungan Multi-Database (CLI)**:
+
+  - Menambahkan dukungan penuh untuk inisialisasi proyek dengan **MongoDB** dan **MySQL** selain **PostgreSQL**.
+  - Memperbaiki logika penggantian provider database pada template `schema.prisma` agar lebih akurat.
+  - Menambahkan argumen CLI `--db-type=mongo|pgsql|mysql` untuk otomatisasi instalasi tanpa interaksi.
+  - Mengatasi masalah migrasi pada MongoDB dengan menggunakan `prisma db push` secara kondisional.
+
+- **Pembersihan Paket (Cleanup)**:
+
+  - Menghapus file dan folder development yang tidak diperlukan (`test-local-run`, `init`, `framework.md`, dll) dari paket publik NPM.
+  - Menambahkan file `LICENSE` (MIT) secara eksplisit ke dalam paket.
+  - Memastikan folder `dist` di-generate ulang dengan bersih saat publikasi.
+
+- **Dokumentasi & Website**:
+  - Menambahkan struktur dasar dashboard admin pada dokumentasi website.
+  - Menambahkan skrip simulasi API telemetri lokal untuk pengembangan website.
 
 ## [2025-12-28] - Minggu, 28 Desember 2025 - Perbaikan Upgrade & Testing (v2.4.9)
 
