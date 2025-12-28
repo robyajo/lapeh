@@ -36,14 +36,14 @@ export default defineConfig({
         items: [
           { text: "Apa itu Lapeh?", link: "/docs/introduction" },
           { text: "Fitur Utama", link: "/docs/features" },
-          { text: "Arsitektur", link: "/docs/architecture_guide" },
+          { text: "Arsitektur", link: "/docs/architecture-guide" },
           { text: "Struktur Project", link: "/docs/structure" },
         ],
       },
       {
         text: "Panduan Utama",
         items: [
-          { text: "Memulai (Getting Started)", link: "/docs/getting_started" },
+          { text: "Memulai (Getting Started)", link: "/docs/getting-started" },
           { text: "Tutorial Lengkap", link: "/docs/tutorial" },
           { text: "CLI Command", link: "/docs/cli" },
           { text: "Deployment (VPS/PM2)", link: "/docs/deployment" },
