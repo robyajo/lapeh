@@ -1,8 +1,16 @@
 const { PrismaClient } = require('@prisma/client');
 const https = require('https');
 
-const prisma = global.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+let prisma;
+
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient();
+} else {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient();
+  }
+  prisma = global.prisma;
+}
 
 function getNpmVersion() {
   return new Promise((resolve) => {
@@ -42,6 +50,10 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
+      if (!process.env.DATABASE_URL) {
+         throw new Error('DATABASE_URL is not defined in environment variables');
+      }
+
       // 1. Total Installs (count of unique CLI 'init' or 'create' events)
       const totalInstalls = await prisma.telemetry.count({
         where: {
