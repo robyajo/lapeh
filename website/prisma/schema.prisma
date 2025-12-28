@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Telemetry {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  command     String
+  nodeVersion String
+  osPlatform  String
+  osRelease   String
+  timestamp   DateTime @default(now())
+  
+  @@map("telemetry")
+}
+
+model CrashReport {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  error       String
+  stack       String?
+  command     String?
+  nodeVersion String
+  osPlatform  String
+  timestamp   DateTime @default(now())
+
+  @@map("crash_reports")
+}

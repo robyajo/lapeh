@@ -1,6 +1,6 @@
 
 model pets {
-  id         BigInt    @id @default(autoincrement())
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   species    String
   age        Int

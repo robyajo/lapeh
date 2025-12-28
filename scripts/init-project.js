@@ -49,6 +49,7 @@ const selectOption = async (query, options) => {
     const dbType = await selectOption("Database apa yang akan digunakan?", [
       { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" },
       { key: "mysql", label: "MySQL", provider: "mysql", defaultPort: "3306" },
+      { key: "mongo", label: "MongoDB", provider: "mongodb", defaultPort: "27017" },
     ]);
 
     let dbUrl = "";
@@ -56,14 +57,17 @@ const selectOption = async (query, options) => {
 
     const host = await ask("Database Host", "localhost");
     const port = await ask("Database Port", dbType.defaultPort);
-    const user = await ask("Database User", "root");
+    const user = await ask("Database User", dbType.key === "mongo" ? "" : "root");
     const password = await ask("Database Password", "");
     const dbName = await ask("Database Name", "lapeh");
 
     if (dbType.key === "pgsql") {
       dbUrl = `postgresql://${user}:${password}@${host}:${port}/${dbName}?schema=public`;
-    } else {
+    } else if (dbType.key === "mysql") {
       dbUrl = `mysql://${user}:${password}@${host}:${port}/${dbName}`;
+    } else if (dbType.key === "mongo") {
+      const auth = user ? `${user}:${password}@` : "";
+      dbUrl = `mongodb://${auth}${host}:${port}/${dbName}?authSource=admin`;
     }
 
     // Close readline as we are done with input
@@ -98,18 +102,22 @@ const selectOption = async (query, options) => {
     fs.writeFileSync(envFile, envContent);
     console.log("✅ .env updated with database configuration.");
 
-    // 2. Update prisma/base.prisma.template
-    console.log("📄 Updating prisma/base.prisma.template...");
+    // Update base.prisma.template with the correct provider
+    console.log("\n�️  Updating Prisma configuration...");
     if (fs.existsSync(prismaBaseFile)) {
-      let baseContent = fs.readFileSync(prismaBaseFile, "utf8");
+      let prismaContent = fs.readFileSync(prismaBaseFile, "utf8");
+      
       // Replace provider in datasource block
-      baseContent = baseContent.replace(
-        /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")([^"]+)(")/, 
-        `$1${dbProvider}$3`
+      // Matches: provider = "..." inside datasource db { ... }
+      prismaContent = prismaContent.replace(
+        /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")[^"]+(")/, 
+        `$1${dbProvider}$2`
       );
-      fs.writeFileSync(prismaBaseFile, baseContent);
+
+      fs.writeFileSync(prismaBaseFile, prismaContent);
+      console.log(`✅ prisma/base.prisma.template updated to use ${dbProvider}.`);
     } else {
-      console.warn("⚠️ prisma/base.prisma.template not found. Skipping.");
+        console.warn("⚠️  prisma/base.prisma.template not found. Skipping prisma update.");
     }
 
     // 3. Install dependencies
@@ -150,7 +158,11 @@ const selectOption = async (query, options) => {
       execSync("npx prisma generate", { stdio: "inherit", cwd: rootDir });
       
       console.log("🚀 Running Migration...");
-      execSync("npx prisma migrate dev --name init_setup", { stdio: "inherit", cwd: rootDir });
+      if (dbProvider === 'mongodb') {
+        execSync("npx prisma db push", { stdio: "inherit", cwd: rootDir });
+      } else {
+        execSync("npx prisma migrate dev --name init_setup", { stdio: "inherit", cwd: rootDir });
+      }
     } catch (error) {
       console.warn(
         '⚠️ Database migration had an issue. Please check your database connection in .env and run "npm run prisma:migrate" manually.'

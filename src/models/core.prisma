@@ -1,17 +1,19 @@
 model cache {
-  key        String @id
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  key        String @unique
   value      String
   expiration Int
 }
 
 model cache_locks {
-  key        String @id
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  key        String @unique
   owner      String
   expiration Int
 }
 
 model failed_jobs {
-  id         BigInt   @id @default(autoincrement())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   uuid       String   @unique
   connection String
   queue      String
@@ -21,7 +23,7 @@ model failed_jobs {
 }
 
 model job_batches {
-  id             String @id
+  id             String @id @map("_id")
   name           String
   total_jobs     Int
   pending_jobs   Int
@@ -34,7 +36,7 @@ model job_batches {
 }
 
 model jobs {
-  id           BigInt @id @default(autoincrement())
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
   queue        String
   payload      String
   attempts     Int
@@ -46,21 +48,22 @@ model jobs {
 }
 
 model migrations {
-  id        Int    @id @default(autoincrement())
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
   migration String
   batch     Int
 }
 
 model password_reset_tokens {
-  email      String    @id
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  email      String    @unique
   token      String
   created_at DateTime?
 }
 
 model personal_access_tokens {
-  id             BigInt    @id @default(autoincrement())
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
   tokenable_type String
-  tokenable_id   BigInt
+  tokenable_id   String
   name           String
   token          String    @unique
   abilities      String?
@@ -74,8 +77,8 @@ model personal_access_tokens {
 }
 
 model sessions {
-  id            String  @id
-  user_id       BigInt?
+  id            String  @id @map("_id")
+  user_id       String?
   ip_address    String?
   user_agent    String?
   payload       String
@@ -86,7 +89,7 @@ model sessions {
 }
 
 model users {
-  id                BigInt    @id @default(autoincrement())
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
   uuid              String    @unique
   name              String
   email             String    @unique
@@ -97,67 +100,4 @@ model users {
   remember_token    String?
   created_at        DateTime?
   updated_at        DateTime?
-
-  user_roles       user_roles[]
-  user_permissions user_permissions[]
-}
-
-model roles {
-  id          BigInt    @id @default(autoincrement())
-  name        String
-  slug        String    @unique
-  description String?
-  created_at  DateTime?
-  updated_at  DateTime?
-
-  user_roles       user_roles[]
-  role_permissions role_permissions[]
-}
-
-model permissions {
-  id          BigInt    @id @default(autoincrement())
-  name        String
-  slug        String    @unique
-  description String?
-  created_at  DateTime?
-  updated_at  DateTime?
-
-  role_permissions role_permissions[]
-  user_permissions user_permissions[]
-}
-
-model user_roles {
-  id         BigInt    @id @default(autoincrement())
-  user_id    BigInt
-  role_id    BigInt
-  created_at DateTime?
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  role roles @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([user_id, role_id])
-}
-
-model role_permissions {
-  id            BigInt    @id @default(autoincrement())
-  role_id       BigInt
-  permission_id BigInt
-  created_at    DateTime?
-
-  role       roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([role_id, permission_id])
-}
-
-model user_permissions {
-  id            BigInt    @id @default(autoincrement())
-  user_id       BigInt
-  permission_id BigInt
-  created_at    DateTime?
-
-  user       users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  permission permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([user_id, permission_id])
 }

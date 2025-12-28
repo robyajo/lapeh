@@ -8,8 +8,79 @@ const readline = require('readline');
 const args = process.argv.slice(2);
 const command = args[0];
 
-// Register tsconfig paths for development
-// require('tsconfig-paths/register');
+// Telemetry Logic
+async function sendTelemetry(cmd, errorInfo = null) {
+  try {
+    const os = require('os');
+    
+    const payload = {
+      command: cmd,
+      nodeVersion: process.version,
+      osPlatform: os.platform(),
+      osRelease: os.release(),
+      timestamp: new Date().toISOString()
+    };
+
+    if (errorInfo) {
+        payload.error = errorInfo.message;
+        payload.stack = errorInfo.stack;
+    }
+
+    const data = JSON.stringify(payload);
+
+    // Parse URL from env or use default
+    const apiUrl = process.env.LAPEH_API_URL || 'https://lapeh-doc.vercel.app/api/telemetry';
+    const url = new URL(apiUrl);
+    const isHttps = url.protocol === 'https:';
+    const client = isHttps ? require('https') : require('http');
+
+    const options = {
+      hostname: url.hostname,
+      port: url.port || (isHttps ? 443 : 80),
+      path: url.pathname,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data)
+      },
+      timeout: 2000 // Slightly longer for crash reports
+    };
+
+    const req = client.request(options, (res) => {
+      res.resume();
+    });
+    
+    req.on('error', (e) => {
+      // Silent fail
+    });
+
+    req.write(data);
+    req.end();
+  } catch (e) {
+    // Silent fail
+  }
+}
+
+// Global Error Handler for Crash Reporting
+process.on('uncaughtException', async (err) => {
+  console.error('❌ Unexpected Error:', err);
+  console.log('📝 Sending crash report...');
+  try {
+     // Send crash report synchronously-ish (we can't truly await in uncaughtException easily if we want to exit fast, 
+     // but we should try to keep process alive just long enough)
+     sendTelemetry(command || 'unknown', err);
+     
+     // Give it a moment to send
+     setTimeout(() => {
+         process.exit(1);
+     }, 1000);
+  } catch (e) {
+      process.exit(1);
+  }
+});
+
+// Send telemetry for every command (only if not crashing immediately)
+sendTelemetry(command || 'init');
 
 switch (command) {
   case 'dev':
@@ -352,7 +423,9 @@ async function upgradeProject() {
       const stats = fs.statSync(srcPath);
       if (stats.isDirectory()) {
           console.log(`🔄 Syncing directory ${item}...`);
-          syncDirectory(srcPath, destPath);
+          // Strict sync for 'lib' (framework core), safe sync for others (scripts, etc)
+          const shouldClean = item === 'lib';
+          syncDirectory(srcPath, destPath, shouldClean);
       } else {
           console.log(`🔄 Updating file ${item}...`);
           // Ensure dir exists
@@ -535,6 +608,10 @@ function createProject() {
          } else if (dbTypeArg.toLowerCase() === 'pgsql') {
              dbType = { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" };
              port = "5432";
+         } else if (dbTypeArg.toLowerCase() === 'mongo' || dbTypeArg.toLowerCase() === 'mongodb') {
+             dbType = { key: "mongo", label: "MongoDB", provider: "mongodb", defaultPort: "27017" };
+             port = "27017";
+             user = ""; // MongoDB usually doesn't have default root user in connection string if not auth enabled
          }
       }
       
@@ -548,11 +625,12 @@ function createProject() {
       dbType = await selectOption("Database apa yang akan digunakan?", [
         { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" },
         { key: "mysql", label: "MySQL", provider: "mysql", defaultPort: "3306" },
+        { key: "mongo", label: "MongoDB", provider: "mongodb", defaultPort: "27017" },
       ]);
 
       host = await ask("Database Host", "localhost");
       port = await ask("Database Port", dbType.defaultPort);
-      user = await ask("Database User", "root");
+      user = await ask("Database User", dbType.key === "mongo" ? "" : "root");
       password = await ask("Database Password", "");
       dbName = await ask("Database Name", projectName.replace(/-/g, '_')); // Default db name based on project name
     }
@@ -562,8 +640,11 @@ function createProject() {
 
     if (dbType.key === "pgsql") {
       dbUrl = `postgresql://${user}:${password}@${host}:${port}/${dbName}?schema=public`;
-    } else {
+    } else if (dbType.key === "mysql") {
       dbUrl = `mysql://${user}:${password}@${host}:${port}/${dbName}`;
+    } else if (dbType.key === "mongo") {
+      const auth = user ? `${user}:${password}@` : "";
+      dbUrl = `mongodb://${auth}${host}:${port}/${dbName}?authSource=admin`;
     }
 
     if (!useDefaults) {
@@ -587,6 +668,10 @@ function createProject() {
       'prisma/migrations', // Exclude existing migrations
       'prisma/dev.db', // Exclude sqlite db if exists
       'prisma/dev.db-journal',
+      'website',
+      'init',
+      'test-local-run',
+      'coverage',
       projectName // Don't copy the destination folder itself if creating inside the template
     ];
 
@@ -789,8 +874,8 @@ function createProject() {
       let baseContent = fs.readFileSync(prismaBaseFile, "utf8");
       // Replace provider in datasource block
       baseContent = baseContent.replace(
-        /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")([^"]+)(")/, 
-        `$1${dbProvider}$3`
+        /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")[^"]+(")/, 
+        `$1${dbProvider}$2`
       );
       fs.writeFileSync(prismaBaseFile, baseContent);
     }
@@ -820,7 +905,11 @@ function createProject() {
       
       // Try to migrate (this will create the DB if it doesn't exist)
       console.log('   Running migration (creates DB if missing)...');
-      execSync('npx prisma migrate dev --name init_setup', { cwd: projectDir, stdio: 'inherit' });
+      if (dbProvider === 'mongodb') {
+        execSync('npx prisma db push', { cwd: projectDir, stdio: 'inherit' });
+      } else {
+        execSync('npx prisma migrate dev --name init_setup', { cwd: projectDir, stdio: 'inherit' });
+      }
       
       // Seed (Users & Roles are mandatory, Pets are demo data)
       console.log('   Seeding mandatory data (Users, Roles, Permissions)...');

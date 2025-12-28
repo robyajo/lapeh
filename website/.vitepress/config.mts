@@ -15,6 +15,16 @@ export default defineConfig({
   cleanUrls: true,
   ignoreDeadLinks: true,
   lastUpdated: true,
+  vite: {
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true
+        }
+      }
+    }
+  },
   sitemap: {
     hostname: "https://lapeh-doc.vercel.app",
   },
