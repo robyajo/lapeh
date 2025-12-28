@@ -7,10 +7,45 @@ export default defineConfig({
   lang: "id-ID",
   cleanUrls: true,
   ignoreDeadLinks: true, // Abaikan link mati (sementara) agar build sukses
+  lastUpdated: true,
+  sitemap: {
+    hostname: "https://lapeh-doc.vercel.app",
+  },
 
   head: [
     ["link", { rel: "icon", href: "/favicon.ico" }],
     ["meta", { name: "theme-color", content: "#3eaf7c" }],
+    // SEO Standard
+    [
+      "meta",
+      {
+        name: "keywords",
+        content:
+          "Lapeh Framework, Node.js, Express, TypeScript, Backend, API, Boilerplate, Prisma, Javascript, Framework Indonesia",
+      },
+    ],
+    ["meta", { name: "author", content: "Roby Karti S" }],
+    ["meta", { name: "robots", content: "index, follow" }],
+    // Open Graph / Facebook
+    ["meta", { property: "og:site_name", content: "Lapeh Framework" }],
+    ["meta", { property: "og:type", content: "website" }],
+    ["meta", { property: "og:locale", content: "id_ID" }],
+    [
+      "meta",
+      {
+        property: "og:image",
+        content: "https://lapeh-doc.vercel.app/logo.png",
+      },
+    ],
+    // Twitter
+    ["meta", { name: "twitter:card", content: "summary" }],
+    [
+      "meta",
+      {
+        name: "twitter:image",
+        content: "https://lapeh-doc.vercel.app/logo.png",
+      },
+    ],
   ],
 
   themeConfig: {
@@ -20,6 +55,7 @@ export default defineConfig({
     nav: [
       { text: "Beranda", link: "/" },
       { text: "Panduan", link: "/docs/getting-started" },
+      { text: "Blog", link: "/blog/" },
       { text: "Referensi", link: "/docs/packages" },
       {
         text: "v2.4.6",
