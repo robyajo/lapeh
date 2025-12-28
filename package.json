@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "engines": {
     "node": ">=18.0.0",
@@ -37,7 +37,8 @@
     "eslint.config.mjs",
     "prisma.config.ts",
     "gitignore.template",
-    "ecosystem.config.js"
+    "ecosystem.config.js",
+    "tsconfig.build.json"
   ],
   "scripts": {
     "dev": "node bin/index.js dev",
