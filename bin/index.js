@@ -95,8 +95,12 @@ switch (command) {
       await upgradeProject();
     })();
     break;
+  case 'init':
+  case 'create':
+    createProject(true);
+    break;
   default:
-    createProject();
+    createProject(false);
     break;
 }
 
@@ -425,8 +429,9 @@ async function upgradeProject() {
   console.log('   Please check your .env file against .env.example for any new required variables.');
 }
 
-function createProject() {
-  const projectName = args.find(arg => !arg.startsWith('-'));
+function createProject(skipFirstArg = false) {
+  const searchArgs = skipFirstArg ? args.slice(1) : args;
+  const projectName = searchArgs.find(arg => !arg.startsWith('-'));
   const isFull = args.includes('--full');
   const useDefaults = args.includes('--defaults') || args.includes('--default') || args.includes('-y');
 
