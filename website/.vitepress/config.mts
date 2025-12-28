@@ -42,7 +42,7 @@ export default defineConfig({
           "Lapeh Framework, Node.js, Express, TypeScript, Backend, API, Boilerplate, Prisma, Javascript, Framework Indonesia",
       },
     ],
-    ["meta", { name: "author", content: "Roby Karti S" }],
+    ["meta", { name: "author", content: "robyajo" }],
     ["meta", { name: "robots", content: "index, follow" }],
     // Open Graph
     ["meta", { property: "og:site_name", content: "Lapeh Framework" }],

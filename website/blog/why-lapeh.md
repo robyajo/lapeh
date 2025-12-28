@@ -1,6 +1,6 @@
 # Mengapa Kami Membangun Lapeh?
 
-*Ditulis pada 25 Desember 2025 oleh Roby Karti S*
+_Ditulis pada 25 Desember 2025 oleh robyajo_
 
 Di dunia Node.js, kebebasan adalah pedang bermata dua. Anda bisa menyusun folder sesuka hati, memilih library sesuka hati, dan menulis kode dengan gaya apa pun.
 
@@ -10,13 +10,14 @@ Namun, kebebasan ini sering kali menjadi masalah besar ketika bekerja dalam tim.
 > "Kita pakai `mongoose` atau `sequelize` atau `prisma`?"
 > "Cara handle error-nya gimana? Pakai `try-catch` di setiap fungsi?"
 
-Pertanyaan-pertanyaan ini membuang waktu. Developer menghabiskan energi untuk *setup* dan *debat struktur*, bukan *membangun fitur*.
+Pertanyaan-pertanyaan ini membuang waktu. Developer menghabiskan energi untuk _setup_ dan _debat struktur_, bukan _membangun fitur_.
 
 ## Lahirnya Lapeh
 
 Lapeh hadir untuk menjawab kekacauan tersebut. Filosofi kami sederhana: **Convention over Configuration**.
 
 Kami mengambil keputusan-keputusan sulit di awal, sehingga Anda tidak perlu memikirkannya lagi:
+
 1.  **Struktur Folder Baku**: Setiap project Lapeh memiliki struktur yang sama. Developer baru bisa langsung paham dalam hitungan menit.
 2.  **Prisma ORM**: Kami memilih Prisma karena Type-safety dan Developer Experience terbaik saat ini.
 3.  **Express.js**: Framework yang sudah teruji, stabil, dan memiliki ekosistem terbesar.

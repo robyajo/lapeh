@@ -77,10 +77,10 @@
     "lapeh",
     "roby-ajo",
     "ajo-roby",
-    "roby-karti-s",
+    "robyajo",
     "lapeh"
   ],
-  "author": "Roby Karti S <robyfull.dev@gmail.com>",
+  "author": "robyajo <robyfull.dev@gmail.com>",
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
