@@ -9,6 +9,7 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 - **CLI `init` Command**:
   - **Prisma Client Generation**: Fixed `MODULE_NOT_FOUND` error for `.prisma/client/default` during seeding by forcing `npx prisma generate` before the seed process.
   - **Project Name Parsing**: Fixed a critical bug where running `npx lapeh init <project-name>` would incorrectly interpret `init` as the project name.
+  - **Dependency Management**: Moved `@prisma/client` to `peerDependencies` in the framework core and ensured it is explicitly added to the new project's `dependencies`. This prevents conflicts and ensures the generated client is correctly located.
 
 ## [2025-12-29] - Monday, December 29, 2025 - Upgrade CLI Improvements & MongoDB Support (v2.6.6)
 

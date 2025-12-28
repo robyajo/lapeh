@@ -598,6 +598,11 @@ function createProject(skipFirstArg = false) {
        const lapehPath = path.resolve(__dirname, '..').replace(/\\/g, '/');
        packageJson.dependencies["lapeh"] = `file:${lapehPath}`;
     }
+
+    // Ensure @prisma/client is in dependencies for the new project
+    if (usePrisma) {
+       packageJson.dependencies["@prisma/client"] = "^7.2.0";
+    }
     
     packageJson.version = '1.0.0';
     delete packageJson.bin;
