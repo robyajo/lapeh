@@ -67,7 +67,7 @@ Middleware bawaan framework.
 
 Fungsi bantuan (Helper) bawaan.
 
-- `validator.ts`: Validasi input ala Laravel.
+- `validator.ts`: Validasi input yang kuat dan ekspresif.
 - `response.ts`: Standar format JSON response (`sendFastSuccess`, `sendError`).
 - `logger.ts`: Sistem logging (Winston).
 

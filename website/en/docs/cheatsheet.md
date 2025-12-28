@@ -18,7 +18,7 @@ Referensi cepat untuk perintah dan kode yang sering digunakan.
 | **`npm run db:seed`**                | Isi data dummy.                              |
 | **`npm run db:reset`**               | Hapus DB & mulai dari nol.                   |
 
-## 🛡️ Validator Rules (Laravel-Style)
+## 🛡️ Validator Rules (Simple Syntax)
 
 Gunakan di `Validator.make(data, rules)`.
 

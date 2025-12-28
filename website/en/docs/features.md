@@ -2,9 +2,9 @@
 
 This document explains the key features of Lapeh Framework and how to use them in depth.
 
-## 1. Data Validation (Laravel-Style)
+## 1. Data Validation (Simple & Powerful)
 
-The framework provides a `Validator` utility inspired by Laravel, using `zod` behind the scenes but with an API that is more string-based and readable.
+The framework provides a `Validator` utility inspired by expressive modern validation styles, using `zod` behind the scenes but with an API that is more string-based and readable.
 
 **Location:** `@lapeh/utils/validator`
 
@@ -42,7 +42,7 @@ export async function createProduct(req: Request, res: Response) {
 - `image`: File must be an image (jpg, png, webp, etc).
 - `mimes:types`: File must be a specific type (e.g., `mimes:pdf,docx`).
 
-## 2. High Performance Response (Fastify-Style)
+## 2. High Performance Response (Fastify-Like)
 
 For endpoints requiring high performance (e.g., large data lists), use schema-based serialization. This is much faster than standard Express `res.json`.
 

@@ -67,7 +67,7 @@ Built-in framework middleware.
 
 Built-in Helper functions.
 
-- `validator.ts`: Laravel-style input validation.
+- `validator.ts`: Powerful and expressive input validation.
 - `response.ts`: Standard JSON response format (`sendFastSuccess`, `sendError`).
 - `logger.ts`: Logging system (Winston).
 

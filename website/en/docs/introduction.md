@@ -4,33 +4,35 @@
 
 **Lapeh** is a Backend Framework for Node.js built on top of **Express** and **TypeScript**.
 
-If you have ever used **Laravel** (PHP) or **NestJS** (Node.js), you will feel very familiar. Lapeh adopts the philosophy of ease-of-use & clean structure from Laravel, while maintaining the flexibility and speed of Express.
+If you have ever used other modern frameworks, you will feel very familiar. Lapeh adopts the philosophy of ease-of-use & clean structure, while maintaining the flexibility and speed of Express.
 
 The name "Lapeh" comes from the Minang language which means "Loose" or "Free", symbolizing the freedom for developers to build applications quickly without being burdened by complicated configurations.
 
 ## Why was Lapeh Created?
 
 In the Node.js ecosystem, developers often experience "Decision Fatigue":
+
 - "Which ORM to use? Prisma, TypeORM, or Drizzle?"
 - "Validation using Joi, Zod, or express-validator?"
 - "How about the folder structure? MVC? Clean Architecture?"
 - "How to handle Auth?"
 
 Lapeh answers all of that with **Opinionated Defaults**:
+
 1.  **ORM**: Prisma (Current industry standard).
-2.  **Validation**: Zod (with Laravel-style wrapper syntax).
+2.  **Validation**: Zod (Powerful and readable schema validation).
 3.  **Structure**: Modular MVC (Controller, Model, Route separated but cohesive).
 4.  **Auth**: Ready-to-use JWT + RBAC (Role Based Access Control).
 
 ## Comparison with Other Frameworks
 
-| Feature | Express (Raw) | NestJS | Lapeh Framework |
-| :--- | :--- | :--- | :--- |
+| Feature            | Express (Raw)                 | NestJS                           | Lapeh Framework                        |
+| :----------------- | :---------------------------- | :------------------------------- | :------------------------------------- |
 | **Learning Curve** | Low (but confusing structure) | High (Angular-style, Decorators) | **Medium** (Express + Clear Structure) |
-| **Boilerplate** | Empty | Very Heavy | **Just Right (Ready to use)** |
-| **Type Safety** | Manual | Strict | **Strict (Native TypeScript)** |
-| **Dev Speed** | Slow (manual setup) | Medium | **Fast (CLI Generator)** |
-| **Flexibility** | Very High | Rigid | **High** |
+| **Boilerplate**    | Empty                         | Very Heavy                       | **Just Right (Ready to use)**          |
+| **Type Safety**    | Manual                        | Strict                           | **Strict (Native TypeScript)**         |
+| **Dev Speed**      | Slow (manual setup)           | Medium                           | **Fast (CLI Generator)**               |
+| **Flexibility**    | Very High                     | Rigid                            | **High**                               |
 
 ## "The Lapeh Way" Philosophy
 
