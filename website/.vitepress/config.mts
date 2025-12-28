@@ -1,4 +1,13 @@
 import { defineConfig } from "vitepress";
+import { readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(
+  readFileSync(resolve(__dirname, "../../package.json"), "utf-8")
+);
+const version = pkg.version;
 
 export default defineConfig({
   title: "Lapeh Framework",
@@ -79,7 +88,7 @@ export default defineConfig({
           { text: "Blog", link: "/blog/" },
           { text: "Referensi", link: "/docs/packages" },
           {
-            text: "v2.4.6",
+            text: `v${version}`,
             items: [
               { text: "Changelog", link: "/docs/changelog" },
               { text: "Roadmap", link: "/docs/roadmap" },
@@ -176,7 +185,7 @@ export default defineConfig({
           { text: "Blog", link: "/en/blog/" },
           { text: "Reference", link: "/en/docs/packages" },
           {
-            text: "v2.4.6",
+            text: `v${version}`,
             items: [
               { text: "Changelog", link: "/en/docs/changelog" },
               { text: "Roadmap", link: "/en/docs/roadmap" },
