@@ -21,7 +21,8 @@
     "lib",
     "src",
     "prisma",
-    "generated"
+    "generated",
+    "tests"
   ],
   "exclude": [
     "node_modules",

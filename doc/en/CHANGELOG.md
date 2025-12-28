@@ -2,6 +2,21 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-28] - Sunday, December 28, 2025 - Upgrade & Testing Improvements (v2.4.9)
+
+### 🚀 Features & Fixes
+
+- **Smart Upgrade CLI**:
+
+  - Updated `npx lapeh upgrade` to perform full synchronization (mirroring).
+  - Files removed in the latest framework version are now automatically removed from user projects, keeping them clean.
+  - Removed `bin` folder from synchronization as it is managed by the package.
+
+- **Comprehensive Testing Support**:
+  - Updated `tsconfig.json` to support `@lapeh/*` path aliases within the `tests` folder.
+  - The `tests` folder is now excluded from production builds (via `tsconfig.build.json`), resulting in a cleaner `dist/` folder.
+  - Jest documentation and configuration have been adjusted for seamless integration.
+
 ## [2025-12-28] - Minggu, 28 Desember 2025 - Perbaikan Kompatibilitas & Automasi
 
 ### 🛠️ Perbaikan Bug (Bug Fixes)

@@ -122,7 +122,7 @@ export async function register(req: Request, res: Response) {
     });
   }
 
-  sendFastSuccess(res, 200, registerSerializer, {
+  sendFastSuccess(res, 201, registerSerializer, {
     status: "success",
     message: "Registration successful",
     data: {

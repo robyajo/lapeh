@@ -231,7 +231,7 @@ function runBuild() {
 
   // Compile TS
   try {
-      execSync('npx tsc && npx tsc-alias', { stdio: 'inherit' });
+      execSync('npx tsc -p tsconfig.build.json && npx tsc-alias -p tsconfig.build.json', { stdio: 'inherit' });
   } catch (e) {
       console.error('❌ Build failed.');
       process.exit(1);
@@ -255,7 +255,7 @@ async function upgradeProject() {
 
   // Files/Folders to overwrite/copy
   const filesToSync = [
-    'bin', // Ensure CLI script is updated
+    // 'bin', // Removed: CLI script is managed by package
     'lib', // Ensure core framework files are updated
     'scripts',
     'docker-compose.yml',
@@ -268,7 +268,47 @@ async function upgradeProject() {
     'src/prisma.ts', // Core framework file
   ];
 
-  // Helper to copy recursive
+  // Helper to sync directory (copy new/updated, delete removed)
+  function syncDirectory(src, dest) {
+    if (!fs.existsSync(src)) return;
+    
+    // Ensure dest exists
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+
+    // 1. Copy/Update files from src to dest
+    const srcEntries = fs.readdirSync(src, { withFileTypes: true });
+    const srcEntryNames = new Set();
+
+    for (const entry of srcEntries) {
+      srcEntryNames.add(entry.name);
+      const srcPath = path.join(src, entry.name);
+      const destPath = path.join(dest, entry.name);
+
+      if (entry.isDirectory()) {
+        syncDirectory(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+
+    // 2. Delete files in dest that are not in src (only if we are syncing a folder)
+    const destEntries = fs.readdirSync(dest, { withFileTypes: true });
+    for (const entry of destEntries) {
+        if (!srcEntryNames.has(entry.name)) {
+            const destPath = path.join(dest, entry.name);
+            console.log(`🗑️  Removing obsolete file/directory: ${destPath}`);
+            if (entry.isDirectory()) {
+                fs.rmSync(destPath, { recursive: true, force: true });
+            } else {
+                fs.unlinkSync(destPath);
+            }
+        }
+    }
+  }
+
+  // Helper to copy recursive (legacy, kept for other uses if any, but replaced by syncDirectory for upgrade)
   function copyRecursive(src, dest) {
     if (!fs.existsSync(src)) return;
     const stats = fs.statSync(src);
@@ -309,8 +349,17 @@ async function upgradeProject() {
     const destPath = path.join(currentDir, item);
     
     if (fs.existsSync(srcPath)) {
-      console.log(`🔄 Updating ${item}...`);
-      copyRecursive(srcPath, destPath);
+      const stats = fs.statSync(srcPath);
+      if (stats.isDirectory()) {
+          console.log(`🔄 Syncing directory ${item}...`);
+          syncDirectory(srcPath, destPath);
+      } else {
+          console.log(`🔄 Updating file ${item}...`);
+          // Ensure dir exists
+          const destDir = path.dirname(destPath);
+          if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+          fs.copyFileSync(srcPath, destPath);
+      }
     }
   }
 

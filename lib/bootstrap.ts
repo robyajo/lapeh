@@ -17,21 +17,11 @@ import { apiLimiter } from "./middleware/rateLimit";
 import { requestLogger } from "./middleware/requestLogger";
 import { sendSuccess } from "./utils/response";
 
-export async function bootstrap() {
+export async function createApp() {
   // Register aliases for production runtime
   // Since user code (compiled JS) uses require('@lapeh/...')
   // We map '@lapeh' to the directory containing this file (lib/ or dist/lib/)
   moduleAlias.addAlias("@lapeh", __dirname);
-
-  // Validasi Environment Variables
-  const requiredEnvs = ["DATABASE_URL", "JWT_SECRET"];
-  const missingEnvs = requiredEnvs.filter((key) => !process.env[key]);
-  if (missingEnvs.length > 0) {
-    console.error(
-      `❌ Missing required environment variables: ${missingEnvs.join(", ")}`
-    );
-    process.exit(1);
-  }
 
   const app = express();
 
@@ -88,22 +78,64 @@ export async function bootstrap() {
       : path.join(process.cwd(), "src", "routes");
 
     // Gunakan require agar sinkron dan mudah dicatch
-    const { apiRouter } = require(userRoutesPath);
-    app.use("/api", apiRouter);
-    console.log(
-      `✅ User routes loaded successfully from ${
-        isProduction ? "dist/" : ""
-      }src/routes`
-    );
+    // Check if file exists before requiring to avoid crash in tests/clean env
+    try {
+      // In test environment, we might need to point to src/routes explicitly if not compiled
+      // const routesPath = process.env.NODE_ENV === 'test'
+      //    ? path.join(process.cwd(), "src", "routes", "index.ts")
+      //    : userRoutesPath;
+
+      // Note: For TS files in jest, we rely on ts-jest handling 'require' if it points to .ts or we need to use 'import'
+      // But 'require' in jest with ts-jest should work if configured.
+
+      // However, require(path) with .ts extension might be tricky.
+      // Let's stick to userRoutesPath but maybe adjust for test env.
+
+      // Check if we are in test environment and using ts-jest
+      // If so, we might need to import the TS file directly via relative path if alias is not working for require
+
+      const { apiRouter } = require(userRoutesPath);
+      app.use("/api", apiRouter);
+      console.log(
+        `✅ User routes loaded successfully from ${
+          isProduction ? "dist/" : ""
+        }src/routes`
+      );
+    } catch (e) {
+      // If it's just missing module, maybe we are in test mode or fresh install
+      if (process.env.NODE_ENV !== "test") {
+        console.warn(
+          `⚠️  Could not load user routes from ${userRoutesPath}. (This is expected during initial setup or if src/routes is missing)`
+        );
+      } else {
+        // In test mode, we really want to know if it failed to load
+        console.error(
+          `Error loading routes in test mode from ${userRoutesPath}:`,
+          e
+        );
+      }
+    }
   } catch (error) {
-    console.warn(
-      "⚠️  Could not load user routes. Make sure you export 'apiRouter'."
-    );
     console.error(error);
   }
 
   app.use(errorHandler);
 
+  return app;
+}
+
+export async function bootstrap() {
+  // Validasi Environment Variables
+  const requiredEnvs = ["DATABASE_URL", "JWT_SECRET"];
+  const missingEnvs = requiredEnvs.filter((key) => !process.env[key]);
+  if (missingEnvs.length > 0) {
+    console.error(
+      `❌ Missing required environment variables: ${missingEnvs.join(", ")}`
+    );
+    process.exit(1);
+  }
+
+  const app = await createApp();
   const port = process.env.PORT ? Number(process.env.PORT) : 4000;
   const server = http.createServer(app);
 

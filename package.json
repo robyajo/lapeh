@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.4.8",
+  "version": "2.4.9",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "main": "dist/lib/bootstrap.js",
   "bin": {
@@ -47,6 +47,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "jest",
     "prisma:generate": "node scripts/compile-schema.js && prisma generate",
     "prisma:migrate": "node scripts/compile-schema.js && prisma migrate dev",
     "prisma:deploy": "node scripts/compile-schema.js && prisma migrate deploy",
@@ -123,9 +124,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@types/jest": "^30.0.0",
     "@types/module-alias": "^2.0.4",
+    "@types/supertest": "^6.0.3",
     "eslint": "^9.39.2",
     "globals": "^16.5.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.6",
     "typescript-eslint": "^8.50.1"
   }
 }

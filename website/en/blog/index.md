@@ -4,6 +4,14 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Lapeh v2.4.9 Release: Smart Upgrade & Testing Suite](./release-v2.4.9)
+
+_December 28, 2025_ • 👤 robyajo • 🏷️ _Release_
+
+Lapeh v2.4.9 arrives with a smarter CLI (Smart Upgrade) for clean project synchronization, and full support for Testing Suite (Jest) isolated from production builds. [Read more →](./release-v2.4.9)
+
+---
+
 ## 🚀 [New Era of Lapeh: New Identity & Global Standardization](./new-identity-docs-standard)
 
 _December 28, 2025_ • 👤 robyajo • 🏷️ _Announcement_
