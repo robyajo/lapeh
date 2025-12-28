@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "engines": {
     "node": ">=18.0.0",

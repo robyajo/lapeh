@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+### Fixed
+
+- **CLI**: Fixed `tsconfig.build.json` not being included in the published package, causing `lapeh build` to fail in generated projects.
+- **Prisma**: Updated seed command to use `tsconfig-paths/register` to support path aliases in `prisma/seed.ts`.
+
 ## [2.6.2] - 2025-12-29
 
 ### Fixed
