@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "node scripts/sync-docs.js && vitepress dev",
     "build": "node scripts/sync-docs.js && vitepress build",
-    "preview": "vitepress preview"
+    "preview": "vitepress preview",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "5.22.0",

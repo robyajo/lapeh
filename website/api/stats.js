@@ -1,9 +1,31 @@
 const { PrismaClient } = require('@prisma/client');
+const https = require('https');
 
 const prisma = global.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
-export default async function handler(req, res) {
+function getNpmVersion() {
+  return new Promise((resolve) => {
+    https.get('https://registry.npmjs.org/lapeh/latest', { headers: { 'User-Agent': 'Lapeh-Admin' } }, (res) => {
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        try {
+          if (res.statusCode === 200) {
+             const json = JSON.parse(data);
+             resolve(json.version);
+          } else {
+             resolve('unknown');
+          }
+        } catch (e) {
+          resolve('unknown');
+        }
+      });
+    }).on('error', () => resolve('unknown'));
+  });
+}
+
+module.exports = async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -70,8 +92,16 @@ export default async function handler(req, res) {
         },
       });
 
+      // 6. Get Latest NPM Version
+      const latestVersion = await getNpmVersion();
+
+      // 7. Total Commands Executed (Proxy for Activity)
+      const totalCommands = await prisma.telemetry.count();
+
       res.status(200).json({
         totalInstalls,
+        totalCommands,
+        latestVersion,
         nodeStats: {
           labels: nodeVersions.map(n => n.version),
           data: nodeVersions.map(n => n.count)

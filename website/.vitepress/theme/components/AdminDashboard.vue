@@ -49,6 +49,15 @@ const realOsData = ref(null)
 const realCliVersionData = ref(null)
 const crashReports = ref([])
 const totalInstalls = ref(0)
+const totalCommands = ref(0)
+const latestCliVersion = ref('Loading...')
+
+const logout = () => {
+  localStorage.removeItem('lapeh_admin_auth')
+  isAuthenticated.value = false
+  username.value = ''
+  password.value = ''
+}
 
 const fetchStats = async () => {
   isLoading.value = true
@@ -58,6 +67,8 @@ const fetchStats = async () => {
         const data = await res.json()
         
         totalInstalls.value = data.totalInstalls || 0
+        totalCommands.value = data.totalCommands || 0
+        latestCliVersion.value = data.latestVersion || 'unknown'
         crashReports.value = data.recentCrashes || []
 
         // Update CLI Node Chart
@@ -164,7 +175,10 @@ const chartOptions = {
 
     <div v-else>
       <div class="header">
-        <h1>Dashboard Pemantauan <span v-if="isLoading" class="loading">(Loading...)</span></h1>
+        <div class="header-top">
+          <h1>Dashboard Pemantauan <span v-if="isLoading" class="loading">(Loading...)</span></h1>
+          <button @click="logout" class="logout-btn">Logout</button>
+        </div>
         <div class="tabs">
           <button :class="{ active: activeTab === 'web' }" @click="activeTab = 'web'">Web Analytics</button>
           <button :class="{ active: activeTab === 'cli' }" @click="activeTab = 'cli'">NPM & CLI</button>
@@ -213,17 +227,17 @@ const chartOptions = {
           <div class="stats-row">
              <div class="stat-card">
                <h4>Total Installs</h4>
-               <span class="number">{{ totalInstalls || '2,459' }}</span>
+               <span class="number">{{ totalInstalls || '...' }}</span>
                <span class="trend up" v-if="totalInstalls > 0">Live Data</span>
              </div>
              <div class="stat-card">
-               <h4>Active Projects</h4>
-               <span class="number">142</span>
-               <span class="trend up">+5%</span>
+               <h4>Total Commands</h4>
+               <span class="number">{{ totalCommands || '...' }}</span>
+               <span class="trend up">All Time</span>
              </div>
              <div class="stat-card">
-               <h4>CLI Version (Latest)</h4>
-               <span class="number">v2.4.9</span>
+               <h4>CLI Version (NPM)</h4>
+               <span class="number">{{ latestCliVersion }}</span>
              </div>
           </div>
           
@@ -287,6 +301,26 @@ const chartOptions = {
 </template>
 
 <style scoped>
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+}
+
 .admin-dashboard {
   padding: 2rem;
   max-width: 1200px;
