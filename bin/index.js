@@ -665,6 +665,10 @@ function createProject(skipFirstArg = false) {
            execSync('npx prisma migrate dev --name init_setup', { cwd: projectDir, stdio: 'inherit' });
         }
 
+        // Explicitly generate Prisma Client to ensure .prisma/client/default exists
+        console.log('   Generating Prisma Client...');
+        execSync('npx prisma generate', { cwd: projectDir, stdio: 'inherit' });
+
         let runSeed = false;
         if (!useDefaults) {
            const seedChoice = await selectOption("Jalankan seeder?", [

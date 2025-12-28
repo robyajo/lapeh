@@ -7,8 +7,8 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 ### 🛠️ Perbaikan Bug
 
 - **Perintah CLI `init`**:
-  - Memperbaiki bug kritis di mana menjalankan `npx lapeh init <nama-project>` akan salah menafsirkan `init` sebagai nama proyek, menyebabkan konflik dan kegagalan pembuatan proyek.
-  - CLI sekarang mem-parsing argumen dengan benar untuk membedakan perintah dari nama proyek.
+  - **Prisma Client Generation**: Memperbaiki error `MODULE_NOT_FOUND` untuk `.prisma/client/default` saat seeding dengan memaksa eksekusi `npx prisma generate` sebelum proses seed.
+  - **Parsing Nama Project**: Memperbaiki bug kritis di mana menjalankan `npx lapeh init <nama-project>` akan salah menafsirkan `init` sebagai nama proyek.
 
 ## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan CLI Upgrade & Dukungan MongoDB (v2.6.6)
 
