@@ -610,6 +610,9 @@ function createProject(skipFirstArg = false) {
     // Ensure @prisma/client is in dependencies for the new project
     if (usePrisma) {
        packageJson.dependencies["@prisma/client"] = "^6.0.0";
+       packageJson.prisma = {
+         seed: "ts-node -r tsconfig-paths/register prisma/seed.ts"
+       };
     }
     
     packageJson.version = '1.0.0';
