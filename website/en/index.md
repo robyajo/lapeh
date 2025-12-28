@@ -4,6 +4,9 @@ layout: home
 hero:
   name: "Lapeh Framework"
   text: "Modern API Framework for Node.js"
+  image:
+    src: /hero.png
+    alt: Lapeh Framework
   tagline: "Fast, Standardized, and Production-Ready. Built on Express & Prisma."
   actions:
     - theme: brand
