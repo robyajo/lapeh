@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/robyajo/lapeh.git"
   },
-  "homepage": "https://github.com/robyajo/lapeh#readme",
+  "homepage": "https://lapeh-doc.vercel.app",
   "bugs": {
     "url": "https://github.com/robyajo/lapeh/issues"
   },
