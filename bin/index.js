@@ -545,7 +545,7 @@ function createProject(skipFirstArg = false) {
       'node_modules', 'dist', '.git', '.env', 'bin', 'lib', 
       'package-lock.json', '.DS_Store', 'prisma/migrations', 
       'prisma/dev.db', 'prisma/dev.db-journal', 'website', 
-      'init', 'test-local-run', 'coverage', projectName
+      'init', 'test-local-run', 'coverage', 'doc', projectName
     ];
 
     function copyDir(src, dest) {
