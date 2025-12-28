@@ -22,18 +22,14 @@ Untuk memahami Lapeh Framework sepenuhnya, Anda perlu tahu apa fungsi setiap fil
 
 Ini adalah tempat Anda bekerja setiap hari.
 
-### `src/controllers/`
+### `src/modules/` (Modular Architecture)
 
-Berisi logika aplikasi. Controller menerima Request, memprosesnya, dan mengembalikan Response.
+Lapeh menggunakan pendekatan **Modular**. Setiap fitur dikelompokkan dalam satu folder modul agar kode lebih terorganisir.
 
-- **Contoh**: `authController.ts` menangani login/register.
-- **Tips**: Jangan taruh _business logic_ yang terlalu kompleks di sini. Gunakan Service (opsional) jika controller sudah terlalu gemuk.
+Contoh struktur modul `Auth`:
 
-### `src/models/`
-
-Berisi definisi tabel database (Schema Prisma).
-
-- **Unik di Lapeh**: Kami memecah `schema.prisma` yang besar menjadi file-file kecil per fitur (misal `user.prisma`, `product.prisma`) agar mudah di-manage. Script `prisma:migrate` akan menggabungkannya nanti.
+- `Auth/auth.controller.ts`: Logika aplikasi (Controller).
+- `Auth/auth.prisma`: Definisi tabel database (Model).
 
 ### `src/routes/`
 
@@ -41,6 +37,13 @@ Mendefinisikan URL endpoint.
 
 - Menghubungkan URL (misal `/api/login`) ke fungsi di Controller.
 - Menempelkan Middleware (misal `requireAuth`).
+
+### `src/config/`
+
+Konfigurasi aplikasi yang bersifat statis.
+
+- `app.ts`: Konfigurasi umum aplikasi.
+- `cors.ts`: Konfigurasi CORS (Cross-Origin Resource Sharing).
 
 ## Folder `lib/` (Framework Internals)
 
@@ -81,9 +84,10 @@ Fungsi bantuan (Helper) bawaan.
 
 Script-script "Magic" yang dijalankan `npm run`.
 
-- `make-controller.js`: Generator controller.
-- `compile-schema.js`: Penggabung file `.prisma`.
+- `make-module.js`: Generator modul baru (Controller + Prisma Model).
+- `compile-schema.js`: Penggabung file `.prisma` dari setiap modul menjadi satu `schema.prisma`.
 - `init-project.js`: Wizard setup awal.
+- `generate-jwt-secret.js`: Generator kunci rahasia JWT otomatis.
 
 ---
 
