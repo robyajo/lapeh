@@ -11,6 +11,14 @@ All notable changes to this project will be documented in this file.
 
 - **Core**: Removed explicit `datasources` configuration in `PrismaClient` initialization to prevent validation errors in generated projects. `PrismaClient` now relies on the environment variable defined in `schema.prisma`.
 
+## [2.6.6] - 2025-12-29
+
+### Fixed
+
+- Upgrade CLI command now respects local file dependencies (`file:...`) while upgrading npm dependencies for others.
+- Fixed `BigInt` serialization issues in Auth controller for MongoDB compatibility.
+- Fixed `sendSuccess` optional data parameter.
+
 ## [2.6.5] - 2025-12-29
 
 ### Fixed

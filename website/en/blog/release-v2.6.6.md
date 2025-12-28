@@ -1,20 +1,20 @@
 ---
-title: "Release v2.6.5: CLI Upgrade Fixes and MongoDB Support"
+title: "Release v2.6.6: CLI Upgrade Fixes and MongoDB Support"
 date: 2025-12-29
 author: Lapeh Team
 description: "Bug fixes for CLI upgrade command, dependency adjustments, and Prisma Client data type compatibility fixes for MongoDB."
 tag: "Release"
 ---
 
-# Release v2.6.5: CLI Upgrade Fixes and MongoDB Support
+# Release v2.6.6: CLI Upgrade Fixes and MongoDB Support
 
-We just released **v2.6.5** which brings some important fixes for CLI stability and database compatibility.
+We just released **v2.6.6** which brings some important fixes for CLI stability and database compatibility.
 
 ## What's New?
 
 ### 1. `upgrade` CLI Command Fixes
 We improved the logic in the `lapeh upgrade` command to handle `lapeh` dependency versions more smartly.
-- If the project uses an npm version, `package.json` will be updated using caret versioning (e.g., `^2.6.5`).
+- If the project uses an npm version, `package.json` will be updated using caret versioning (e.g., `^2.6.6`).
 - If the project uses a local version (development), it will keep using the file path.
 - Fixed automatic `tsconfig.json` updates so `paths` alias `@lapeh/*` points to the correct `dist/lib` directory.
 
@@ -39,7 +39,7 @@ Or manually update `package.json`:
 
 ```json
 "dependencies": {
-  "lapeh": "^2.6.5"
+  "lapeh": "^2.6.6"
 }
 ```
 

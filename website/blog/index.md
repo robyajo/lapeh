@@ -4,11 +4,11 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
-## 🚀 [Rilis v2.6.5: Perbaikan CLI Upgrade dan Dukungan MongoDB](./release-v2.6.5)
+## 🚀 [Rilis v2.6.6: Perbaikan CLI Upgrade dan Dukungan MongoDB](./release-v2.6.6)
 
 _29 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Perbaikan bug pada perintah upgrade CLI, penyesuaian dependensi, dan perbaikan kompatibilitas tipe data Prisma Client untuk MongoDB. [Baca selengkapnya →](./release-v2.6.5)
+Perbaikan bug pada perintah upgrade CLI, penyesuaian dependensi, dan perbaikan kompatibilitas tipe data Prisma Client untuk MongoDB. [Baca selengkapnya →](./release-v2.6.6)
 
 ---
 
