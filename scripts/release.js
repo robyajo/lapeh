@@ -302,8 +302,20 @@ Thank you for using Lapeh Framework!
         // 5. Question: NPM
         const publishNpm = await question('\n4. Apa ingin publish ke NPM? (y/n): ');
         if (publishNpm.toLowerCase() === 'y') {
-            execSync('npm publish', { stdio: 'inherit' });
-            console.log('✅ NPM publish complete');
+            try {
+                execSync('npm publish', { stdio: 'inherit' });
+                console.log('✅ NPM publish complete');
+            } catch (error) {
+                console.log('\n⚠️  NPM Publish failed. This might be due to 2FA.');
+                const otp = await question('🔐 Masukkan kode OTP (Authenticator App) Anda: ');
+                if (otp && otp.trim() !== '') {
+                     execSync(`npm publish --otp=${otp.trim()}`, { stdio: 'inherit' });
+                     console.log('✅ NPM publish complete');
+                } else {
+                    console.log('❌ NPM publish aborted.');
+                    throw error;
+                }
+            }
         } else {
              console.log('⏭️  Skipping NPM publish.');
         }
