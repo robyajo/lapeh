@@ -1,84 +1,103 @@
-# Bedah Struktur Proyek
+# Struktur Proyek
 
-Untuk memahami Lapeh Framework sepenuhnya, Anda perlu tahu apa fungsi setiap file dan folder. Berikut adalah "Tour" lengkap ke dalam direktori proyek.
+Memahami struktur folder adalah langkah pertama untuk menguasai Lapeh Framework. Proyek ini didesain agar **mudah dinavigasi**, memisahkan logika aplikasi Anda (*User Space*) dengan mesin framework (*Core Framework*).
 
-## Root Directory
+## Peta Direktori
 
-| File/Folder          | Deskripsi                                                                     |
-| :------------------- | :---------------------------------------------------------------------------- |
-| `bin/`               | Berisi script eksekusi untuk CLI (`npx lapeh`). Anda jarang menyentuh ini.    |
-| `doc/`               | Dokumentasi proyek ini berada.                                                |
-| `lib/`               | **Framework Core**. Bagian internal framework yang jarang Anda sentuh.        |
-| `scripts/`           | Kumpulan script Node.js untuk utility (generator, compiler schema, dll).      |
-| `src/`               | **Source Code Utama**. 99% kodingan Anda ada di sini.                         |
-| `.env`               | Variabel rahasia (Database URL, API Keys). **Jangan commit file ini ke Git!** |
-| `docker-compose.yml` | Konfigurasi Docker untuk menjalankan Database & Redis lokal.                  |
-| `nodemon.json`       | Konfigurasi auto-restart saat development.                                    |
-| `package.json`       | Daftar library (dependencies) dan perintah (`npm run ...`).                   |
-| `tsconfig.json`      | Konfigurasi TypeScript.                                                       |
+Berikut adalah gambaran besar struktur direktori proyek Lapeh:
 
-## Folder `src/` (Source Code - User Space)
-
-Ini adalah tempat Anda bekerja setiap hari.
-
-### `src/modules/` (Modular Architecture)
-
-Lapeh menggunakan pendekatan **Modular**. Setiap fitur dikelompokkan dalam satu folder modul agar kode lebih terorganisir.
-
-Contoh struktur modul `Auth`:
-
-- `Auth/auth.controller.ts`: Logika aplikasi (Controller).
-
-### `src/routes/`
-
-Mendefinisikan URL endpoint.
-
-- Menghubungkan URL (misal `/api/login`) ke fungsi di Controller.
-- Menempelkan Middleware (misal `requireAuth`).
-
-### `src/config/`
-
-Konfigurasi aplikasi yang bersifat statis.
-
-- `app.ts`: Konfigurasi umum aplikasi.
-- `cors.ts`: Konfigurasi CORS (Cross-Origin Resource Sharing).
-
-## Folder `lib/` (Framework Internals)
-
-Bagian ini mirip dengan `node_modules` atau folder `.next` di Next.js. Ini adalah mesin framework.
-
-### `lib/core/`
-
-Bagian "Mesin" framework.
-
-- `server.ts`: Setup Express App.
-- `redis.ts`: Koneksi Redis.
-- `serializer.ts`: Logic caching JSON Schema.
-
-### `lib/middleware/`
-
-Middleware bawaan framework.
-
-- `auth.ts`: Cek JWT Token.
-- `rateLimit.ts`: Batasi jumlah request.
-- `requestLogger.ts`: Log setiap request yang masuk.
-
-### `lib/utils/`
-
-Fungsi bantuan (Helper) bawaan.
-
-- `validator.ts`: Validasi input yang kuat dan ekspresif.
-- `response.ts`: Standar format JSON response (`sendFastSuccess`, `sendError`).
-- `logger.ts`: Sistem logging (Winston).
-
-## Folder `scripts/`
-
-Script-script "Magic" yang dijalankan `npm run`.
-
-- `make-module.js`: Generator modul baru (Controller).
-- `init-project.js`: Wizard setup awal.
-- `generate-jwt-secret.js`: Generator kunci rahasia JWT otomatis.
+```
+lapeh/
+├── bin/                 # Entry point untuk CLI (npx lapeh)
+├── lib/                 # ⚙️ Framework Core (Mesin Lapeh)
+├── scripts/             # Script otomatisasi (Build, Release, Generator)
+├── src/                 # 🏠 Source Code Aplikasi Anda (Tempat Anda bekerja)
+│   ├── config/          # Konfigurasi aplikasi
+│   ├── modules/         # Logika bisnis per fitur (Controller)
+│   └── routes/          # Definisi rute API
+├── storage/             # File sementara, log, dan upload
+├── tests/               # Unit & Integration Tests
+├── website/             # Source code dokumentasi ini
+├── .env                 # Environment variables (Rahasia!)
+├── ecosystem.config.js  # Konfigurasi PM2
+├── jest.config.js       # Konfigurasi Testing
+├── package.json         # Dependensi proyek
+└── tsconfig.json        # Konfigurasi TypeScript
+```
 
 ---
 
-Dengan memahami struktur ini, Anda tidak akan tersesat saat ingin menambah fitur baru atau mencari bug.
+## 🏠 Folder `src/` (User Space)
+
+Ini adalah folder terpenting. 99% waktu coding Anda akan dihabiskan di sini.
+
+### `src/modules/` (Modular Architecture)
+Lapeh menggunakan pendekatan **Modular**. Setiap fitur dikelompokkan dalam satu folder agar kode tetap rapi seiring berkembangnya aplikasi.
+
+*   **Contoh**: Jika Anda membuat fitur "Produk", Anda akan memiliki folder `src/modules/Product/`.
+*   **Isi**: Biasanya berisi `controller` (logika) dan file pendukung fitur tersebut.
+
+### `src/routes/`
+Tempat mendefinisikan URL API Anda.
+
+*   **`index.ts`**: Pintu gerbang utama semua rute.
+*   **File route lainnya**: Menghubungkan URL (misal `/api/users`) ke fungsi di Controller dan memasang middleware.
+
+### `src/config/`
+Konfigurasi statis aplikasi Anda.
+
+*   **`app.ts`**: Pengaturan umum.
+*   **`cors.ts`**: Pengaturan keamanan akses domain (CORS).
+
+---
+
+## ⚙️ Folder `lib/` (Framework Core)
+
+Folder ini adalah "mesin" di balik layar. Isinya adalah kode inti yang menjalankan server, koneksi database, dan utilitas bawaan.
+
+> **Catatan**: Anda jarang perlu menyentuh folder ini kecuali Anda ingin memodifikasi perilaku dasar framework.
+
+*   **`lib/core/`**: Setup server Express, koneksi Redis, dan Serializer.
+*   **`lib/middleware/`**: Middleware bawaan seperti `auth` (JWT), `rateLimit`, dan `requestLogger`.
+*   **`lib/utils/`**: Fungsi bantuan seperti `validator` (validasi input), `logger` (pencatatan log), dan `response` (format respon standar).
+
+---
+
+## 🧪 Folder `tests/`
+
+Tempat Anda menulis pengujian otomatis untuk memastikan aplikasi berjalan lancar.
+
+*   **`unit/`**: Tes untuk fungsi-fungsi kecil secara terisolasi.
+*   **`integration/`**: Tes untuk alur API secara menyeluruh (misal: hit endpoint login dan pastikan dapat token).
+*   **`setup.ts`**: Konfigurasi awal sebelum tes dijalankan.
+
+---
+
+## 📦 Folder `storage/`
+
+Folder untuk menyimpan file yang dihasilkan oleh aplikasi saat berjalan (runtime).
+
+*   **`logs/`**: File log aplikasi (error log, access log).
+*   **`uploads/`** (Opsional): Tempat penyimpanan file yang diunggah user (jika menggunakan penyimpanan lokal).
+
+---
+
+## 🛠️ File Konfigurasi Penting
+
+| File | Deskripsi |
+| :--- | :--- |
+| **`.env`** | Menyimpan **rahasia** aplikasi (Database URL, API Keys). **Jangan commit file ini ke Git!** |
+| **`package.json`** | Daftar pustaka (library) yang dipakai dan perintah script (`npm run ...`). |
+| **`ecosystem.config.js`** | Konfigurasi untuk **PM2**. Digunakan saat deploy ke server production (VPS) agar aplikasi auto-restart. |
+| **`jest.config.js`** | Pengaturan untuk framework testing (Jest). |
+| **`nodemon.json`** | Pengaturan auto-restart server saat Anda sedang coding (Development mode). |
+
+---
+
+## 🤖 Folder `scripts/`
+
+Berisi script "ajaib" yang memudahkan hidup Anda. Script ini biasanya dipanggil lewat perintah `npm run`.
+
+*   **`release.js`**: Otomatisasi rilis versi, changelog, dan blog.
+*   **`make-module.js`**: Generator untuk membuat modul/controller baru dengan cepat.
+*   **`sync-docs.js`**: Sinkronisasi dokumentasi antar bahasa.

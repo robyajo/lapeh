@@ -1,84 +1,103 @@
-# Project Structure Breakdown
+# Project Structure
 
-To fully understand Lapeh Framework, you need to know what each file and folder does. Here is a complete "Tour" of the project directory.
+Understanding the folder structure is the first step to mastering Lapeh Framework. This project is designed to be **easy to navigate**, separating your application logic (*User Space*) from the framework engine (*Core Framework*).
 
-## Root Directory
+## Directory Map
 
-| File/Folder          | Description                                                                    |
-| :------------------- | :----------------------------------------------------------------------------- |
-| `bin/`               | Contains execution scripts for CLI (`npx lapeh`). You rarely touch this.       |
-| `doc/`               | Project documentation resides here.                                            |
-| `lib/`               | **Framework Core**. Internal parts of the framework you rarely touch.          |
-| `scripts/`           | Collection of Node.js utility scripts (generators, schema compilers, etc).     |
-| `src/`               | **Main Source Code**. 99% of your coding happens here.                         |
-| `.env`               | Secret variables (Database URL, API Keys). **Do not commit this file to Git!** |
-| `docker-compose.yml` | Docker configuration for running local Database & Redis.                       |
-| `nodemon.json`       | Auto-restart configuration during development.                                 |
-| `package.json`       | List of libraries (dependencies) and commands (`npm run ...`).                 |
-| `tsconfig.json`      | TypeScript configuration.                                                      |
+Here is the big picture of the Lapeh project directory structure:
 
-## `src/` Folder (Source Code - User Space)
-
-This is where you work every day.
-
-### `src/modules/` (Modular Architecture)
-
-Lapeh uses a **Modular** approach. Each feature is grouped into a single module folder to keep the code organized.
-
-Example `Auth` module structure:
-
-- `Auth/auth.controller.ts`: Application logic (Controller).
-
-### `src/routes/`
-
-Defines endpoint URLs.
-
-- Connects URLs (e.g., `/api/login`) to functions in Controllers.
-- Attaches Middleware (e.g., `requireAuth`).
-
-### `src/config/`
-
-Static application configuration.
-
-- `app.ts`: General application configuration.
-- `cors.ts`: CORS (Cross-Origin Resource Sharing) configuration.
-
-## `lib/` Folder (Framework Internals)
-
-This part is similar to `node_modules` or the `.next` folder in Next.js. This is the framework engine.
-
-### `lib/core/`
-
-The "Engine" part of the framework.
-
-- `server.ts`: Express App setup.
-- `redis.ts`: Redis connection.
-- `serializer.ts`: JSON Schema caching logic.
-
-### `lib/middleware/`
-
-Built-in framework middleware.
-
-- `auth.ts`: Check JWT Token.
-- `rateLimit.ts`: Limit request count.
-- `requestLogger.ts`: Log every incoming request.
-
-### `lib/utils/`
-
-Built-in Helper functions.
-
-- `validator.ts`: Powerful and expressive input validation.
-- `response.ts`: Standard JSON response format (`sendFastSuccess`, `sendError`).
-- `logger.ts`: Logging system (Winston).
-
-## `scripts/` Folder
-
-"Magic" scripts executed by `npm run`.
-
-- `make-module.js`: New module generator (Controller).
-- `init-project.js`: Initial setup wizard.
-- `generate-jwt-secret.js`: Automatic JWT secret key generator.
+```
+lapeh/
+├── bin/                 # CLI entry point (npx lapeh)
+├── lib/                 # ⚙️ Framework Core (Lapeh Engine)
+├── scripts/             # Automation scripts (Build, Release, Generators)
+├── src/                 # 🏠 Your Application Source Code (Where you work)
+│   ├── config/          # Application configuration
+│   ├── modules/         # Business logic per feature (Controllers)
+│   └── routes/          # API route definitions
+├── storage/             # Temporary files, logs, and uploads
+├── tests/               # Unit & Integration Tests
+├── website/             # Documentation source code
+├── .env                 # Environment variables (Secrets!)
+├── ecosystem.config.js  # PM2 Configuration
+├── jest.config.js       # Testing Configuration
+├── package.json         # Project dependencies
+└── tsconfig.json        # TypeScript Configuration
+```
 
 ---
 
-By understanding this structure, you won't get lost when adding new features or debugging.
+## 🏠 `src/` Folder (User Space)
+
+This is the most important folder. 99% of your coding time will be spent here.
+
+### `src/modules/` (Modular Architecture)
+Lapeh uses a **Modular** approach. Each feature is grouped into a single folder to keep code organized as the application grows.
+
+*   **Example**: If you build a "Product" feature, you will have a `src/modules/Product/` folder.
+*   **Contents**: Usually contains the `controller` (logic) and supporting files for that feature.
+
+### `src/routes/`
+Where you define your API URLs.
+
+*   **`index.ts`**: The main gateway for all routes.
+*   **Other route files**: Connect URLs (e.g., `/api/users`) to functions in Controllers and attach middleware.
+
+### `src/config/`
+Static application configuration.
+
+*   **`app.ts`**: General settings.
+*   **`cors.ts`**: Domain access security settings (CORS).
+
+---
+
+## ⚙️ `lib/` Folder (Framework Core)
+
+This folder is the "engine" behind the scenes. It contains the core code that runs the server, database connections, and built-in utilities.
+
+> **Note**: You rarely need to touch this folder unless you want to modify the framework's basic behavior.
+
+*   **`lib/core/`**: Express server setup, Redis connection, and Serializer.
+*   **`lib/middleware/`**: Built-in middleware like `auth` (JWT), `rateLimit`, and `requestLogger`.
+*   **`lib/utils/`**: Helper functions like `validator` (input validation), `logger` (logging), and `response` (standard response format).
+
+---
+
+## 🧪 `tests/` Folder
+
+Where you write automated tests to ensure your application runs smoothly.
+
+*   **`unit/`**: Tests for small functions in isolation.
+*   **`integration/`**: Tests for complete API flows (e.g., hit login endpoint and verify token receipt).
+*   **`setup.ts`**: Initial configuration before tests run.
+
+---
+
+## 📦 `storage/` Folder
+
+Folder for storing files generated by the application at runtime.
+
+*   **`logs/`**: Application log files (error log, access log).
+*   **`uploads/`** (Optional): Storage for user-uploaded files (if using local storage).
+
+---
+
+## 🛠️ Important Configuration Files
+
+| File | Description |
+| :--- | :--- |
+| **`.env`** | Stores application **secrets** (Database URL, API Keys). **Do not commit this file to Git!** |
+| **`package.json`** | List of libraries used and script commands (`npm run ...`). |
+| **`ecosystem.config.js`** | Configuration for **PM2**. Used when deploying to production servers (VPS) for auto-restart. |
+| **`jest.config.js`** | Settings for the testing framework (Jest). |
+| **`nodemon.json`** | Server auto-restart settings while you are coding (Development mode). |
+
+---
+
+## 🤖 `scripts/` Folder
+
+Contains "magic" scripts that make your life easier. These scripts are usually called via `npm run`.
+
+*   **`release.js`**: Automates version release, changelog, and blog.
+*   **`make-module.js`**: Generator to quickly create new modules/controllers.
+*   **`sync-docs.js`**: Synchronizes documentation across languages.
