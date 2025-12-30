@@ -231,7 +231,7 @@ Thank you for using Lapeh Framework!
             execSync('git add .', { stdio: 'inherit' });
             execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' });
             execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
-            execSync('git push && git push --tags', { stdio: 'inherit' });
+            execSync(`git push origin HEAD && git push origin v${newVersion}`, { stdio: 'inherit' });
             console.log('✅ Git push & tag complete');
         } else {
             console.log('⏭️  Skipping Git push.');
