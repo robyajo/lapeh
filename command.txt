@@ -92,3 +92,9 @@ enter
 enter
 3. apa ingin pusbli ke git ? (Ya dan Tidak)
 4. apa ingin pusbli ke npm ? (Ya dan Tidak)
+
+
+=============================
+ALL DONE QUIK SETUP RELEASE =
+=============================
+npm run release
