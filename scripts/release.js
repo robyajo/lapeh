@@ -73,8 +73,64 @@ function incrementPatch(version) {
     return parts.join('.');
 }
 
+// Helper to generate auto commit message
+function generateAutoCommitMessage() {
+    try {
+        const status = execSync('git status --porcelain', { stdio: 'pipe' }).toString().trim();
+        if (!status) return 'chore: no changes detected';
+
+        const files = status.split('\n').map(line => line.substring(3).trim());
+        
+        const hasDocs = files.some(f => f.startsWith('website/') || f.endsWith('.md'));
+        const hasScripts = files.some(f => f.startsWith('scripts/'));
+        const hasPackage = files.some(f => f.includes('package.json'));
+        const hasSrc = files.some(f => !f.startsWith('website/') && !f.startsWith('scripts/') && !f.includes('package.json') && !f.startsWith('.'));
+
+        let types = [];
+        if (hasDocs) types.push('docs');
+        if (hasScripts) types.push('scripts');
+        if (hasPackage) types.push('deps');
+        if (hasSrc) types.push('feat/fix');
+
+        if (types.length === 0) return 'chore: update project files';
+        
+        if (hasDocs && !hasSrc && !hasScripts) return 'docs: update documentation';
+        if (hasScripts && !hasSrc) return 'chore: update build scripts';
+        
+        return `chore: update ${types.join(', ')}`;
+    } catch (e) {
+        return 'chore: update project files';
+    }
+}
+
 async function main() {
     try {
+        // 0. Quick Git Update Check
+        const quickGit = await question('\n⚡ Apakah ini hanya Quick Git Update (tanpa rilis versi)? (y/n): ');
+        if (quickGit.toLowerCase() === 'y') {
+             console.log('\n🤖 Auto-generating commit message...');
+             const commitMsg = generateAutoCommitMessage();
+             console.log(`📝 Commit Message: "${commitMsg}"`);
+             
+             try {
+                 console.log('🔄 Syncing documentation (just in case)...');
+                 try {
+                    execSync('node scripts/sync-docs.js', { cwd: websiteDir, stdio: 'inherit' });
+                 } catch (e) {
+                    console.log('⚠️ Warning: Doc sync failed, continuing...');
+                 }
+
+                 execSync('git add .', { stdio: 'inherit' });
+                 execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' });
+                 execSync('git push origin HEAD', { stdio: 'inherit' });
+                 console.log('✅ Quick Git Update selesai!');
+                 process.exit(0);
+             } catch (e) {
+                 console.error('❌ Error during git operations:', e.message);
+                 process.exit(1);
+             }
+        }
+
         // 1. Check versions and ask for new one
         console.log('🔍 Checking npm version...');
         const npmVersion = getNpmVersion();
