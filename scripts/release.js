@@ -43,7 +43,14 @@ function getGitChanges() {
         // Filter out chores, merges, etc. if desired, or keep everything
         return logs.split('\n')
             .map(l => l.trim())
-            .filter(l => l && !l.startsWith('chore:') && !l.startsWith('Merge branch'));
+            .filter(l => 
+                l && 
+                !l.startsWith('chore:') && 
+                !l.startsWith('Merge branch') &&
+                !l.startsWith('docs: release') &&
+                !l.includes('release v') &&
+                !l.includes('Update version')
+            );
     } catch (e) {
         return [];
     }
@@ -103,17 +110,14 @@ async function main() {
             const defaultDesc = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
             const defaultFeatures = changes.join(', ');
 
-            console.log('\n--- 🇮🇩 Bahasa Indonesia Input ---');
-            const titleID = await question(`Judul Rilis (default: "${defaultTitle}"): `) || defaultTitle;
-            const descriptionID = await question(`Deskripsi Singkat (default: "${defaultDesc}"): `) || defaultDesc;
-            const featuresID = await question(`Fitur Utama (default: "${defaultFeatures}"): `) || defaultFeatures;
+            // Use defaults directly
+            const titleID = defaultTitle;
+            const descriptionID = defaultDesc;
+            const featuresID = defaultFeatures;
 
-            console.log('\n--- 🇺🇸 English Input ---');
-            // Reuse ID inputs as defaults for EN if user just hits enter, 
-            // but ideally they should type English. We show the same defaults.
-            const titleEN = await question(`Release Title (default: "${defaultTitle}"): `) || defaultTitle;
-            const descriptionEN = await question(`Short Description (default: "${defaultDesc}"): `) || defaultDesc;
-            const featuresEN = await question(`Key Features (default: "${defaultFeatures}"): `) || defaultFeatures;
+            const titleEN = defaultTitle;
+            const descriptionEN = defaultDesc;
+            const featuresEN = defaultFeatures;
             
             blogTitleEN = titleEN; // Save for commit message
 
@@ -124,8 +128,14 @@ async function main() {
             
             const blogFileName = `release-v${newVersion}.md`;
             
-            const featureListID = featuresID.split(',').map(f => `*   **${f.trim()}**`).join('\n');
-            const featureListEN = featuresEN.split(',').map(f => `*   **${f.trim()}**`).join('\n');
+            // Generate list items
+            const featureListID = changes.length > 0 
+                ? changes.map(f => `*   **${f.trim()}**`).join('\n')
+                : '*   **Routine maintenance**';
+                
+            const featureListEN = changes.length > 0
+                ? changes.map(f => `*   **${f.trim()}**`).join('\n')
+                : '*   **Routine maintenance**';
 
             // Indonesian Blog Content
             const idContent = `---
@@ -220,8 +230,9 @@ Thank you for using Lapeh Framework!
 
             execSync('git add .', { stdio: 'inherit' });
             execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' });
-            execSync('git push', { stdio: 'inherit' });
-            console.log('✅ Git push complete');
+            execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
+            execSync('git push && git push --tags', { stdio: 'inherit' });
+            console.log('✅ Git push & tag complete');
         } else {
             console.log('⏭️  Skipping Git push.');
         }
