@@ -2,7 +2,7 @@
 title: Rilis v3.0.3 - Update Version
 date: 2025-12-30
 author: Tim Lapeh
-description: Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2
+description: "Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2"
 ---
 
 # Rilis v3.0.3: Update Version

@@ -2,7 +2,7 @@
 title: Release v3.0.3 - Update Version
 date: 2025-12-30
 author: Lapeh Team
-description: Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2
+description: "Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2"
 ---
 
 # Release v3.0.3: Update Version

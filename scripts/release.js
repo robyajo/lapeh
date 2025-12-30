@@ -171,7 +171,7 @@ Terima kasih telah menggunakan Lapeh Framework!
 title: Release v${newVersion} - ${titleEN}
 date: ${date}
 author: Lapeh Team
-description: ${descriptionEN.replace(/: /g, ':')}
+description: "${descriptionEN.replace(/"/g, '\\"')}"
 ---
 
 # Release v${newVersion}: ${titleEN}
