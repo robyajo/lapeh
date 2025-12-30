@@ -195,10 +195,10 @@ async function main() {
 
             // Indonesian Blog Content
             const idContent = `---
-title: Rilis v${newVersion} - ${titleID}
+title: "Rilis v${newVersion} - ${titleID.replace(/"/g, '\\"')}"
 date: ${date}
 author: Tim Lapeh
-description: ${descriptionID.replace(/: /g, ':')}
+description: "${descriptionID.replace(/"/g, '\\"')}"
 ---
 
 # Rilis v${newVersion}: ${titleID}
@@ -224,7 +224,7 @@ Terima kasih telah menggunakan Lapeh Framework!
 
             // English Blog Content
             const enContent = `---
-title: Release v${newVersion} - ${titleEN}
+title: "Release v${newVersion} - ${titleEN.replace(/"/g, '\\"')}"
 date: ${date}
 author: Lapeh Team
 description: "${descriptionEN.replace(/"/g, '\\"')}"

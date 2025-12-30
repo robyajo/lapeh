@@ -1,5 +1,5 @@
 ---
-title: Release v3.0.5 - fix: escape description in v3.0.3 blog posts and update release script
+title: "Release v3.0.5 - fix: escape description in v3.0.3 blog posts and update release script"
 date: 2025-12-30
 author: Lapeh Team
 description: "Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error"
