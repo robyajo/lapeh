@@ -84,7 +84,7 @@ npm run dev
 
 > **Catatan**: Perintah `npm run dev` sekarang menggunakan CLI internal framework (`lapeh dev`), memberikan pengalaman development yang lebih stabil dan terstandarisasi. Core framework (`bin` dan `lib`) tidak lagi memenuhi root folder Anda, tetapi tersimpan aman sebagai dependency.
 
-Server akan berjalan di `http://localhost:4000`.
+Server akan berjalan di `http://localhost:8000`.
 
 ### 🛡️ Keamanan & Pembaruan
 
@@ -296,7 +296,7 @@ server {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_pass http://127.0.0.1:4000;
+    proxy_pass http://127.0.0.1:8000;
   }
 }
 ```
@@ -335,8 +335,8 @@ sudo systemctl reload apache2
   <Proxy *>
     Require all granted
   </Proxy>
-  ProxyPass / http://127.0.0.1:4000/
-  ProxyPassReverse / http://127.0.0.1:4000/
+  ProxyPass / http://127.0.0.1:8000/
+  ProxyPassReverse / http://127.0.0.1:8000/
   ErrorLog ${APACHE_LOG_DIR}/lapeh-error.log
   CustomLog ${APACHE_LOG_DIR}/lapeh-access.log combined
 </VirtualHost>
@@ -353,5 +353,5 @@ sudo systemctl reload apache2
 ### 6) Checklist Produksi
 
 - `pm2 status` menunjukkan proses hidup
-- Proxy (Nginx/Apache) menuju port aplikasi (default 4000)
+- Proxy (Nginx/Apache) menuju port aplikasi (default 8000)
 - `.env` aman dan tidak di-commit ke repository

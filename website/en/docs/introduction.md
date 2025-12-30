@@ -19,7 +19,7 @@ In the Node.js ecosystem, developers often experience "Decision Fatigue":
 
 Lapeh answers all of that with **Opinionated Defaults**:
 
-1.  **Database**: Agnostic (Free choice: Prisma, TypeORM, Drizzle, etc).
+1.  **ORM**: Prisma (Current industry standard).
 2.  **Validation**: Zod (Powerful and readable schema validation).
 3.  **Structure**: Modular MVC (Controller, Model, Route separated but cohesive).
 4.  **Auth**: Ready-to-use JWT + RBAC (Role Based Access Control).

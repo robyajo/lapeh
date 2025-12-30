@@ -107,14 +107,14 @@ Anda bisa menggabungkannya dalam satu file `ecosystem.config.js`.
 
 ### 8. Reverse Proxy (Nginx)
 
-Jangan expose port 4000 langsung. Gunakan Nginx di depannya.
+Jangan expose port 8000 langsung. Gunakan Nginx di depannya.
 Config Nginx block:
 
 ```nginx
 server {
     server_name api.domain-anda.com;
     location / {
-        proxy_pass http://localhost:4000;
+        proxy_pass http://localhost:8000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -141,7 +141,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-EXPOSE 4000
+EXPOSE 8000
 CMD ["npm", "run", "start:prod"]
 ```
 
@@ -149,7 +149,7 @@ CMD ["npm", "run", "start:prod"]
 
 ```bash
 docker build -t my-lapeh-app .
-docker run -p 4000:4000 --env-file .env my-lapeh-app
+docker run -p 8000:8000 --env-file .env my-lapeh-app
 ```
 
 ## Strategi 3: PaaS (Railway / Render / Vercel)

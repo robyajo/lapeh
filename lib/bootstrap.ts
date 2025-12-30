@@ -159,7 +159,7 @@ export async function bootstrap() {
   }
 
   const app = await createApp();
-  const port = process.env.PORT ? Number(process.env.PORT) : 4000;
+  const port = process.env.PORT ? Number(process.env.PORT) : 8000;
   const server = http.createServer(app);
 
   initRealtime(server);

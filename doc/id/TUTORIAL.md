@@ -1,6 +1,7 @@
 # Tutorial: Membangun API Perpustakaan
 
 Dalam tutorial ini, kita akan membangun fitur "Manajemen Buku" sederhana menggunakan semua fitur unggulan Lapeh Framework:
+
 1.  **CLI** untuk generate kode.
 2.  **Validator** untuk validasi input.
 3.  **Fast Serialization** untuk respon cepat.
@@ -16,6 +17,7 @@ npm run make:module Book
 ```
 
 Framework akan membuat:
+
 - `src/controllers/bookController.ts`
 - `src/routes/book.ts`
 
@@ -49,16 +51,22 @@ const bookSchema = {
     title: { type: "string" },
     author: { type: "string" },
     isbn: { type: "string" },
-    stock: { type: "number" }
-  }
+    stock: { type: "number" },
+  },
 };
 
 // 2. Buat Serializer
-const bookDetailSerializer = getSerializer("book-detail", createResponseSchema(bookSchema));
-const bookListSerializer = getSerializer("book-list", createResponseSchema({
-  type: "array",
-  items: bookSchema
-}));
+const bookDetailSerializer = getSerializer(
+  "book-detail",
+  createResponseSchema(bookSchema)
+);
+const bookListSerializer = getSerializer(
+  "book-list",
+  createResponseSchema({
+    type: "array",
+    items: bookSchema,
+  })
+);
 ```
 
 ### Implementasi Create (dengan Validasi)
@@ -70,7 +78,7 @@ export async function createBook(req: Request, res: Response) {
     title: "required|string|min:3",
     author: "required|string",
     isbn: "required|string",
-    stock: "required|number|min:1"
+    stock: "required|number|min:1",
   });
 
   if (validator.fails()) {
@@ -80,7 +88,7 @@ export async function createBook(req: Request, res: Response) {
   // 2. Simpan Data (In-Memory)
   const newBook: Book = {
     id: Date.now().toString(),
-    ...validator.validated()
+    ...validator.validated(),
   };
   books.push(newBook);
 
@@ -113,6 +121,7 @@ export default router;
 ## Langkah 4: Test API Anda
 
 Jalankan server:
+
 ```bash
 npm run dev
 ```
@@ -120,15 +129,17 @@ npm run dev
 Test dengan curl atau Postman:
 
 **Buat Buku Baru:**
+
 ```bash
-curl -X POST http://localhost:4000/api/book \
+curl -X POST http://localhost:8000/api/book \
   -H "Content-Type: application/json" \
   -d '{"title":"Panduan Lapeh", "author":"Tim Lapeh", "isbn":"12345", "stock":10}'
 ```
 
 **List Buku:**
+
 ```bash
-curl http://localhost:4000/api/book
+curl http://localhost:8000/api/book
 ```
 
 Selamat! Anda telah membangun API yang cepat dan tervalidasi tanpa terjebak dalam konfigurasi database yang rumit.

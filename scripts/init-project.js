@@ -53,7 +53,7 @@ const selectOption = async (query, options) => {
       envContent = fs.readFileSync(envExample, "utf8");
     } else {
       // Fallback minimal env if example missing
-      envContent = `PORT=4000\nJWT_SECRET="replace_this"\n`;
+      envContent = `PORT=8000\nJWT_SECRET="replace_this"\n`;
     }
 
     fs.writeFileSync(envFile, envContent);

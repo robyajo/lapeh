@@ -107,14 +107,14 @@ You can combine multiple Node.js apps in one `ecosystem.config.js`.
 
 ### 8. Reverse Proxy (Nginx)
 
-Do not expose port 4000 directly. Use Nginx in front of it.
+Do not expose port 8000 directly. Use Nginx in front of it.
 Nginx block config:
 
 ```nginx
 server {
     server_name api.your-domain.com;
     location / {
-        proxy_pass http://localhost:4000;
+        proxy_pass http://localhost:8000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -141,7 +141,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-EXPOSE 4000
+EXPOSE 8000
 CMD ["npm", "run", "start:prod"]
 ```
 
@@ -149,7 +149,7 @@ CMD ["npm", "run", "start:prod"]
 
 ```bash
 docker build -t my-lapeh-app .
-docker run -p 4000:4000 --env-file .env my-lapeh-app
+docker run -p 8000:8000 --env-file .env my-lapeh-app
 ```
 
 ## Strategy 3: PaaS (Railway / Render / Vercel)

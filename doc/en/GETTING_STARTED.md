@@ -43,7 +43,7 @@ This script will automatically perform the following:
 npm run dev
 ```
 
-The server will run at `http://localhost:4000` (or the port specified in `.env`).
+The server will run at `http://localhost:8000` (or the port specified in `.env`).
 
 ## Directory Structure
 
@@ -72,7 +72,7 @@ The `.env` file stores important configurations. Here are the key variables:
 
 ```ini
 # Server
-PORT=4000
+PORT=8000
 NODE_ENV=development
 
 # Security
