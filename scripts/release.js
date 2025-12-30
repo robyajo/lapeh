@@ -142,7 +142,7 @@ async function main() {
 title: Rilis v${newVersion} - ${titleID}
 date: ${date}
 author: Tim Lapeh
-description: ${descriptionID}
+description: ${descriptionID.replace(/: /g, ':')}
 ---
 
 # Rilis v${newVersion}: ${titleID}
@@ -171,7 +171,7 @@ Terima kasih telah menggunakan Lapeh Framework!
 title: Release v${newVersion} - ${titleEN}
 date: ${date}
 author: Lapeh Team
-description: ${descriptionEN}
+description: ${descriptionEN.replace(/: /g, ':')}
 ---
 
 # Release v${newVersion}: ${titleEN}

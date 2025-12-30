@@ -2,7 +2,7 @@
 title: Release v3.0.4 - Update Version
 date: 2025-12-30
 author: Lapeh Team
-description: Includes: Update Version
+description: "Includes: Update Version"
 ---
 
 # Release v3.0.4: Update Version
