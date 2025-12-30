@@ -1,6 +1,6 @@
 {
   "name": "lapeh-docs",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Documentation website for Lapeh Framework",
   "scripts": {
     "dev": "node scripts/sync-docs.js && vitepress dev",
