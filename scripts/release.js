@@ -290,10 +290,30 @@ Thank you for using Lapeh Framework!
                 ? `chore: release v${newVersion} - ${blogTitleEN}`
                 : `chore: release v${newVersion}`;
 
-            execSync('git add .', { stdio: 'inherit' });
-            execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' });
+            try {
+                execSync('git add .', { stdio: 'inherit' });
+                execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' });
+            } catch (e) {
+                console.log('⚠️  No changes to commit or commit failed. Continuing...');
+            }
+
+            try {
+                // Delete tag if it exists locally to avoid "already exists" error
+                execSync(`git tag -d v${newVersion}`, { stdio: 'ignore' });
+            } catch (e) {
+                // Ignore if tag doesn't exist
+            }
+
             execSync(`git tag v${newVersion}`, { stdio: 'inherit' });
-            execSync(`git push origin HEAD && git push origin v${newVersion}`, { stdio: 'inherit' });
+            execSync(`git push origin HEAD`, { stdio: 'inherit' });
+            
+            try {
+                execSync(`git push origin v${newVersion}`, { stdio: 'inherit' });
+            } catch (e) {
+                 console.log('⚠️  Tag push failed. Trying force push (updating existing tag)...');
+                 execSync(`git push origin v${newVersion} --force`, { stdio: 'inherit' });
+            }
+            
             console.log('✅ Git push & tag complete');
         } else {
             console.log('⏭️  Skipping Git push.');
