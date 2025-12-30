@@ -4,6 +4,16 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
+## 🚀 [Rilis v3.0.5: fix: escape description in v3.0.3 blog posts and update release script](./release-v3.0.5)
+
+_31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error [Baca selengkapnya →](./release-v3.0.5)
+
+---
+
+---
+
 ## 🚀 [Rilis v3.0.4: Update Version](./release-v3.0.4)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_

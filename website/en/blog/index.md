@@ -4,6 +4,16 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Release v3.0.5: fix: escape description in v3.0.3 blog posts and update release script](./release-v3.0.5)
+
+_December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error [Read more →](./release-v3.0.5)
+
+---
+
+---
+
 ## 🚀 [Release v3.0.4: Update Version](./release-v3.0.4)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_

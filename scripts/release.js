@@ -81,10 +81,10 @@ function generateAutoCommitMessage() {
 
         const files = status.split('\n').map(line => line.substring(3).trim());
         
-        const hasDocs = files.some(f => f.startsWith('website/') || f.endsWith('.md'));
+        const hasDocs = files.some(f => f.startsWith('website/') || f.startsWith('doc/') || f.endsWith('.md'));
         const hasScripts = files.some(f => f.startsWith('scripts/'));
         const hasPackage = files.some(f => f.includes('package.json'));
-        const hasSrc = files.some(f => !f.startsWith('website/') && !f.startsWith('scripts/') && !f.includes('package.json') && !f.startsWith('.'));
+        const hasSrc = files.some(f => !f.startsWith('website/') && !f.startsWith('doc/') && !f.startsWith('scripts/') && !f.includes('package.json') && !f.startsWith('.'));
 
         let types = [];
         if (hasDocs) types.push('docs');

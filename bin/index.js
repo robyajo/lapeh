@@ -133,7 +133,7 @@ sendTelemetry(command || 'init');
 
 switch (command) {
   case 'dev':
-    runDev();
+    (async () => { await runDev(); })();
     break;
   case 'start':
     (async () => { await runStart(); })();
@@ -155,8 +155,69 @@ switch (command) {
     break;
 }
 
-function runDev() {
+async function checkUpdate() {
+  try {
+    const pkg = require(path.join(__dirname, '../package.json'));
+    const currentVersion = pkg.version;
+    
+    // Fetch latest version from npm registry
+    const latestVersion = await new Promise((resolve) => {
+         const https = require('https');
+         const req = https.get('https://registry.npmjs.org/lapeh/latest', {
+             headers: { 'User-Agent': 'Lapeh-CLI' },
+             timeout: 1500 // 1.5s timeout
+         }, (res) => {
+             let data = '';
+             res.on('data', chunk => data += chunk);
+             res.on('end', () => {
+                 try {
+                     const json = JSON.parse(data);
+                     resolve(json.version);
+                 } catch (e) {
+                     resolve(null);
+                 }
+             });
+         });
+         
+         req.on('error', () => resolve(null));
+         req.on('timeout', () => {
+             req.destroy();
+             resolve(null);
+         });
+    });
+
+    if (latestVersion && latestVersion !== currentVersion) {
+        const currentParts = currentVersion.split('.').map(Number);
+        const latestParts = latestVersion.split('.').map(Number);
+        
+        let isOutdated = false;
+        for(let i=0; i<3; i++) {
+            if (latestParts[i] > currentParts[i]) {
+                isOutdated = true;
+                break;
+            } else if (latestParts[i] < currentParts[i]) {
+                break;
+            }
+        }
+        
+        if (isOutdated) {
+            console.log('\n');
+            console.log('\x1b[33m┌────────────────────────────────────────────────────────────┐\x1b[0m');
+            console.log(`\x1b[33m│\x1b[0m  \x1b[1mUpdate available!\x1b[0m \x1b[31m${currentVersion}\x1b[0m → \x1b[32m${latestVersion}\x1b[0m                           \x1b[33m│\x1b[0m`);
+            console.log(`\x1b[33m│\x1b[0m  Run \x1b[36mnpm install lapeh@latest\x1b[0m to update                  \x1b[33m│\x1b[0m`);
+            console.log(`\x1b[33m│\x1b[0m  Then run \x1b[36mnpx lapeh upgrade\x1b[0m to sync files               \x1b[33m│\x1b[0m`);
+            console.log('\x1b[33m└────────────────────────────────────────────────────────────┘\x1b[0m');
+            console.log('\n');
+        }
+    }
+  } catch (e) {
+    // Ignore errors during update check
+  }
+}
+
+async function runDev() {
   console.log('🚀 Starting Lapeh in development mode...');
+  await checkUpdate();
   try {
     const tsNodePath = require.resolve('ts-node/register');
     const tsConfigPathsPath = require.resolve('tsconfig-paths/register');
@@ -305,6 +366,12 @@ async function upgradeProject() {
     'src/redis.ts'
   ];
 
+  const updateStats = {
+      updated: [],
+      created: [],
+      removed: []
+  };
+
   function syncDirectory(src, dest, clean = false) {
     if (!fs.existsSync(src)) return;
     if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
@@ -316,11 +383,28 @@ async function upgradeProject() {
       srcEntryNames.add(entry.name);
       const srcPath = path.join(src, entry.name);
       const destPath = path.join(dest, entry.name);
+      const relativePath = path.relative(currentDir, destPath);
 
       if (entry.isDirectory()) {
         syncDirectory(srcPath, destPath, clean);
       } else {
-        fs.copyFileSync(srcPath, destPath);
+        let shouldCopy = true;
+        
+        if (fs.existsSync(destPath)) {
+            const srcContent = fs.readFileSync(srcPath);
+            const destContent = fs.readFileSync(destPath);
+            if (srcContent.equals(destContent)) {
+                shouldCopy = false;
+            } else {
+                updateStats.updated.push(relativePath);
+            }
+        } else {
+            updateStats.created.push(relativePath);
+        }
+
+        if (shouldCopy) {
+            fs.copyFileSync(srcPath, destPath);
+        }
       }
     }
 
@@ -329,7 +413,11 @@ async function upgradeProject() {
       for (const entry of destEntries) {
         if (!srcEntryNames.has(entry.name)) {
             const destPath = path.join(dest, entry.name);
+            const relativePath = path.relative(currentDir, destPath);
+            
             console.log(`🗑️  Removing obsolete file/directory: ${destPath}`);
+            updateStats.removed.push(relativePath);
+            
             if (entry.isDirectory()) {
                 fs.rmSync(destPath, { recursive: true, force: true });
             } else {
@@ -343,6 +431,7 @@ async function upgradeProject() {
   for (const item of filesToSync) {
     const srcPath = path.join(templateDir, item);
     const destPath = path.join(currentDir, item);
+    const relativePath = item; // Since item is relative to templateDir/currentDir
     
     if (fs.existsSync(srcPath)) {
       const stats = fs.statSync(srcPath);
@@ -350,10 +439,26 @@ async function upgradeProject() {
           console.log(`🔄 Syncing directory ${item}...`);
           syncDirectory(srcPath, destPath, item === 'lib');
       } else {
-          console.log(`🔄 Updating file ${item}...`);
+          console.log(`🔄 Checking file ${item}...`);
           const destDir = path.dirname(destPath);
           if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
-          fs.copyFileSync(srcPath, destPath);
+          
+          let shouldCopy = true;
+          if (fs.existsSync(destPath)) {
+              const srcContent = fs.readFileSync(srcPath);
+              const destContent = fs.readFileSync(destPath);
+              if (srcContent.equals(destContent)) {
+                  shouldCopy = false;
+              } else {
+                  updateStats.updated.push(relativePath);
+              }
+          } else {
+              updateStats.created.push(relativePath);
+          }
+
+          if (shouldCopy) {
+            fs.copyFileSync(srcPath, destPath);
+          }
       }
     }
   }
@@ -430,7 +535,27 @@ async function upgradeProject() {
   }
 
   console.log('\n✅ Upgrade completed successfully!');
-  console.log('   Please check your .env file against .env.example for any new required variables.');
+  
+  if (updateStats.created.length > 0) {
+      console.log('\n✨ Created files:');
+      updateStats.created.forEach(f => console.log(`   \x1b[32m+ ${f}\x1b[0m`));
+  }
+  
+  if (updateStats.updated.length > 0) {
+      console.log('\n📝 Updated files:');
+      updateStats.updated.forEach(f => console.log(`   \x1b[33m~ ${f}\x1b[0m`));
+  }
+
+  if (updateStats.removed.length > 0) {
+      console.log('\n🗑️ Removed files:');
+      updateStats.removed.forEach(f => console.log(`   \x1b[31m- ${f}\x1b[0m`));
+  }
+
+  if (updateStats.created.length === 0 && updateStats.updated.length === 0 && updateStats.removed.length === 0) {
+      console.log('   No files were changed.');
+  }
+
+  console.log('\n   Please check your .env file against .env.example for any new required variables.');
 }
 
 function createProject(skipFirstArg = false) {
