@@ -645,7 +645,15 @@ function createProject(skipFirstArg = false) {
         if (ignoreList.includes(entry.name)) continue;
         const srcPath = path.join(src, entry.name);
         const destPath = path.join(dest, entry.name);
-
+        
+        // Clean storage/logs: skip everything except .gitkeep
+        // Check if we are inside storage/logs
+        const relPath = path.relative(templateDir, srcPath);
+        const isInLogs = relPath.includes(path.join('storage', 'logs')) || relPath.includes('storage/logs') || relPath.includes('storage\\logs');
+        
+        if (isInLogs && !entry.isDirectory() && entry.name !== '.gitkeep') {
+            continue; 
+        }
 
         if (entry.isDirectory()) {
           fs.mkdirSync(destPath);

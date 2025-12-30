@@ -264,12 +264,18 @@ Thank you for using Lapeh Framework!
         // 3. Question: Documentation
         const updateDocs = await question('\n2. Apa Anda ingin update dokumentasi? (y/n): ');
         if (updateDocs.toLowerCase() === 'y') {
-             console.log('\n📚 Documentation Reminder:');
+             console.log('\n📚 Documentation Update:');
+             console.log('Sistem akan menjalankan sinkronisasi otomatis:');
+             console.log('  - Menyalin file dari `doc/id` ke `website/docs`');
+             console.log('  - Menyalin file dari `doc/en` ke `website/en/docs`');
+             console.log('  - Mengubah nama file menjadi format URL-friendly (contoh: GETTING_STARTED.md -> getting-started.md)');
+
+             console.log('\n⚠️  Manual Action Required (If applicable):');
              console.log('Jika ada package/method baru, silakan update file berikut secara manual sekarang:');
              console.log('  - website/docs/packages.md');
              console.log('  - website/docs/api.md');
              
-             await question('Tekan Enter jika Anda sudah selesai update manual (atau jika tidak diperlukan)...');
+             await question('Tekan Enter untuk menjalankan sinkronisasi otomatis (setelah Anda selesai update manual)...');
 
              console.log('🔄 Syncing documentation...');
              execSync('node scripts/sync-docs.js', { cwd: websiteDir, stdio: 'inherit' });

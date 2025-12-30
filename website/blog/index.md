@@ -4,6 +4,16 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
+## 🚀 [Rilis v3.0.6: Maintenance Release](./release-v3.0.6)
+
+_31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Routine maintenance and updates. [Baca selengkapnya →](./release-v3.0.6)
+
+---
+
+---
+
 ## 🚀 [Rilis v3.0.5: fix: escape description in v3.0.3 blog posts and update release script](./release-v3.0.5)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
