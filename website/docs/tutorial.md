@@ -4,44 +4,12 @@ Dalam tutorial ini, kita akan membangun fitur "Manajemen Buku" sederhana menggun
 1.  **CLI** untuk generate kode.
 2.  **Validator** untuk validasi input.
 3.  **Fast Serialization** untuk respon cepat.
-4.  **RBAC** untuk proteksi delete (Admin only).
 
-## Langkah 1: Generate Model Database
+> **Catatan**: Tutorial ini menggunakan array in-memory untuk penyimpanan data agar tetap sederhana. Lapeh v3.0.0 bersifat database-agnostic, jadi Anda bebas menggantinya dengan Prisma, TypeORM, atau library database lainnya.
 
-Kita butuh tabel `books`. Gunakan CLI `make:model`.
+## Langkah 1: Generate Module (Controller & Route)
 
-```bash
-npm run make:model Book
-```
-
-File baru akan muncul di `src/models/book.prisma`. Edit file tersebut:
-
-```prisma
-// src/models/book.prisma
-
-model Book {
-  id          BigInt   @id @default(autoincrement())
-  title       String
-  author      String
-  isbn        String   @unique
-  publishedAt DateTime
-  stock       Int      @default(0)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  @@map("books")
-}
-```
-
-Terapkan perubahan ke database:
-
-```bash
-npm run prisma:migrate
-```
-
-## Langkah 2: Generate Module (Controller & Route)
-
-Kita buat controller dan route sekaligus.
+Kita akan membuat controller dan route untuk fitur Buku.
 
 ```bash
 npm run make:module Book
@@ -51,24 +19,33 @@ Framework akan membuat:
 - `src/controllers/bookController.ts`
 - `src/routes/book.ts`
 
-## Langkah 3: Implementasi Controller
+## Langkah 2: Implementasi Controller
 
-Buka `src/controllers/bookController.ts` dan kita implementasikan fitur **Create** dan **List** dengan standar framework.
+Buka `src/controllers/bookController.ts` dan kita implementasikan fitur **Create** dan **List**.
 
-### Setup Import & Serializer
+### Setup Import & Data Store
 
 ```typescript
 import { Request, Response } from "express";
-import { prisma } from "@/core/database";
 import { sendFastSuccess, sendError } from "@/utils/response";
 import { Validator } from "@/utils/validator";
 import { getSerializer, createResponseSchema } from "@/core/serializer";
+
+// Simpan data di memory (Array sederhana)
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  isbn: string;
+  stock: number;
+}
+const books: Book[] = [];
 
 // 1. Definisikan Schema Output (untuk Fastify Serialization)
 const bookSchema = {
   type: "object",
   properties: {
-    id: { type: "string" }, // BigInt -> String
+    id: { type: "string" },
     title: { type: "string" },
     author: { type: "string" },
     isbn: { type: "string" },
@@ -92,101 +69,66 @@ export async function createBook(req: Request, res: Response) {
   const validator = await Validator.make(req.body, {
     title: "required|string|min:3",
     author: "required|string",
-    isbn: "required|string|unique:books,isbn", // Cek unik di tabel books
-    stock: "required|number|min:1",
-    publishedAt: "required|string" // Format tanggal ISO
+    isbn: "required|string",
+    stock: "required|number|min:1"
   });
 
   if (validator.fails()) {
     return sendError(res, 400, "Validation Error", validator.errors());
   }
 
-  const data = validator.validated();
+  // 2. Simpan Data (In-Memory)
+  const newBook: Book = {
+    id: Date.now().toString(),
+    ...validator.validated()
+  };
+  books.push(newBook);
 
-  // 2. Simpan ke Database
-  const book = await prisma.book.create({
-    data: {
-      title: data.title,
-      author: data.author,
-      isbn: data.isbn,
-      stock: data.stock,
-      publishedAt: new Date(data.publishedAt)
-    }
-  });
+  // 3. Kirim Response (Serialized)
+  return sendFastSuccess(res, bookDetailSerializer(newBook), 201);
+}
 
-  // 3. Return Response Cepat
-  return sendFastSuccess(res, 201, bookDetailSerializer, {
-    status: "success",
-    message: "Buku berhasil ditambahkan",
-    data: { ...book, id: book.id.toString() } // Konversi BigInt manual jika perlu
-  });
+export async function listBooks(req: Request, res: Response) {
+  // Return semua buku
+  return sendFastSuccess(res, bookListSerializer(books));
 }
 ```
 
-### Implementasi List (High Performance)
+## Langkah 3: Register Route
 
-```typescript
-export async function getBooks(req: Request, res: Response) {
-  const books = await prisma.book.findMany({
-    take: 50, // Limit 50
-    orderBy: { created_at: "desc" }
-  });
-
-  // Convert BigInt to string sebelum passing ke serializer (opsional, tapi aman)
-  const safeBooks = books.map(b => ({ ...b, id: b.id.toString() }));
-
-  return sendFastSuccess(res, 200, bookListSerializer, {
-    status: "success",
-    message: "Daftar buku",
-    data: safeBooks
-  });
-}
-```
-
-## Langkah 4: Daftarkan Route & Proteksi
-
-Buka `src/routes/book.ts` (atau file yang digenerate). Pastikan route terhubung dan tambahkan middleware auth.
+Buka `src/routes/book.ts`. CLI sudah membuat struktur dasarnya. Kita hanya perlu menghubungkannya dengan fungsi controller kita.
 
 ```typescript
 import { Router } from "express";
-import { createBook, getBooks } from "../controllers/bookController";
-import { requireAuth, requireAdmin } from "../middleware/auth";
+import { createBook, listBooks } from "../controllers/bookController";
 
-export const bookRouter = Router();
+const router = Router();
 
-// Public route (bisa diakses siapa saja)
-bookRouter.get("/", getBooks);
+router.post("/", createBook);
+router.get("/", listBooks);
 
-// Admin only (Butuh login + role admin)
-bookRouter.post("/", requireAuth, requireAdmin, createBook);
+export default router;
 ```
 
-Terakhir, daftarkan router ini di `src/routes/index.ts` (jika belum otomatis):
-
-```typescript
-import { bookRouter } from "./book";
-// ...
-router.use("/books", bookRouter);
-```
-
-## Langkah 5: Testing
+## Langkah 4: Test API Anda
 
 Jalankan server:
 ```bash
 npm run dev
 ```
 
-Coba hit endpoint:
-1. **POST /api/books** (Tanpa token) -> 401 Unauthorized.
-2. **POST /api/books** (Token User Biasa) -> 403 Forbidden.
-3. **POST /api/books** (Token Admin + Data Invalid) -> 400 Validation Error.
-4. **POST /api/books** (Token Admin + Data Valid) -> 201 Created.
-5. **GET /api/books** -> 200 OK (Super Cepat).
+Test dengan curl atau Postman:
 
-## Kesimpulan
+**Buat Buku Baru:**
+```bash
+curl -X POST http://localhost:4000/api/book \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Panduan Lapeh", "author":"Tim Lapeh", "isbn":"12345", "stock":10}'
+```
 
-Dengan Lapeh Framework, Anda telah membuat API yang:
-- **Aman** (Validasi, Auth, RBAC).
-- **Cepat** (Fast Serialization).
-- **Rapi** (Struktur terstandarisasi).
-- **Mudah** (CLI Generator).
+**List Buku:**
+```bash
+curl http://localhost:4000/api/book
+```
+
+Selamat! Anda telah membangun API yang cepat dan tervalidasi tanpa terjebak dalam konfigurasi database yang rumit.

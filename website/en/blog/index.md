@@ -4,6 +4,16 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Release v3.0.3: Update Version](./release-v3.0.3)
+
+_December 30, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2 [Read more →](./release-v3.0.3)
+
+---
+
+---
+
 ## 🚀 [Release v3.0.1: CLI UX Improvements & Database-Agnostic Mode](./release-v3.0.1)
 
 _December 30, 2025_ • 👤 Lapeh Team • 🏷️ _Release_

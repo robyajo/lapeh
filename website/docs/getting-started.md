@@ -1,54 +1,91 @@
-# Memulai (Getting Started)
+# Getting Started with Lapeh Framework
 
-Selamat datang di dokumentasi Lapeh Framework! Panduan ini akan membantu Anda memulai proyek baru menggunakan Lapeh.
+Selamat datang di dokumentasi resmi **Lapeh Framework**. Panduan ini akan membantu Anda memulai instalasi, konfigurasi, dan pemahaman dasar tentang struktur proyek.
 
-## Prasyarat
+## Persyaratan Sistem
 
-Sebelum memulai, pastikan Anda telah menginstal:
+Sebelum memulai, pastikan sistem Anda memenuhi persyaratan berikut:
 
-- [Node.js](https://nodejs.org/) (versi 18 atau lebih baru)
-- [npm](https://www.npmjs.com/) (biasanya terinstal bersama Node.js)
+- **Node.js**: Versi 18.x atau lebih baru.
+- **Package Manager**: NPM (bawaan Node.js).
 
-## Instalasi & Pembuatan Proyek
+## Instalasi
 
-Anda dapat membuat proyek Lapeh baru dengan menjalankan perintah berikut di terminal Anda:
+Cara termudah untuk memulai adalah menggunakan CLI generator `npx`.
+
+### 1. Buat Project Baru
+
+Jalankan perintah berikut di terminal Anda:
 
 ```bash
-npx lapeh-cli@latest create my-app
+# Setup Interaktif Standar
+npx lapeh@latest init nama-project-anda
 ```
 
-Ikuti petunjuk di terminal untuk mengonfigurasi proyek Anda.
+### 2. Setup Awal
 
-## Menjalankan Proyek
-
-Setelah proyek dibuat, masuk ke direktori proyek dan jalankan server pengembangan:
+Setelah project dibuat, masuk ke direktori project dan jalankan setup wizard:
 
 ```bash
-cd my-app
+cd nama-project-anda
+npm run first
+```
+
+Script ini akan melakukan hal-hal berikut secara otomatis:
+
+1.  Menyalin `.env.example` ke `.env`.
+2.  Menginstall semua dependency (`npm install`).
+3.  Membuat **JWT Secret** yang aman.
+
+### 3. Jalankan Server Development
+
+```bash
 npm run dev
 ```
 
-Server akan berjalan di `http://localhost:3000` (atau port yang Anda konfigurasi).
+Server akan berjalan di `http://localhost:4000` (atau port yang Anda tentukan di `.env`).
 
-## Pengujian Login (Default Credentials)
+## Struktur Direktori
 
-Untuk memudahkan pengembangan dan pengujian awal, proyek ini menyertakan data pengguna default di `database.json`. Anda dapat menggunakan kredensial berikut untuk menguji endpoint login:
+Berikut adalah struktur folder standar Lapeh Framework:
 
-- **Email**: `sa@sa.com`
-- **Password**: `password`
+```
+my-app/
+├── bin/                  # Script CLI untuk npx
+├── doc/                  # Dokumentasi proyek
+├── scripts/              # Script utility (Generator, Compiler)
+├── src/                  # Source code utama aplikasi
+│   ├── controllers/      # Logika bisnis (Handler request)
+│   ├── core/             # Konfigurasi inti (Redis, Server)
+│   ├── middleware/       # Middleware Express (Auth, RateLimit)
+│   ├── routes/           # Definisi routing API
+│   ├── utils/            # Helper function (Response, Validator)
+│   └── index.ts          # Entry point aplikasi
+├── .env                  # Variabel lingkungan (Rahasia)
+├── package.json          # Dependensi & Script NPM
+└── tsconfig.json         # Konfigurasi TypeScript
+```
 
-Endpoint login biasanya tersedia di:
-`POST /api/v1/auth/login`
+## Konfigurasi Environment (.env)
 
-Gunakan kredensial ini untuk mendapatkan Access Token dan mulai menjelajahi API.
+File `.env` menyimpan konfigurasi penting. Berikut adalah variabel kunci:
 
-## Struktur Proyek
+```ini
+# Server
+PORT=4000
+NODE_ENV=development
 
-Berikut adalah gambaran singkat struktur proyek Lapeh:
+# Security
+JWT_SECRET="rahasia-super-panjang-dan-acak"
+ACCESS_TOKEN_EXPIRES_IN=3600 # 1 jam
 
-- `src/modules`: Berisi logika bisnis (Controllers, Services).
-- `src/routes`: Definisi rute API.
-- `lib/core`: Komponen inti framework.
-- `database.json`: Penyimpanan data sementara (JSON-based).
+# Redis (Opsional - otomatis mock jika tidak ada)
+REDIS_URL="redis://localhost:6379"
+NO_REDIS=false # Set true untuk memaksa mode mock
+```
 
-Selamat berkarya dengan Lapeh!
+## Langkah Selanjutnya
+
+- Pelajari cara menggunakan **[CLI Tools](CLI.md)** untuk mempercepat development.
+- Pahami **[Fitur & Konsep Inti](FEATURES.md)** framework.
+- Ikuti **[Tutorial Studi Kasus](TUTORIAL.md)** untuk membangun fitur nyata.

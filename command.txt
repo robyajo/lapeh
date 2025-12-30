@@ -74,7 +74,7 @@ D. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu d
  3. cari dan uji sampai semua prisma hilang dari package framework ini
  4. upgrade versi framework jadi 3.0.0
 
-E. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu dalam folder pengjujian) pastikan semua berjalan lancar
+F. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu dalam folder pengjujian) pastikan semua berjalan lancar
  1. buat project baru
  2. buat project baru --full
  3. buat project baru --default
@@ -84,3 +84,11 @@ E. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu d
  7. npm run build
  8. npm run start
  9. bersihkan semua project ujicoba setelah semuanya selesai
+
+G. ketika npm run release berikan saya pertanyaan 
+1. apa anda akan membuatkan blog untuk featur baru ini ?(ya maka sesuaikan konten yang akan di publis dan jika Tidak maka jangan buat kontent)
+enter 
+2. apa anda ingin update documentasi ?   (ya maka sesuaikan konten yang akan di publis dan jika Tidak maka jangan buat kontent)
+enter
+3. apa ingin pusbli ke git ? (Ya dan Tidak)
+4. apa ingin pusbli ke npm ? (Ya dan Tidak)

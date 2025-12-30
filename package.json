@@ -1,6 +1,6 @@
 {
   "name": "lapeh",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Framework API Express yang siap pakai (Standardized)",
   "engines": {
     "node": ">=18.0.0",
@@ -52,6 +52,7 @@
     "make:module": "node scripts/make-module.js",
     "make:modul": "node scripts/make-module.js",
     "config:clear": "node scripts/config-clear.js",
+    "release": "node scripts/release.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
