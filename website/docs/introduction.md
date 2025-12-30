@@ -19,7 +19,7 @@ Di ekosistem Node.js, developer sering mengalami "Decision Fatigue" (Kelelahan m
 
 Lapeh menjawab semua itu dengan **Opinionated Defaults**:
 
-1.  **ORM**: Prisma (Standar industri saat ini).
+1.  **Database**: Agnostic (Bebas pilih: Prisma, TypeORM, Drizzle, dll).
 2.  **Validasi**: Zod (Validasi skema yang kuat dan mudah dibaca).
 3.  **Struktur**: MVC Modular (Controller, Model, Route terpisah tapi kohesif).
 4.  **Auth**: JWT + RBAC (Role Based Access Control) siap pakai.
@@ -52,7 +52,7 @@ Bagaimana Lapeh menangani satu permintaan dari user?
 5.  **Auth Middleware** (Opsional): Cek token JWT & Role.
 6.  **Validator** (Opsional): Validasi input body/query.
 7.  **Controller**: Logika bisnis utama dijalankan.
-    - Panggil Database (Prisma).
+    - Panggil Database (via `db` adapter).
     - Panggil Cache (Redis).
 8.  **Serializer**: Data diformat & disanitasi (misal: hide password).
 9.  **Response**: JSON dikirim kembali ke user.

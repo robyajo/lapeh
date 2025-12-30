@@ -103,6 +103,26 @@ function generateAutoCommitMessage() {
     }
 }
 
+// Helper to extract changelog entry
+function extractChangelogEntry(filePath, version) {
+    try {
+        if (!fs.existsSync(filePath)) return null;
+        const content = fs.readFileSync(filePath, 'utf8');
+        // Regex to find the section for the version. 
+        // Matches "## [YYYY-MM-DD] ... vX.X.X ..." until the next "## ["
+        // We allow the version to be anywhere in the header line
+        const regex = new RegExp(`## \\[.*?\\] - .*?v${version}.*?([\\s\\S]*?)(?=\\n## \\[|$)`, 'i');
+        const match = content.match(regex);
+        
+        if (match && match[1]) {
+            return match[1].trim();
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
 async function main() {
     try {
         // 0. Quick Git Update Check
@@ -158,22 +178,48 @@ async function main() {
         let blogTitleEN = '';
 
         if (createBlog.toLowerCase() === 'y') {
-            console.log('\n🤖 Auto-detecting changes from Git...');
+            console.log('\n🤖 Auto-detecting changes from Git & Changelog...');
             const changes = getGitChanges();
             
-            // Heuristics for defaults
-            const defaultTitle = changes.length > 0 ? changes[0] : 'Maintenance Release';
-            const defaultDesc = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
-            const defaultFeatures = changes.join(', ');
+            // Try to read from CHANGELOG.md first
+            const changelogID = extractChangelogEntry(path.join(rootDir, 'doc/id/CHANGELOG.md'), newVersion);
+            const changelogEN = extractChangelogEntry(path.join(rootDir, 'doc/en/CHANGELOG.md'), newVersion);
 
-            // Use defaults directly
-            const titleID = defaultTitle;
-            const descriptionID = defaultDesc;
-            const featuresID = defaultFeatures;
+            let titleID, descriptionID, featuresID, featureListID;
+            let titleEN, descriptionEN, featuresEN, featureListEN;
 
-            const titleEN = defaultTitle;
-            const descriptionEN = defaultDesc;
-            const featuresEN = defaultFeatures;
+            if (changelogID) {
+                console.log('✅ Found entry in doc/id/CHANGELOG.md');
+                // Extract title from first line of changelog entry if possible, or use default
+                // Actually usually changelog entry body starts with ### Section.
+                // We'll use a generic title and the full body as content.
+                titleID = `Update Terbaru v${newVersion}`; 
+                // Try to find specific sections for description/features is hard without strict parsing.
+                // We will treat the entire changelog body as the "Features" section.
+                descriptionID = `Rilis versi ${newVersion} hadir dengan berbagai pembaruan dan perbaikan.`;
+                featureListID = changelogID; 
+            } else {
+                console.log('⚠️ No entry in doc/id/CHANGELOG.md, using git logs...');
+                titleID = changes.length > 0 ? changes[0] : 'Maintenance Release';
+                descriptionID = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
+                featureListID = changes.length > 0 
+                    ? changes.map(f => `*   **${f.trim()}**`).join('\n')
+                    : '*   **Routine maintenance**';
+            }
+
+            if (changelogEN) {
+                console.log('✅ Found entry in doc/en/CHANGELOG.md');
+                titleEN = `Latest Update v${newVersion}`;
+                descriptionEN = `Release version ${newVersion} comes with various updates and improvements.`;
+                featureListEN = changelogEN;
+            } else {
+                console.log('⚠️ No entry in doc/en/CHANGELOG.md, using git logs...');
+                titleEN = changes.length > 0 ? changes[0] : 'Maintenance Release';
+                descriptionEN = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
+                featureListEN = changes.length > 0
+                    ? changes.map(f => `*   **${f.trim()}**`).join('\n')
+                    : '*   **Routine maintenance**';
+            }
             
             blogTitleEN = titleEN; // Save for commit message
 
@@ -183,33 +229,20 @@ async function main() {
             const dateStringEn = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             
             const blogFileName = `release-v${newVersion}.md`;
-            
-            // Generate list items
-            const featureListID = changes.length > 0 
-                ? changes.map(f => `*   **${f.trim()}**`).join('\n')
-                : '*   **Routine maintenance**';
-                
-            const featureListEN = changes.length > 0
-                ? changes.map(f => `*   **${f.trim()}**`).join('\n')
-                : '*   **Routine maintenance**';
 
             // Indonesian Blog Content
             const idContent = `---
-title: "Rilis v${newVersion} - ${titleID.replace(/"/g, '\\"')}"
+title: "Rilis v${newVersion}"
 date: ${date}
 author: Tim Lapeh
 description: "${descriptionID.replace(/"/g, '\\"')}"
 ---
 
-# Rilis v${newVersion}: ${titleID}
-
-Kami dengan senang hati mengumumkan rilis **Lapeh Framework v${newVersion}**!
-
-## Apa yang Baru?
+# Rilis v${newVersion}
 
 ${descriptionID}
 
-### Fitur Utama 🚀
+## Rincian Perubahan 📝
 
 ${featureListID}
 
@@ -224,21 +257,17 @@ Terima kasih telah menggunakan Lapeh Framework!
 
             // English Blog Content
             const enContent = `---
-title: "Release v${newVersion} - ${titleEN.replace(/"/g, '\\"')}"
+title: "Release v${newVersion}"
 date: ${date}
 author: Lapeh Team
 description: "${descriptionEN.replace(/"/g, '\\"')}"
 ---
 
-# Release v${newVersion}: ${titleEN}
-
-We are excited to announce the release of **Lapeh Framework v${newVersion}**!
-
-## What's New?
+# Release v${newVersion}
 
 ${descriptionEN}
 
-### Key Features 🚀
+## Change Details 📝
 
 ${featureListEN}
 

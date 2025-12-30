@@ -52,7 +52,7 @@ How does Lapeh handle a single request from a user?
 5.  **Auth Middleware** (Optional): Check JWT token & Role.
 6.  **Validator** (Optional): Validate body/query input.
 7.  **Controller**: Main business logic executed.
-    - Call Database (Prisma).
+    - Call Database (via `db` adapter).
     - Call Cache (Redis).
 8.  **Serializer**: Data formatted & sanitized (e.g., hide password).
 9.  **Response**: JSON sent back to user.

@@ -2,6 +2,17 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-30] - Tuesday, December 30, 2025 - Documentation & CLI (v3.0.7)
+
+### 📚 Documentation
+
+- **Project Structure Guide**: Comprehensive update to `STRUCTURE.md` to accurately reflect the No-ORM architecture and Core folder separation.
+- **Scripts Documentation**: Added detailed explanation for `release.js` and `make-module.js` automation scripts.
+
+### 🛠️ CLI Improvements
+
+- **Cleanup**: Improved `init` and `upgrade` commands to better handle legacy configuration files.
+
 ## [2025-12-30] - Tuesday, December 30, 2025 - Major Release v3.0.0 (No-ORM)
 
 ### ⚠️ Breaking Changes
@@ -17,6 +28,10 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 - **In-Memory Mock Data**: Built-in modules (Auth, RBAC, Pets) now use in-memory dummy data for demonstration without database setup.
 - **Redis Caching**: Redis caching implementation on Pets controller.
 - **Documentation**: Comprehensive update to documentation to reflect database agnostic philosophy.
+
+## ⚠️ Deprecated Versions
+
+Starting from release v3.0.0, all previous versions (v1.x and v2.x) are considered **DEPRECATED**. There will be no further feature updates or bug fixes for these versions unless for critical security issues. Users are strongly advised to migrate to v3.0.0.
 
 ## [2025-12-29] - Monday, December 29, 2025 - CLI Init Bug Fix (v2.6.7)
 
