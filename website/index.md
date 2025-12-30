@@ -7,7 +7,7 @@ hero:
   image:
     src: /hero.png
     alt: Lapeh Framework
-  tagline: "Cepat, Terstandarisasi, dan Siap Produksi. Dibangun di atas Express & Prisma."
+  tagline: "Cepat, Terstandarisasi, dan Siap Produksi. Dibangun di atas Express & TypeScript."
   actions:
     - theme: brand
       text: Mulai Sekarang

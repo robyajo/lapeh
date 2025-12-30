@@ -14,7 +14,7 @@ Artikel ini akan membahas perubahan struktur direktori dan bagaimana hal ini mem
 
 ## Apa itu Modular Architecture?
 
-Alih-alih memisahkan file berdasarkan *jenisnya* (semua controller di folder `controllers/`, semua model di `models/`), kami sekarang mengelompokkan file berdasarkan **Fitur**.
+Alih-alih memisahkan file berdasarkan _jenisnya_ (semua controller di folder `controllers/`, semua model di `models/`), kami sekarang mengelompokkan file berdasarkan **Fitur**.
 
 ### Struktur Lama (Layered)
 
@@ -24,8 +24,8 @@ src/
     authController.ts
     productController.ts
   models/
-    user.prisma
-    product.prisma
+    user.model.ts
+    product.model.ts
 ```
 
 Jika Anda ingin mengubah fitur "Product", Anda harus melompat-lompat antara folder `controllers` dan `models`.
@@ -37,13 +37,14 @@ src/
   modules/
     Auth/
       auth.controller.ts
-      auth.prisma
+      auth.model.ts
     Product/
       product.controller.ts
-      product.prisma
+      product.model.ts
 ```
 
 Sekarang, segala sesuatu yang berhubungan dengan "Auth" ada di satu tempat. Ini membuat kode lebih:
+
 1.  **Portable**: Mudah dipindahkan atau dicopy ke project lain.
 2.  **Maintainable**: Anda fokus pada satu folder saat mengerjakan satu fitur.
 3.  **Scalable**: Tim yang berbeda bisa mengerjakan modul yang berbeda tanpa konflik file.
@@ -51,20 +52,24 @@ Sekarang, segala sesuatu yang berhubungan dengan "Auth" ada di satu tempat. Ini 
 ## Perubahan Penting Lainnya
 
 ### 1. Folder `src/config/`
+
 Kami menambahkan folder khusus untuk konfigurasi statis aplikasi.
+
 - `app.ts`: Konfigurasi umum.
 - `cors.ts`: Pengaturan keamanan CORS.
 
 ### 2. Generator Otomatis: `make-module`
+
 Karena strukturnya berubah, cara membuat file baru juga berubah. Kami menyediakan script baru:
 
 ```bash
 npm run make-module NamaFitur
 ```
 
-Perintah ini akan otomatis membuatkan folder `src/modules/NamaFitur` lengkap dengan controller dan file prisma template-nya.
+Perintah ini akan otomatis membuatkan folder `src/modules/NamaFitur` lengkap dengan controller dan file model template-nya.
 
 ### 3. CLI Telemetry & Tracking
+
 Kami juga telah memperbarui sistem tracking di dashboard admin. Kini Anda bisa melihat versi Lapeh CLI mana yang paling banyak digunakan oleh komunitas, membantu kami menentukan prioritas dukungan versi.
 
 ## Kesimpulan

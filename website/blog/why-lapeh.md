@@ -19,7 +19,7 @@ Lapeh hadir untuk menjawab kekacauan tersebut. Filosofi kami sederhana: **Conven
 Kami mengambil keputusan-keputusan sulit di awal, sehingga Anda tidak perlu memikirkannya lagi:
 
 1.  **Struktur Folder Baku**: Setiap project Lapeh memiliki struktur yang sama. Developer baru bisa langsung paham dalam hitungan menit.
-2.  **Prisma ORM**: Kami memilih Prisma karena Type-safety dan Developer Experience terbaik saat ini.
+2.  **Database Agnostic**: Lapeh tidak memaksakan ORM tertentu. Anda bebas menggunakan driver database apa pun yang Anda sukai.
 3.  **Express.js**: Framework yang sudah teruji, stabil, dan memiliki ekosistem terbesar.
 
 ## Visi Kami

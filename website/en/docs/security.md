@@ -36,20 +36,19 @@ Framework tidak bisa melindungi dari kode yang buruk. Berikut hal yang WAJIB And
 
 Jangan pernah mempercayai input user. Selalu gunakan `Validator`.
 
-**❌ Tidak Aman (Raw Query):**
+**❌ Insecure (Raw Query):**
 
 ```typescript
-// Bahaya SQL Injection jika pakai raw query manual (walau Prisma aman, tetap hati-hati)
-const user =
-  await prisma.$queryRaw`SELECT * FROM users WHERE email = ${req.body.email}`;
+// Danger of SQL Injection if using manual raw query without sanitization
+const user = await db.query(`SELECT * FROM users WHERE email = '${req.body.email}'`);
 ```
 
-**✅ Aman (Validator + Prisma Client):**
+**✅ Secure (Validator + Parameterized Query):**
 
 ```typescript
 const valid = await Validator.make(req.body, { email: "required|email" });
-// Prisma Client otomatis sanitize input
-const user = await prisma.user.findUnique({
+// Use parameterized query or your preferred ORM/Query Builder
+const user = await db.users.findOne({
   where: { email: valid.validated().email },
 });
 ```

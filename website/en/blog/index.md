@@ -4,6 +4,16 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Release v3.0.7: docs: update project structure guide](./release-v3.0.7)
+
+_December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Includes: docs: update project structure guide [Read more →](./release-v3.0.7)
+
+---
+
+---
+
 ## 🚀 [Release v3.0.6: Maintenance Release](./release-v3.0.6)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_

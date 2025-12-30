@@ -19,7 +19,7 @@ Lapeh exists to answer that chaos. Our philosophy is simple: **Convention over C
 We made the hard decisions upfront so you don't have to think about them again:
 
 1.  **Standardized Folder Structure**: Every Lapeh project has the same structure. New developers can understand it in minutes.
-2.  **Prisma ORM**: We chose Prisma for its Type-safety and best Developer Experience today.
+2.  **Database Agnostic**: Lapeh does not enforce a specific ORM. You are free to use any database driver you prefer.
 3.  **Express.js**: A battle-tested framework, stable, and with the largest ecosystem.
 
 ## Our Vision

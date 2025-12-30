@@ -14,7 +14,7 @@ This article will discuss the directory structure changes and how this makes you
 
 ## What is Modular Architecture?
 
-Instead of separating files by *type* (all controllers in `controllers/`, all models in `models/`), we now group files by **Feature**.
+Instead of separating files by _type_ (all controllers in `controllers/`, all models in `models/`), we now group files by **Feature**.
 
 ### Old Structure (Layered)
 
@@ -24,8 +24,8 @@ src/
     authController.ts
     productController.ts
   models/
-    user.prisma
-    product.prisma
+    user.model.ts
+    product.model.ts
 ```
 
 If you wanted to change the "Product" feature, you had to jump between the `controllers` and `models` folders.
@@ -37,13 +37,14 @@ src/
   modules/
     Auth/
       auth.controller.ts
-      auth.prisma
+      auth.model.ts
     Product/
       product.controller.ts
-      product.prisma
+      product.model.ts
 ```
 
 Now, everything related to "Auth" is in one place. This makes the code more:
+
 1.  **Portable**: Easy to move or copy to other projects.
 2.  **Maintainable**: You focus on one folder when working on one feature.
 3.  **Scalable**: Different teams can work on different modules without file conflicts.
@@ -51,20 +52,24 @@ Now, everything related to "Auth" is in one place. This makes the code more:
 ## Other Important Changes
 
 ### 1. `src/config/` Folder
+
 We added a dedicated folder for static application configuration.
+
 - `app.ts`: General configuration.
 - `cors.ts`: CORS security settings.
 
 ### 2. Automatic Generator: `make-module`
+
 Since the structure changed, the way to create new files also changed. We provide a new script:
 
 ```bash
 npm run make-module FeatureName
 ```
 
-This command will automatically create the `src/modules/FeatureName` folder complete with its controller and prisma template file.
+This command will automatically create the `src/modules/FeatureName` folder complete with its controller and model template file.
 
 ### 3. CLI Telemetry & Tracking
+
 We have also updated the tracking system in the admin dashboard. You can now see which Lapeh CLI versions are most used by the community, helping us prioritize version support.
 
 ## Conclusion

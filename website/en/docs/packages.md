@@ -13,13 +13,11 @@ Package-package ini adalah nyawa dari framework ini.
 | **`cors`** | Cross-Origin Resource Sharing. | Mengizinkan frontend (React/Vue) dari domain berbeda untuk mengakses API kita. |
 | **`helmet`** | Middleware keamanan HTTP headers. | Melindungi aplikasi dari serangan umum (XSS, Clickjacking) dengan mengatur header HTTP secara otomatis. |
 
-## Database & ORM
+## Database Driver
 
-| Package | Deskripsi | Kenapa Kita Pakai? |
+| Package | Description | Why we use it? |
 | :--- | :--- | :--- |
-| **`@prisma/client`** | Query builder & ORM. | Type-safe query database. Autocomplete-nya sangat membantu developer. |
-| **`pg`** | Driver PostgreSQL. | Driver native untuk koneksi ke database Postgres. |
-| **`@prisma/adapter-*`** | Adapter serverless. | (Opsional) Persiapan untuk deployment ke environment serverless (seperti Vercel/Neon). |
+| **`pg`** | PostgreSQL Driver. | Native driver for connecting to Postgres database. |
 
 ## Authentication & Security
 

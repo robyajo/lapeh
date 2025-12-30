@@ -6,7 +6,7 @@ File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada 
 
 ### ⚠️ Perubahan Besar (Breaking Changes)
 
-- **Penghapusan Prisma ORM**: Lapeh Framework kini **tidak lagi menyertakan ORM bawaan** (seperti Prisma). Kami memberikan kebebasan penuh kepada pengguna untuk memilih stack database mereka sendiri (Prisma, TypeORM, Drizzle, dll).
+- **Penghapusan Prisma ORM**: Lapeh Framework kini **tidak lagi menyertakan ORM bawaan**. Kami memberikan kebebasan penuh kepada pengguna untuk memilih stack database mereka sendiri (TypeORM, Drizzle, dll).
 - **Update CLI**:
   - `init`: Tidak lagi menanyakan konfigurasi database.
   - `make:module`: Tidak lagi membuat file `.prisma`.

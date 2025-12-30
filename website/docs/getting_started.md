@@ -7,7 +7,6 @@ Selamat datang di dokumentasi resmi **Lapeh Framework**. Panduan ini akan memban
 Sebelum memulai, pastikan sistem Anda memenuhi persyaratan berikut:
 
 - **Node.js**: Versi 18.x atau lebih baru.
-- **Database**: PostgreSQL (Recommended) atau MySQL/MariaDB.
 - **Package Manager**: NPM (bawaan Node.js).
 
 ## Instalasi
@@ -42,8 +41,6 @@ Script ini akan melakukan hal-hal berikut secara otomatis:
 1.  Menyalin `.env.example` ke `.env`.
 2.  Menginstall semua dependency (`npm install`).
 3.  Membuat **JWT Secret** yang aman.
-4.  Menjalankan migrasi database (membuat tabel).
-5.  Menjalankan seeder (mengisi data awal).
 
 ### 3. Jalankan Server Development
 
@@ -61,17 +58,11 @@ Berikut adalah struktur folder standar Lapeh Framework:
 my-app/
 ├── bin/                  # Script CLI untuk npx
 ├── doc/                  # Dokumentasi proyek
-├── prisma/               # Konfigurasi Database & Schema
-│   ├── migrations/       # File history migrasi database
-│   ├── base.prisma.template # Template konfigurasi database
-│   ├── schema.prisma     # File schema gabungan (Auto-generated)
-│   └── seed.ts           # Script untuk mengisi data awal
 ├── scripts/              # Script utility (Generator, Compiler)
 ├── src/                  # Source code utama aplikasi
 │   ├── controllers/      # Logika bisnis (Handler request)
 │   ├── core/             # Konfigurasi inti (DB, Redis, Server)
 │   ├── middleware/       # Middleware Express (Auth, RateLimit)
-│   ├── models/           # Definisi Schema Prisma per-fitur
 │   ├── routes/           # Definisi routing API
 │   ├── utils/            # Helper function (Response, Validator)
 │   └── index.ts          # Entry point aplikasi
@@ -88,9 +79,6 @@ File `.env` menyimpan konfigurasi penting. Berikut adalah variabel kunci:
 # Server
 PORT=4000
 NODE_ENV=development
-
-# Database (Ganti sesuai kredensial Anda)
-DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
 
 # Security
 JWT_SECRET="rahasia-super-panjang-dan-acak"

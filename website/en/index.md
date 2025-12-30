@@ -7,7 +7,7 @@ hero:
   image:
     src: /hero.png
     alt: Lapeh Framework
-  tagline: "Fast, Standardized, and Production-Ready. Built on Express & Prisma."
+  tagline: "Fast, Standardized, and Production Ready. Built on Express & TypeScript."
   actions:
     - theme: brand
       text: Get Started

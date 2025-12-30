@@ -1,6 +1,6 @@
 # Panduan Arsitektur: Menuju "Framework as a Dependency" (Next.js Style)
 
-Saat ini, Lapeh menggunakan pendekatan **Boilerplate** (seperti Laravel), di mana pengguna mendapatkan seluruh kode sumber (`src/`) dan bertanggung jawab atas `express`, `prisma`, dll.
+Saat ini, Lapeh menggunakan pendekatan **Boilerplate** (seperti Laravel), di mana pengguna mendapatkan seluruh kode sumber (`src/`) dan bertanggung jawab atas `express`, driver database, dll.
 
 Untuk mengubahnya menjadi seperti **Next.js** (di mana pengguna hanya menginstall `lapeh` dan `package.json` mereka bersih), kita perlu mengubah arsitektur menjadi **Library**.
 

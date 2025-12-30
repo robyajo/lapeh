@@ -33,7 +33,8 @@ const userListSerializer = getSerializer("user-list", createResponseSchema({
 }));
 
 export async function getUsers(req: Request, res: Response) {
-  const users = await prisma.users.findMany();
+  // Contoh pengambilan data dari database
+  const users = await db.users.findMany();
 
   // 3. Kirim response super cepat
   return sendFastSuccess(res, 200, userListSerializer, {

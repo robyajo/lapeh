@@ -39,17 +39,16 @@ Jangan pernah mempercayai input user. Selalu gunakan `Validator`.
 **❌ Tidak Aman (Raw Query):**
 
 ```typescript
-// Bahaya SQL Injection jika pakai raw query manual (walau Prisma aman, tetap hati-hati)
-const user =
-  await prisma.$queryRaw`SELECT * FROM users WHERE email = ${req.body.email}`;
+// Bahaya SQL Injection jika pakai raw query manual tanpa sanitasi
+const user = await db.query(`SELECT * FROM users WHERE email = '${req.body.email}'`);
 ```
 
-**✅ Aman (Validator + Prisma Client):**
+**✅ Aman (Validator + Parameterized Query):**
 
 ```typescript
 const valid = await Validator.make(req.body, { email: "required|email" });
-// Prisma Client otomatis sanitize input
-const user = await prisma.user.findUnique({
+// Gunakan parameterized query atau ORM/Query Builder pilihan Anda
+const user = await db.users.findOne({
   where: { email: valid.validated().email },
 });
 ```

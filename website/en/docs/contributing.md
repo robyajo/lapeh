@@ -30,11 +30,10 @@ Pastikan Anda sudah menginstal:
 ```bash
 npm install
 ```
-Jangan lupa jalankan setup awal untuk database lokal (pastikan PostgreSQL/MySQL jalan):
+Jangan lupa jalankan setup awal:
 ```bash
 cp .env.example .env
-npm run prisma:migrate
-npm run db:seed
+# Konfigurasi .env sesuai kebutuhan (terutama bagian Database)
 ```
 
 ## 🛠️ Workflow Pengembangan

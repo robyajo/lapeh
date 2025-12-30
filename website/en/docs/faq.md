@@ -4,32 +4,9 @@ Kumpulan pertanyaan umum dan solusi untuk masalah yang sering dihadapi.
 
 ## Database
 
-### Q: Bagaimana cara mengganti database dari PostgreSQL ke MySQL?
+### Q: Database apa yang didukung?
 **A:**
-1. Buka `prisma/base.prisma.template`.
-2. Ubah `provider = "postgresql"` menjadi `provider = "mysql"`.
-3. Di `.env`, ubah `DATABASE_URL` formatnya menjadi format MySQL (`mysql://user:pass@host:3306/db`).
-4. Hapus folder `prisma/migrations` (jika baru mulai) atau siapkan strategi migrasi.
-5. Jalankan `npm run prisma:migrate`.
-
-### Q: Bagaimana cara membuat relasi antar tabel?
-**A:**
-Definisikan relasi di file `.prisma` masing-masing. Karena file akan digabung, Anda bisa mereferensikan model yang ada di file lain.
-**File `user.prisma`:**
-```prisma
-model User {
-  id    Int    @id
-  posts Post[] // Relasi ke Post
-}
-```
-**File `post.prisma`:**
-```prisma
-model Post {
-  id       Int  @id
-  authorId Int
-  author   User @relation(fields: [authorId], references: [id]) // Relasi ke User
-}
-```
+Lapeh bersifat **Database Agnostic**. Anda bisa menggunakan PostgreSQL, MySQL, MongoDB, atau database apapun. Framework tidak membatasi pilihan database Anda. Kami menyediakan wrapper `db` generik yang bisa Anda konfigurasi sesuai kebutuhan.
 
 ## Redis & Caching
 

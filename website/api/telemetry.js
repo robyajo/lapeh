@@ -1,9 +1,9 @@
-const { PrismaClient } = require('@prisma/client');
+// const { PrismaClient } = require('@prisma/client');
 
 // Use a global variable to prevent multiple instances in development (hot reloading)
 // In production, this doesn't matter as much for serverless
-const prisma = global.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+// const prisma = global.prisma || new PrismaClient();
+// if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
 module.exports = async function handler(req, res) {
   // Set CORS headers

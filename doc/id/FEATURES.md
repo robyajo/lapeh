@@ -161,7 +161,9 @@ Gunakan `@/` untuk import module agar kode lebih bersih.
 **Contoh:**
 
 ```typescript
-import { prisma } from "@/core/database"; // ✅ Rapi
+import { db } from "@/core/database"; // ✅ Rapi
+
 // vs
-import { prisma } from "../../../core/database"; // ❌ Berantakan
+
+import { db } from "../../../core/database"; // ❌ Berantakan
 ```

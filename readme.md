@@ -8,7 +8,7 @@ Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap:
 
 - **Production Ready**: Struktur folder modular (MVC) yang mudah dikembangkan.
 - **TypeScript First**: Full type-safety untuk mengurangi runtime error.
-- **Database Agnostic**: Bebas pilih database dan ORM (Prisma, TypeORM, Drizzle, dll).
+- **Database Agnostic**: Bebas pilih database dan ORM pilihan Anda.
 - **Standardized Structure**: Controller, Service, dan Route yang terpisah rapi.
 - **Auto CLI Generator**: Buat modul dan controller dengan satu perintah.
 - **Smart Caching**: Otomatis menggunakan Redis jika tersedia, fallback ke in-memory jika tidak.

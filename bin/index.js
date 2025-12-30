@@ -128,8 +128,36 @@ process.on('uncaughtException', async (err) => {
   }
 });
 
+function showHelp() {
+    console.log('\n\x1b[36m   L A P E H   F R A M E W O R K   C L I\x1b[0m\n');
+    console.log('Usage: npx lapeh <command> [options]\n');
+    console.log('Commands:');
+    console.log('  create <name>   Create a new Lapeh project');
+    console.log('  dev             Start development server (with update check)');
+    console.log('  start           Start production server');
+    console.log('  build           Build the project for production');
+    console.log('  upgrade         Upgrade project files to match framework version');
+    console.log('  help            Show this help message');
+    console.log('\nOptions:');
+    console.log('  --full          Create project with full example (auth, users, etc)');
+    console.log('  -y, --defaults  Skip prompts and use defaults');
+    console.log('  -h, --help      Show this help message');
+    console.log('\nExamples:');
+    console.log('  npx lapeh my-app');
+    console.log('  npx lapeh create my-app --full');
+    console.log('  npx lapeh dev');
+    console.log('\n');
+}
+
+// Handle Help or No Args
+if (!command || ['help', '--help', '-h'].includes(command)) {
+    showHelp();
+    sendTelemetry('help');
+    process.exit(0);
+}
+
 // Send telemetry for every command (only if not crashing immediately)
-sendTelemetry(command || 'init');
+sendTelemetry(command);
 
 switch (command) {
   case 'dev':
@@ -726,7 +754,6 @@ function createProject(skipFirstArg = false) {
       }
     }
 
-    const prismaBaseFile = path.join(projectDir, "prisma", "base.prisma.template");
     // Removed Prisma base file handling
 
     try {
