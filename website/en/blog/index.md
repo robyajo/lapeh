@@ -4,6 +4,14 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Release v3.0.1: CLI UX Improvements & Database-Agnostic Mode](./release-v3.0.1)
+
+_December 30, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Patch update v3.0.1 brings more interactive CLI animations, example module cleanup, and more flexible default database configuration. [Read more →](./release-v3.0.1)
+
+---
+
 ## 🚀 [Release v2.6.6: CLI Upgrade Fixes and MongoDB Support](./release-v2.6.6)
 
 _December 29, 2025_ • 👤 Lapeh Team • 🏷️ _Release_

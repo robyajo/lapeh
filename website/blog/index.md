@@ -4,6 +4,14 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
+## 🚀 [Rilis v3.0.1: Peningkatan UX CLI & Mode Database-Agnostic](./release-v3.0.1)
+
+_30 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Update patch v3.0.1 membawa animasi CLI yang lebih interaktif, pembersihan modul contoh, dan konfigurasi database default yang lebih fleksibel. [Baca selengkapnya →](./release-v3.0.1)
+
+---
+
 ## 🚀 [Rilis v2.6.6: Perbaikan CLI Upgrade dan Dukungan MongoDB](./release-v2.6.6)
 
 _29 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
