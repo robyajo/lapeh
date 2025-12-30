@@ -1,21 +1,20 @@
 ---
-title: Rilis v3.0.4 - Update Version
+title: "Rilis v3.0.4: Sinkronisasi Deployment"
 date: 2025-12-30
 author: Tim Lapeh
-description: "Includes: Update Version"
+description: "Rilis teknis untuk memicu ulang build deployment dan sinkronisasi versi."
 ---
 
-# Rilis v3.0.4: Update Version
+# Rilis v3.0.4: Sinkronisasi Deployment
 
-Kami dengan senang hati mengumumkan rilis **Lapeh Framework v3.0.4**!
+Rilis ini merupakan rilis teknis untuk memastikan konsistensi deployment.
 
 ## Apa yang Baru?
 
-Includes: Update Version
+### 🔄 Deployment
 
-### Fitur Utama 🚀
-
-*   **Update Version**
+- **Force Rebuild**: Memicu ulang proses build pada platform hosting (Vercel) untuk memastikan semua perubahan aset statis dan perbaikan metadata terbaru diterapkan dengan benar.
+- **Version Sync**: Memastikan nomor versi tersinkronisasi di seluruh ekosistem paket.
 
 ## Cara Update
 

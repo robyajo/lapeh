@@ -1,25 +1,22 @@
 ---
-title: "Release v3.0.5 - fix: escape description in v3.0.3 blog posts and update release script"
+title: "Release v3.0.5: Blog System & Release Script Fixes"
 date: 2025-12-30
 author: Lapeh Team
-description: "Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error"
+description: "Critical fix for release.js script to handle special characters in YAML frontmatter."
 ---
 
-# Release v3.0.5: fix: escape description in v3.0.3 blog posts and update release script
+# Release v3.0.5: Blog System & Release Script Fixes
 
-We are excited to announce the release of **Lapeh Framework v3.0.5**!
+This release is a hotfix to address issues in our blog automation system.
 
 ## What's New?
 
-Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error
+We discovered a bug where special characters (like quotes) in Git commit messages could break the YAML frontmatter format in auto-generated blog files, causing build failures on the documentation website.
 
-### Key Features 🚀
+### 🛠️ Bug Fixes
 
-*   **fix: escape description in v3.0.3 blog posts and update release script**
-*   **fix: escape description in frontmatter to prevent yaml error**
-*   **trigger: force vercel rebuild v3.0.4**
-*   **trigger: force vercel rebuild v3.0.4**
-*   **update tags**
+- **Fix YAML Escaping**: Updated `release.js` to correctly escape `title` and `description` in blog frontmatter.
+- **Release Script Update**: Improved release script resilience against various commit message formats.
 
 ## How to Update
 

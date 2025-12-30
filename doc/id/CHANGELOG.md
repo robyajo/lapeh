@@ -2,6 +2,14 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-30] - Selasa, 30 Desember 2025 - Otomatisasi Blog Cerdas (v3.0.8)
+
+### 🤖 Peningkatan Script Rilis
+
+- **Smart Blog Generation**: Script `release.js` kini secara cerdas membaca konten dari `CHANGELOG.md` (baik ID maupun EN) untuk membuat postingan blog rilis. Tidak ada lagi konten generik "Routine maintenance"!
+- **Deteksi Versi Fleksibel**: Peningkatan Regex untuk mendeteksi versi dalam format header changelog yang bervariasi.
+- **Dukungan Dwibahasa**: Memastikan rilis notes tersedia dalam Bahasa Indonesia dan Inggris secara akurat.
+
 ## [2025-12-30] - Selasa, 30 Desember 2025 - Dokumentasi & CLI (v3.0.7)
 
 ### 📚 Dokumentasi

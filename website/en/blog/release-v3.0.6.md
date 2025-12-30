@@ -1,21 +1,22 @@
 ---
-title: "Release v3.0.6 - Maintenance Release"
+title: "Release v3.0.6: Stability Improvements"
 date: 2025-12-30
 author: Lapeh Team
-description: "Routine maintenance and updates."
+description: "Routine update to ensure framework stability and internal dependency updates."
 ---
 
-# Release v3.0.6: Maintenance Release
+# Release v3.0.6: Stability Improvements
 
-We are excited to announce the release of **Lapeh Framework v3.0.6**!
+We continue to perform routine maintenance to ensure Lapeh Framework remains stable and reliable.
 
 ## What's New?
 
-Routine maintenance and updates.
+This release focuses on internal maintenance and minor dependency updates to keep the framework performance optimal.
 
-### Key Features 🚀
+### 🛠️ Fixes & Maintenance
 
-*   **Routine maintenance**
+- **Dependency Updates**: Updated internal packages to more stable versions.
+- **General Maintenance**: Minor code cleanup and internal optimizations.
 
 ## How to Update
 

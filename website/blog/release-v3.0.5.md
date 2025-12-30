@@ -1,25 +1,22 @@
 ---
-title: "Rilis v3.0.5 - fix: escape description in v3.0.3 blog posts and update release script"
+title: "Rilis v3.0.5: Perbaikan Sistem Blog & Script Rilis"
 date: 2025-12-30
 author: Tim Lapeh
-description: "Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error"
+description: "Perbaikan kritis pada script release.js untuk menangani karakter spesial dalam frontmatter YAML."
 ---
 
-# Rilis v3.0.5: fix: escape description in v3.0.3 blog posts and update release script
+# Rilis v3.0.5: Perbaikan Sistem Blog & Script Rilis
 
-Kami dengan senang hati mengumumkan rilis **Lapeh Framework v3.0.5**!
+Rilis ini adalah perbaikan cepat (hotfix) untuk mengatasi masalah pada sistem otomatisasi blog kami.
 
 ## Apa yang Baru?
 
-Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error
+Kami menemukan bug di mana karakter spesial (seperti tanda kutip) dalam deskripsi commit Git dapat merusak format YAML frontmatter pada file blog yang digenerate otomatis, menyebabkan kegagalan build pada website dokumentasi.
 
-### Fitur Utama 🚀
+### 🛠️ Perbaikan Bug
 
-*   **fix: escape description in v3.0.3 blog posts and update release script**
-*   **fix: escape description in frontmatter to prevent yaml error**
-*   **trigger: force vercel rebuild v3.0.4**
-*   **trigger: force vercel rebuild v3.0.4**
-*   **update tags**
+- **Fix YAML Escaping**: Memperbarui `release.js` untuk melakukan escaping yang benar pada `title` dan `description` di frontmatter blog.
+- **Release Script Update**: Meningkatkan ketahanan script rilis terhadap berbagai format pesan commit.
 
 ## Cara Update
 

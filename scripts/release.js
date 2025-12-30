@@ -103,21 +103,45 @@ function generateAutoCommitMessage() {
     }
 }
 
-// Helper to extract changelog entry
-function extractChangelogEntry(filePath, version) {
+// Helper to parse changelog entry with structure
+function parseChangelogEntry(filePath, version) {
     try {
         if (!fs.existsSync(filePath)) return null;
         const content = fs.readFileSync(filePath, 'utf8');
-        // Regex to find the section for the version. 
-        // Matches "## [YYYY-MM-DD] ... vX.X.X ..." until the next "## ["
-        // We allow the version to be anywhere in the header line
-        const regex = new RegExp(`## \\[.*?\\] - .*?v${version}.*?([\\s\\S]*?)(?=\\n## \\[|$)`, 'i');
-        const match = content.match(regex);
-        
-        if (match && match[1]) {
-            return match[1].trim();
+
+        // 1. Find the header line to extract Title
+        // Regex matches: ## [Date] - Day, Date - Title (vVersion)
+        const headerRegex = new RegExp(`## \\[.*?\\] - .*? - (.*?) \\(v${version}\\)`, 'i');
+        const headerMatch = content.match(headerRegex);
+        const title = headerMatch ? headerMatch[1].trim() : null;
+
+        // 2. Extract the body
+        const bodyRegex = new RegExp(`## \\[.*?\\] - .*?v${version}.*?([\\s\\S]*?)(?=\\n## \\[|$)`, 'i');
+        const bodyMatch = content.match(bodyRegex);
+
+        if (!bodyMatch) return null;
+
+        let rawBody = bodyMatch[1].trim();
+
+        // 3. Extract Intro (text before first ###)
+        let intro = '';
+        let features = rawBody;
+
+        const firstHeaderIndex = rawBody.indexOf('###');
+        if (firstHeaderIndex > 0) {
+            intro = rawBody.substring(0, firstHeaderIndex).trim();
+            features = rawBody.substring(firstHeaderIndex).trim();
+        } else if (firstHeaderIndex === -1 && !rawBody.startsWith('-') && !rawBody.startsWith('*')) {
+             // If no subheaders and doesn't start with list, treat as intro
+             intro = rawBody;
+             features = '';
         }
-        return null;
+
+        return {
+            title,
+            intro,
+            features
+        };
     } catch (e) {
         return null;
     }
@@ -178,47 +202,79 @@ async function main() {
         let blogTitleEN = '';
 
         if (createBlog.toLowerCase() === 'y') {
-            console.log('\n🤖 Auto-detecting changes from Git & Changelog...');
-            const changes = getGitChanges();
             
-            // Try to read from CHANGELOG.md first
-            const changelogID = extractChangelogEntry(path.join(rootDir, 'doc/id/CHANGELOG.md'), newVersion);
-            const changelogEN = extractChangelogEntry(path.join(rootDir, 'doc/en/CHANGELOG.md'), newVersion);
+            const useAuto = await question('🤖 Auto-generate content from CHANGELOG/Git? (y/n): ');
+            
+            let titleID, descriptionID, introID, featureListID;
+            let titleEN, descriptionEN, introEN, featureListEN;
 
-            let titleID, descriptionID, featuresID, featureListID;
-            let titleEN, descriptionEN, featuresEN, featureListEN;
+            if (useAuto.toLowerCase() === 'y') {
+                console.log('\n🤖 Auto-detecting changes from Git & Changelog...');
+                const changes = getGitChanges();
+                
+                // Try to read from CHANGELOG.md first
+                const parsedID = parseChangelogEntry(path.join(rootDir, 'doc/id/CHANGELOG.md'), newVersion);
+                const parsedEN = parseChangelogEntry(path.join(rootDir, 'doc/en/CHANGELOG.md'), newVersion);
 
-            if (changelogID) {
-                console.log('✅ Found entry in doc/id/CHANGELOG.md');
-                // Extract title from first line of changelog entry if possible, or use default
-                // Actually usually changelog entry body starts with ### Section.
-                // We'll use a generic title and the full body as content.
-                titleID = `Update Terbaru v${newVersion}`; 
-                // Try to find specific sections for description/features is hard without strict parsing.
-                // We will treat the entire changelog body as the "Features" section.
-                descriptionID = `Rilis versi ${newVersion} hadir dengan berbagai pembaruan dan perbaikan.`;
-                featureListID = changelogID; 
+                if (parsedID) {
+                    console.log('✅ Found entry in doc/id/CHANGELOG.md');
+                    titleID = parsedID.title || `Update Terbaru v${newVersion}`; 
+                    introID = parsedID.intro || `Kami dengan bangga mengumumkan rilis **Lapeh v${newVersion}**. Update ini menghadirkan **${parsedID.title || 'berbagai fitur baru'}** untuk meningkatkan pengalaman pengembangan Anda.`;
+                    descriptionID = parsedID.intro ? parsedID.intro.split('\n')[0] : `Rilis versi ${newVersion} hadir dengan berbagai pembaruan dan perbaikan.`;
+                    featureListID = parsedID.features; 
+                } else {
+                    console.log('⚠️ No entry in doc/id/CHANGELOG.md, using git logs...');
+                    titleID = changes.length > 0 ? changes[0] : 'Maintenance Release';
+                    descriptionID = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
+                    introID = `Kami dengan bangga mengumumkan rilis **Lapeh v${newVersion}**. Rilis ini mencakup pemeliharaan rutin dan perbaikan bug.`;
+                    featureListID = changes.length > 0 
+                        ? changes.map(f => `*   **${f.trim()}**`).join('\n')
+                        : '*   **Routine maintenance**';
+                }
+
+                if (parsedEN) {
+                    console.log('✅ Found entry in doc/en/CHANGELOG.md');
+                    titleEN = parsedEN.title || `Latest Update v${newVersion}`;
+                    introEN = parsedEN.intro || `We are proud to announce the release of **Lapeh v${newVersion}**. This update brings **${parsedEN.title || 'various new features'}** to enhance your development experience.`;
+                    descriptionEN = parsedEN.intro ? parsedEN.intro.split('\n')[0] : `Release version ${newVersion} comes with various updates and improvements.`;
+                    featureListEN = parsedEN.features;
+                } else {
+                    console.log('⚠️ No entry in doc/en/CHANGELOG.md, using git logs...');
+                    titleEN = changes.length > 0 ? changes[0] : 'Maintenance Release';
+                    descriptionEN = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
+                    introEN = `We are proud to announce the release of **Lapeh v${newVersion}**. This release includes routine maintenance and bug fixes.`;
+                    featureListEN = changes.length > 0
+                        ? changes.map(f => `*   **${f.trim()}**`).join('\n')
+                        : '*   **Routine maintenance**';
+                }
             } else {
-                console.log('⚠️ No entry in doc/id/CHANGELOG.md, using git logs...');
-                titleID = changes.length > 0 ? changes[0] : 'Maintenance Release';
-                descriptionID = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
-                featureListID = changes.length > 0 
-                    ? changes.map(f => `*   **${f.trim()}**`).join('\n')
-                    : '*   **Routine maintenance**';
-            }
+                console.log('\n📝 Manual Blog Entry');
+                console.log('Silakan masukkan detail blog secara manual.');
+                
+                // ID Inputs
+                titleID = await question('Judul Blog (ID): ');
+                descriptionID = await question('Deskripsi Singkat (ID): ');
+                const contentID = await question('Konten Utama/Fitur (ID) - Gunakan format Markdown jika perlu: ');
+                introID = `Rilis versi ${newVersion} telah hadir.`; // Fallback for manual
+                featureListID = contentID;
 
-            if (changelogEN) {
-                console.log('✅ Found entry in doc/en/CHANGELOG.md');
-                titleEN = `Latest Update v${newVersion}`;
-                descriptionEN = `Release version ${newVersion} comes with various updates and improvements.`;
-                featureListEN = changelogEN;
-            } else {
-                console.log('⚠️ No entry in doc/en/CHANGELOG.md, using git logs...');
-                titleEN = changes.length > 0 ? changes[0] : 'Maintenance Release';
-                descriptionEN = changes.length > 0 ? `Includes: ${changes.slice(0, 2).join(', ')}` : 'Routine maintenance and updates.';
-                featureListEN = changes.length > 0
-                    ? changes.map(f => `*   **${f.trim()}**`).join('\n')
-                    : '*   **Routine maintenance**';
+                console.log('\n--- English Version ---');
+                
+                // EN Inputs
+                titleEN = await question('Blog Title (EN): ');
+                descriptionEN = await question('Short Description (EN): ');
+                const contentEN = await question('Main Content/Features (EN): ');
+                introEN = `Release version ${newVersion} is here.`; // Fallback for manual
+                featureListEN = contentEN;
+                
+                // Set defaults if empty
+                if (!titleID) titleID = `Update v${newVersion}`;
+                if (!descriptionID) descriptionID = `Pembaruan versi ${newVersion}`;
+                if (!featureListID) featureListID = '* Pembaruan rutin';
+                
+                if (!titleEN) titleEN = `Update v${newVersion}`;
+                if (!descriptionEN) descriptionEN = `Update version ${newVersion}`;
+                if (!featureListEN) featureListEN = '* Routine updates';
             }
             
             blogTitleEN = titleEN; // Save for commit message
@@ -232,52 +288,72 @@ async function main() {
 
             // Indonesian Blog Content
             const idContent = `---
-title: "Rilis v${newVersion}"
+title: "Rilis Lapeh v${newVersion}: ${titleID}"
 date: ${date}
 author: Tim Lapeh
 description: "${descriptionID.replace(/"/g, '\\"')}"
 ---
 
-# Rilis v${newVersion}
+# Rilis Lapeh v${newVersion}: ${titleID}
 
-${descriptionID}
+Ditulis pada **${dateString}** oleh **Tim Lapeh**
 
-## Rincian Perubahan 📝
+${introID}
+
+## Apa yang Baru? 🚀
 
 ${featureListID}
 
-## Cara Update
+## Cara Upgrade
+
+Bagi pengguna baru, cukup jalankan:
+
+\`\`\`bash
+npx lapeh init my-project
+\`\`\`
+
+Bagi pengguna lama yang ingin update ke versi terbaru:
 
 \`\`\`bash
 npm install lapeh@latest
 \`\`\`
 
-Terima kasih telah menggunakan Lapeh Framework!
+Terima kasih telah menjadi bagian dari perjalanan Lapeh Framework!
 `;
 
             // English Blog Content
             const enContent = `---
-title: "Release v${newVersion}"
+title: "Release Lapeh v${newVersion}: ${titleEN}"
 date: ${date}
 author: Lapeh Team
 description: "${descriptionEN.replace(/"/g, '\\"')}"
 ---
 
-# Release v${newVersion}
+# Release Lapeh v${newVersion}: ${titleEN}
 
-${descriptionEN}
+Written on **${dateStringEn}** by **Lapeh Team**
 
-## Change Details 📝
+${introEN}
+
+## What's New? 🚀
 
 ${featureListEN}
 
-## How to Update
+## How to Upgrade
+
+For new users, simply run:
+
+\`\`\`bash
+npx lapeh init my-project
+\`\`\`
+
+For existing users who want to update to the latest version:
 
 \`\`\`bash
 npm install lapeh@latest
 \`\`\`
 
-Thank you for using Lapeh Framework!
+Thank you for being part of the Lapeh Framework journey!
 `;
 
             fs.writeFileSync(path.join(websiteDir, 'blog', blogFileName), idContent);

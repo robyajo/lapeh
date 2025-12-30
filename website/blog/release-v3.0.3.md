@@ -1,22 +1,20 @@
 ---
-title: Rilis v3.0.3 - Update Version
+title: "Rilis v3.0.3: Sinkronisasi Dokumentasi & Versi"
 date: 2025-12-30
 author: Tim Lapeh
-description: "Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2"
+description: "Menyinkronkan catatan rilis yang tertinggal dan memastikan konsistensi dokumentasi."
 ---
 
-# Rilis v3.0.3: Update Version
+# Rilis v3.0.3: Sinkronisasi Dokumentasi & Versi
 
-Kami dengan senang hati mengumumkan rilis **Lapeh Framework v3.0.3**!
+Rilis ini bertujuan untuk merapikan administrasi proyek dan dokumentasi yang sempat tertinggal selama update cepat sebelumnya.
 
 ## Apa yang Baru?
 
-Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2
+### 📚 Dokumentasi
 
-### Fitur Utama 🚀
-
-*   **Update Version**
-*   **docs: release notes v3.0.1 and sync version 3.0.2**
+- **Release Notes Sync**: Menambahkan dan melengkapi catatan rilis untuk versi v3.0.1 dan v3.0.2 yang sebelumnya belum terdokumentasi dengan baik di blog.
+- **Documentation Update**: Memastikan semua link dan referensi versi di dokumentasi menunjuk ke versi stabil terbaru.
 
 ## Cara Update
 

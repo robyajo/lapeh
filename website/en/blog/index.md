@@ -4,71 +4,71 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
-## 🚀 [Release v3.0.8: Maintenance Release](./release-v3.0.8)
+## 🚀 [Release v3.0.9: Maintenance Release](./release-v3.0.9)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Routine maintenance and updates. [Read more →](./release-v3.0.8)
+Routine maintenance and updates. [Read more →](./release-v3.0.9)
 
 ---
 
 ---
 
-## 🚀 [Release v3.0.7: docs: update project structure guide](./release-v3.0.7)
+## 🚀 [Release v3.0.8: Smart Blog Automation](./release-v3.0.8)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: docs: update project structure guide [Read more →](./release-v3.0.7)
+The release.js script now intelligently reads content from CHANGELOG.md to generate detailed and informative release blog posts. [Read more →](./release-v3.0.8)
 
 ---
 
 ---
 
-## 🚀 [Release v3.0.6: Maintenance Release](./release-v3.0.6)
+## 🚀 [Release v3.0.7: Project Structure Guide Update](./release-v3.0.7)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Routine maintenance and updates. [Read more →](./release-v3.0.6)
+Comprehensive update to project structure documentation to reflect No-ORM architecture and Core folder introduction. [Read more →](./release-v3.0.7)
 
 ---
 
 ---
 
-## 🚀 [Release v3.0.6: Maintenance Release](./release-v3.0.6)
+## 🚀 [Release v3.0.6: Stability Improvements](./release-v3.0.6)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Routine maintenance and updates. [Read more →](./release-v3.0.6)
+Routine update to ensure framework stability and internal dependency updates. [Read more →](./release-v3.0.6)
 
 ---
 
 ---
 
-## 🚀 [Release v3.0.5: fix: escape description in v3.0.3 blog posts and update release script](./release-v3.0.5)
+## 🚀 [Release v3.0.5: Blog System & Release Script Fixes](./release-v3.0.5)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error [Read more →](./release-v3.0.5)
+Critical fix for release.js script to handle special characters in YAML frontmatter. [Read more →](./release-v3.0.5)
 
 ---
 
 ---
 
-## 🚀 [Release v3.0.4: Update Version](./release-v3.0.4)
+## 🚀 [Release v3.0.4: Deployment Synchronization](./release-v3.0.4)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: Update Version [Read more →](./release-v3.0.4)
+Technical release to trigger deployment rebuild and version synchronization. [Read more →](./release-v3.0.4)
 
 ---
 
 ---
 
-## 🚀 [Release v3.0.3: Update Version](./release-v3.0.3)
+## 🚀 [Release v3.0.3: Documentation & Version Synchronization](./release-v3.0.3)
 
 _December 30, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2 [Read more →](./release-v3.0.3)
+Syncing missing release notes and ensuring documentation consistency. [Read more →](./release-v3.0.3)
 
 ---
 

@@ -1,22 +1,20 @@
 ---
-title: Release v3.0.3 - Update Version
+title: "Release v3.0.3: Documentation & Version Synchronization"
 date: 2025-12-30
 author: Lapeh Team
-description: "Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2"
+description: "Syncing missing release notes and ensuring documentation consistency."
 ---
 
-# Release v3.0.3: Update Version
+# Release v3.0.3: Documentation & Version Synchronization
 
-We are excited to announce the release of **Lapeh Framework v3.0.3**!
+This release aims to tidy up project administration and documentation that lagged behind during previous rapid updates.
 
 ## What's New?
 
-Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2
+### 📚 Documentation
 
-### Key Features 🚀
-
-*   **Update Version**
-*   **docs: release notes v3.0.1 and sync version 3.0.2**
+- **Release Notes Sync**: Added and completed release notes for versions v3.0.1 and v3.0.2 which were previously not well documented in the blog.
+- **Documentation Update**: Ensured all links and version references in the documentation point to the latest stable version.
 
 ## How to Update
 

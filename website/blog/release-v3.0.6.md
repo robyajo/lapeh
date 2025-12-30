@@ -1,21 +1,22 @@
 ---
-title: "Rilis v3.0.6 - Maintenance Release"
+title: "Rilis v3.0.6: Peningkatan Stabilitas"
 date: 2025-12-30
 author: Tim Lapeh
-description: "Routine maintenance and updates."
+description: "Pembaruan rutin untuk memastikan stabilitas framework dan pembaruan dependensi internal."
 ---
 
-# Rilis v3.0.6: Maintenance Release
+# Rilis v3.0.6: Peningkatan Stabilitas
 
-Kami dengan senang hati mengumumkan rilis **Lapeh Framework v3.0.6**!
+Kami terus melakukan pemeliharaan rutin untuk memastikan Lapeh Framework tetap stabil dan andal.
 
 ## Apa yang Baru?
 
-Routine maintenance and updates.
+Rilis ini fokus pada pemeliharaan internal dan pembaruan dependensi minor untuk menjaga performa framework tetap optimal.
 
-### Fitur Utama 🚀
+### 🛠️ Perbaikan & Pemeliharaan
 
-*   **Routine maintenance**
+- **Dependency Updates**: Memperbarui paket-paket internal ke versi yang lebih stabil.
+- **General Maintenance**: Pembersihan kode minor dan optimalisasi internal.
 
 ## Cara Update
 

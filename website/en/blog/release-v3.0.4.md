@@ -1,21 +1,20 @@
 ---
-title: Release v3.0.4 - Update Version
+title: "Release v3.0.4: Deployment Synchronization"
 date: 2025-12-30
 author: Lapeh Team
-description: "Includes: Update Version"
+description: "Technical release to trigger deployment rebuild and version synchronization."
 ---
 
-# Release v3.0.4: Update Version
+# Release v3.0.4: Deployment Synchronization
 
-We are excited to announce the release of **Lapeh Framework v3.0.4**!
+This is a technical release to ensure deployment consistency.
 
 ## What's New?
 
-Includes: Update Version
+### 🔄 Deployment
 
-### Key Features 🚀
-
-*   **Update Version**
+- **Force Rebuild**: Triggered a rebuild process on the hosting platform (Vercel) to ensure all static asset changes and latest metadata fixes are correctly applied.
+- **Version Sync**: Ensured version numbers are synchronized across the package ecosystem.
 
 ## How to Update
 

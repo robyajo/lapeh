@@ -4,71 +4,71 @@ Update terbaru seputar pengembangan Lapeh Framework, tutorial, dan tips trik.
 
 ---
 
-## 🚀 [Rilis v3.0.8: Maintenance Release](./release-v3.0.8)
+## 🚀 [Rilis v3.0.9: Maintenance Release](./release-v3.0.9)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Routine maintenance and updates. [Baca selengkapnya →](./release-v3.0.8)
+Routine maintenance and updates. [Baca selengkapnya →](./release-v3.0.9)
 
 ---
 
 ---
 
-## 🚀 [Rilis v3.0.7: docs: update project structure guide](./release-v3.0.7)
+## 🚀 [Rilis v3.0.8: Otomatisasi Blog Cerdas](./release-v3.0.8)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: docs: update project structure guide [Baca selengkapnya →](./release-v3.0.7)
+Script release.js kini secara cerdas membaca konten dari CHANGELOG.md untuk membuat postingan blog rilis yang detail dan informatif. [Baca selengkapnya →](./release-v3.0.8)
 
 ---
 
 ---
 
-## 🚀 [Rilis v3.0.6: Maintenance Release](./release-v3.0.6)
+## 🚀 [Rilis v3.0.7: Pembaruan Panduan Struktur Proyek](./release-v3.0.7)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Routine maintenance and updates. [Baca selengkapnya →](./release-v3.0.6)
+Pembaruan komprehensif pada dokumentasi struktur proyek untuk mencerminkan arsitektur No-ORM dan pengenalan folder Core. [Baca selengkapnya →](./release-v3.0.7)
 
 ---
 
 ---
 
-## 🚀 [Rilis v3.0.6: Maintenance Release](./release-v3.0.6)
+## 🚀 [Rilis v3.0.6: Peningkatan Stabilitas](./release-v3.0.6)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Routine maintenance and updates. [Baca selengkapnya →](./release-v3.0.6)
+Pembaruan rutin untuk memastikan stabilitas framework dan pembaruan dependensi internal. [Baca selengkapnya →](./release-v3.0.6)
 
 ---
 
 ---
 
-## 🚀 [Rilis v3.0.5: fix: escape description in v3.0.3 blog posts and update release script](./release-v3.0.5)
+## 🚀 [Rilis v3.0.5: Perbaikan Sistem Blog & Script Rilis](./release-v3.0.5)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: fix: escape description in v3.0.3 blog posts and update release script, fix: escape description in frontmatter to prevent yaml error [Baca selengkapnya →](./release-v3.0.5)
+Perbaikan kritis pada script release.js untuk menangani karakter spesial dalam frontmatter YAML. [Baca selengkapnya →](./release-v3.0.5)
 
 ---
 
 ---
 
-## 🚀 [Rilis v3.0.4: Update Version](./release-v3.0.4)
+## 🚀 [Rilis v3.0.4: Sinkronisasi Deployment](./release-v3.0.4)
 
 _31 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: Update Version [Baca selengkapnya →](./release-v3.0.4)
+Rilis teknis untuk memicu ulang build deployment dan sinkronisasi versi. [Baca selengkapnya →](./release-v3.0.4)
 
 ---
 
 ---
 
-## 🚀 [Rilis v3.0.3: Update Version](./release-v3.0.3)
+## 🚀 [Rilis v3.0.3: Sinkronisasi Dokumentasi & Versi](./release-v3.0.3)
 
 _30 Desember 2025_ • 👤 Lapeh Team • 🏷️ _Release_
 
-Includes: Update Version, docs: release notes v3.0.1 and sync version 3.0.2 [Baca selengkapnya →](./release-v3.0.3)
+Menyinkronkan catatan rilis yang tertinggal dan memastikan konsistensi dokumentasi. [Baca selengkapnya →](./release-v3.0.3)
 
 ---
 

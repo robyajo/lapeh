@@ -2,6 +2,14 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-30] - Tuesday, December 30, 2025 - Smart Blog Automation (v3.0.8)
+
+### 🤖 Release Script Improvements
+
+- **Smart Blog Generation**: The `release.js` script now intelligently reads content from `CHANGELOG.md` (both ID and EN) to generate release blog posts. No more generic "Routine maintenance" content!
+- **Flexible Version Detection**: Improved Regex to detect versions in various changelog header formats.
+- **Bilingual Support**: Ensures release notes are accurately available in both Indonesian and English.
+
 ## [2025-12-30] - Tuesday, December 30, 2025 - Documentation & CLI (v3.0.7)
 
 ### 📚 Documentation
