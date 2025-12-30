@@ -1,0 +1,242 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "uuid": "0a928776-5efd-4207-8f76-0ab8f86b6ca8",
+      "name": "Super Admin",
+      "email": "sa@sa.com",
+      "password": "$2b$10$1/oSe4Ca1P3eoQw98LJGdOrHgjFfT/85UVHAuZ5TzIADOr0Vs1sU6",
+      "created_at": "2025-12-30T16:07:25.057Z",
+      "updated_at": "2025-12-30T16:07:25.057Z",
+      "avatar": null,
+      "avatar_url": null,
+      "email_verified_at": null,
+      "remember_token": null
+    },
+    {
+      "id": "2",
+      "uuid": "b406d696-d578-4a49-a86e-359da011abde",
+      "name": "Admin User",
+      "email": "a@a.com",
+      "password": "$2b$10$1/oSe4Ca1P3eoQw98LJGdOrHgjFfT/85UVHAuZ5TzIADOr0Vs1sU6",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z",
+      "avatar": null,
+      "avatar_url": null,
+      "email_verified_at": null,
+      "remember_token": null
+    },
+    {
+      "id": "3",
+      "uuid": "05223b20-7aad-4c23-ab84-8e3e60132f66",
+      "name": "Regular User",
+      "email": "u@u.com",
+      "password": "$2b$10$1/oSe4Ca1P3eoQw98LJGdOrHgjFfT/85UVHAuZ5TzIADOr0Vs1sU6",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z",
+      "avatar": null,
+      "avatar_url": null,
+      "email_verified_at": null,
+      "remember_token": null
+    }
+  ],
+  "roles": [
+    {
+      "id": "1",
+      "name": "Super Admin",
+      "slug": "super_admin",
+      "description": "Full access to all resources",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "2",
+      "name": "Admin",
+      "slug": "admin",
+      "description": "Administrator",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "3",
+      "name": "User",
+      "slug": "user",
+      "description": "Regular user",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "1",
+      "name": "Manage Users",
+      "slug": "users.manage",
+      "description": "Create, update, and delete users",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "2",
+      "name": "Create Users",
+      "slug": "users.create",
+      "description": "Create users",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "3",
+      "name": "View Users",
+      "slug": "users.view",
+      "description": "View users",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "4",
+      "name": "Update Users",
+      "slug": "users.update",
+      "description": "Update users",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "5",
+      "name": "Delete Users",
+      "slug": "users.delete",
+      "description": "Delete users",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "6",
+      "name": "Manage Roles",
+      "slug": "roles.manage",
+      "description": "Create, update, and delete roles",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "7",
+      "name": "Manage Permissions",
+      "slug": "permissions.manage",
+      "description": "Create, update, and delete permissions",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "8",
+      "name": "Manage Profiles",
+      "slug": "profiles.manage",
+      "description": "Manage user profiles",
+      "created_at": "2025-12-30T16:07:25.058Z",
+      "updated_at": "2025-12-30T16:07:25.058Z"
+    }
+  ],
+  "user_roles": [
+    {
+      "id": "1",
+      "user_id": "1",
+      "role_id": "1",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "2",
+      "user_id": "2",
+      "role_id": "2",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "3",
+      "user_id": "3",
+      "role_id": "3",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    }
+  ],
+  "role_permissions": [
+    {
+      "id": "1",
+      "role_id": "1",
+      "permission_id": "1",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "2",
+      "role_id": "1",
+      "permission_id": "2",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "3",
+      "role_id": "1",
+      "permission_id": "3",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "4",
+      "role_id": "1",
+      "permission_id": "4",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "5",
+      "role_id": "1",
+      "permission_id": "5",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "6",
+      "role_id": "1",
+      "permission_id": "6",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "7",
+      "role_id": "1",
+      "permission_id": "7",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "8",
+      "role_id": "1",
+      "permission_id": "8",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "9",
+      "role_id": "2",
+      "permission_id": "1",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "10",
+      "role_id": "2",
+      "permission_id": "2",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "11",
+      "role_id": "2",
+      "permission_id": "3",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "12",
+      "role_id": "2",
+      "permission_id": "4",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "13",
+      "role_id": "2",
+      "permission_id": "5",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    },
+    {
+      "id": "14",
+      "role_id": "3",
+      "permission_id": "8",
+      "created_at": "2025-12-30T16:07:25.058Z"
+    }
+  ],
+  "user_permissions": []
+}

@@ -1,6 +1,5 @@
 import { Validator } from "../../lib/utils/validator";
 import { z } from "zod";
-import { prisma } from "../../lib/core/database";
 
 describe("Validator", () => {
   describe("Basic Validation", () => {
@@ -68,35 +67,6 @@ describe("Validator", () => {
       const validator = Validator.make(data, rules);
       expect(await validator.fails()).toBe(true);
       expect(validator.errors()).toHaveProperty("password_confirmation");
-    });
-  });
-
-  describe("Database Rules", () => {
-    it("should validate unique rule", async () => {
-      const data = { email: "new@example.com" };
-      const rules = {
-        email: "required|email|unique:users,email",
-      };
-
-      // Mock prisma count to return 0 (not found, so unique)
-      (prisma.users.count as jest.Mock).mockResolvedValue(0);
-
-      const validator = Validator.make(data, rules);
-      expect(await validator.passes()).toBe(true);
-    });
-
-    it("should fail unique rule if record exists", async () => {
-      const data = { email: "taken@example.com" };
-      const rules = {
-        email: "required|email|unique:users,email",
-      };
-
-      // Mock prisma count to return 1 (found, so not unique)
-      (prisma.users.count as jest.Mock).mockResolvedValue(1);
-
-      const validator = Validator.make(data, rules);
-      expect(await validator.fails()).toBe(true);
-      expect(validator.errors()).toHaveProperty("email");
     });
   });
 

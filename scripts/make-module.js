@@ -55,8 +55,7 @@ export async function destroy(req: Request, res: Response) {
 fs.writeFileSync(path.join(moduleDir, `${lowerName}.controller.ts`), controllerContent);
 
 // Service (Optional but good for NestJS style)
-const serviceContent = `// import { prisma } from "@lapeh/core/database";
-
+const serviceContent = `
 export async function findAll() {
   return [];
 }
@@ -83,18 +82,8 @@ export default router;
 `;
 fs.writeFileSync(path.join(moduleDir, `${lowerName}.routes.ts`), routeContent);
 
-// Prisma Model
-const prismaContent = `model ${name} {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-`;
-fs.writeFileSync(path.join(moduleDir, `${lowerName}.prisma`), prismaContent);
-
 console.log(`✅ Module ${name} created successfully at src/modules/${name}`);
 console.log(`   - ${lowerName}.controller.ts`);
 console.log(`   - ${lowerName}.service.ts`);
 console.log(`   - ${lowerName}.routes.ts`);
-console.log(`   - ${lowerName}.prisma`);
 console.log(`\n👉 Don't forget to register the route in src/routes/index.ts!`);

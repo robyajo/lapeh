@@ -1,7 +1,8 @@
 import request from "supertest";
 import { createApp } from "../../../lib/bootstrap";
 import { Express } from "express";
-import { prisma } from "@lapeh/core/database";
+import { users, roles } from "@lapeh/core/store";
+import bcrypt from "bcryptjs";
 
 describe("Auth API Integration", () => {
   let app: Express;
@@ -10,45 +11,46 @@ describe("Auth API Integration", () => {
     app = await createApp();
   });
 
+  beforeEach(() => {
+    users.length = 0;
+    users.push({
+      id: "1",
+      name: "Admin User",
+      email: "admin@lapeh.com",
+      password: bcrypt.hashSync("password", 10),
+      uuid: "uuid-admin",
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    if (roles.length === 0) {
+      roles.push(
+        {
+          id: "1",
+          name: "Admin",
+          slug: "admin",
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: "2",
+          name: "User",
+          slug: "user",
+          created_at: new Date(),
+          updated_at: new Date(),
+        }
+      );
+    }
+  });
+
   describe("POST /api/auth/register", () => {
     it("should register a new user successfully", async () => {
       const userData = {
-        name: "Test User",
-        email: "test@example.com",
+        name: "New User",
+        email: "newuser@example.com",
         password: "password123",
         confirmPassword: "password123",
       };
-
-      // Mock prisma.users.count for unique check (0 means unique/not found)
-      (prisma.users.count as jest.Mock).mockResolvedValue(0);
-
-      // Mock prisma.users.findUnique to return null (user doesn't exist)
-      (prisma.users.findUnique as jest.Mock).mockResolvedValue(null);
-
-      // Mock prisma.users.create
-      (prisma.users.create as jest.Mock).mockResolvedValue({
-        id: 1n,
-        uuid: "user-uuid",
-        name: userData.name,
-        email: userData.email,
-        password: "hashedpassword",
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
-
-      // Mock prisma.roles.findUnique for default role
-      (prisma.roles.findUnique as jest.Mock).mockResolvedValue({
-        id: 1n,
-        slug: "user",
-        name: "User",
-      });
-
-      // Mock prisma.user_roles.create
-      (prisma.user_roles.create as jest.Mock).mockResolvedValue({
-        id: 1n,
-        user_id: 1n,
-        role_id: 1n,
-      });
 
       const res = await request(app).post("/api/auth/register").send(userData);
 
@@ -59,46 +61,43 @@ describe("Auth API Integration", () => {
     });
 
     it("should return 422 if email already exists", async () => {
-      (prisma.users.count as jest.Mock).mockResolvedValue(1);
-
-      const res = await request(app).post("/api/auth/register").send({
-        name: "Test User",
-        email: "test@example.com",
+      // Use existing user from store.ts
+      const existingUser = {
+        name: "Admin User",
+        email: "admin@lapeh.com",
         password: "password123",
         confirmPassword: "password123",
-      });
+      };
+
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send(existingUser);
 
       expect(res.status).toBe(422);
+      expect(res.body.errors).toHaveProperty("email");
     });
   });
 
   describe("POST /api/auth/login", () => {
     it("should login successfully with valid credentials", async () => {
-      // We need to match the bcrypt hash.
-      const mockUser = {
-        id: 1n,
-        uuid: "user-uuid",
-        name: "Test User",
-        email: "test@example.com",
-        password: "", // Will be set below
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
-
-      const bcrypt = require("bcryptjs");
-      const hashedPassword = await bcrypt.hash("password123", 10);
-      mockUser.password = hashedPassword;
-
-      (prisma.users.findUnique as jest.Mock).mockResolvedValue(mockUser);
-
+      // Use existing user from store.ts (admin@lapeh.com / password)
       const res = await request(app).post("/api/auth/login").send({
-        email: "test@example.com",
-        password: "password123",
+        email: "admin@lapeh.com",
+        password: "password",
       });
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
       expect(res.body.data).toHaveProperty("token");
+    });
+
+    it("should fail with invalid credentials", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email: "admin@lapeh.com",
+        password: "wrongpassword",
+      });
+
+      expect(res.status).toBe(401);
     });
   });
 });

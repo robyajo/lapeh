@@ -10,7 +10,6 @@ import http from "http";
 import path from "path";
 import { initRealtime } from "./core/realtime";
 import { initRedis, redis } from "./core/redis";
-import { prisma } from "./core/database";
 import { visitorCounter } from "./middleware/visitor";
 import { errorHandler } from "./middleware/error";
 import { apiLimiter } from "./middleware/rateLimit";
@@ -23,31 +22,41 @@ export async function createApp() {
   // We map '@lapeh' to the directory containing this file (lib/ or dist/lib/)
   moduleAlias.addAlias("@lapeh", __dirname);
 
-  // LOAD USER CONFIG
+  // Register alias for src directory (@/) to support imports in controllers/routes
   const isProduction = process.env.NODE_ENV === "production";
+  moduleAlias.addAlias(
+    "@",
+    isProduction
+      ? path.join(process.cwd(), "dist", "src")
+      : path.join(process.cwd(), "src")
+  );
+
+  // LOAD USER CONFIG
   const configPath = isProduction
-      ? path.join(process.cwd(), "dist", "src", "config")
-      : path.join(process.cwd(), "src", "config");
+    ? path.join(process.cwd(), "dist", "src", "config")
+    : path.join(process.cwd(), "src", "config");
 
   let appConfig: any = { timeout: 30000, jsonLimit: "10mb" };
-  let corsConfig: any = { 
-      origin: process.env.CORS_ORIGIN || "*", 
-      credentials: true,
-      exposedHeaders: ["x-access-token", "x-access-expires-at"],
+  let corsConfig: any = {
+    origin: process.env.CORS_ORIGIN || "*",
+    credentials: true,
+    exposedHeaders: ["x-access-token", "x-access-expires-at"],
   };
 
   try {
-      const appConfModule = require(path.join(configPath, "app"));
-      if (appConfModule.appConfig) appConfig = { ...appConfig, ...appConfModule.appConfig };
+    const appConfModule = require(path.join(configPath, "app"));
+    if (appConfModule.appConfig)
+      appConfig = { ...appConfig, ...appConfModule.appConfig };
   } catch (e) {
-      // ignore
+    // ignore
   }
 
   try {
-      const corsConfModule = require(path.join(configPath, "cors"));
-      if (corsConfModule.corsConfig) corsConfig = { ...corsConfig, ...corsConfModule.corsConfig };
+    const corsConfModule = require(path.join(configPath, "cors"));
+    if (corsConfModule.corsConfig)
+      corsConfig = { ...corsConfig, ...corsConfModule.corsConfig };
   } catch (e) {
-      // ignore
+    // ignore
   }
 
   const app = express();
@@ -61,7 +70,7 @@ export async function createApp() {
     res.setTimeout(timeout, () => {
       res.status(408).send({
         status: "error",
-        message: `Request Timeout (${timeout/1000}s limit)`,
+        message: `Request Timeout (${timeout / 1000}s limit)`,
       });
     });
     next();
@@ -78,7 +87,9 @@ export async function createApp() {
 
   app.use(requestLogger);
   app.use(express.json({ limit: appConfig.jsonLimit || "10mb" }));
-  app.use(express.urlencoded({ extended: true, limit: appConfig.jsonLimit || "10mb" }));
+  app.use(
+    express.urlencoded({ extended: true, limit: appConfig.jsonLimit || "10mb" })
+  );
   app.use(apiLimiter);
   app.use(visitorCounter);
 
@@ -93,35 +104,24 @@ export async function createApp() {
 
   // DYNAMIC ROUTE LOADING
   try {
+    console.log("BOOTSTRAP: Loading routes. NODE_ENV=", process.env.NODE_ENV);
     const isProduction = process.env.NODE_ENV === "production";
-    const userRoutesPath = isProduction
+    let userRoutesPath = isProduction
       ? path.join(process.cwd(), "dist", "src", "routes")
       : path.join(process.cwd(), "src", "routes");
+
+    // In test environment, explicitly point to index to ensure resolution
+    if (process.env.NODE_ENV === "test") {
+      // In test environment (ts-jest), we need to point to the TS file
+      // And we might need to use the full path with extension
+      userRoutesPath = path.join(process.cwd(), "src", "routes", "index.ts");
+    }
 
     // Gunakan require agar sinkron dan mudah dicatch
     // Check if file exists before requiring to avoid crash in tests/clean env
     try {
-      // In test environment, we might need to point to src/routes explicitly if not compiled
-      // const routesPath = process.env.NODE_ENV === 'test'
-      //    ? path.join(process.cwd(), "src", "routes", "index.ts")
-      //    : userRoutesPath;
-
-      // Note: For TS files in jest, we rely on ts-jest handling 'require' if it points to .ts or we need to use 'import'
-      // But 'require' in jest with ts-jest should work if configured.
-
-      // However, require(path) with .ts extension might be tricky.
-      // Let's stick to userRoutesPath but maybe adjust for test env.
-
-      // Check if we are in test environment and using ts-jest
-      // If so, we might need to import the TS file directly via relative path if alias is not working for require
-
       const { apiRouter } = require(userRoutesPath);
       app.use("/api", apiRouter);
-      console.log(
-        `✅ User routes loaded successfully from ${
-          isProduction ? "dist/" : ""
-        }src/routes`
-      );
     } catch (e) {
       // If it's just missing module, maybe we are in test mode or fresh install
       if (process.env.NODE_ENV !== "test") {
@@ -134,10 +134,12 @@ export async function createApp() {
           `Error loading routes in test mode from ${userRoutesPath}:`,
           e
         );
+        throw e;
       }
     }
   } catch (error) {
     console.error(error);
+    if (process.env.NODE_ENV === "test") throw error;
   }
 
   app.use(errorHandler);
@@ -147,7 +149,7 @@ export async function createApp() {
 
 export async function bootstrap() {
   // Validasi Environment Variables
-  const requiredEnvs = ["DATABASE_URL", "JWT_SECRET"];
+  const requiredEnvs = ["JWT_SECRET"];
   const missingEnvs = requiredEnvs.filter((key) => !process.env[key]);
   if (missingEnvs.length > 0) {
     console.error(
@@ -186,7 +188,6 @@ export async function bootstrap() {
     console.log(`\n🛑 ${signal} received. Closing resources...`);
     server.close(() => console.log("Http server closed."));
     try {
-      await prisma.$disconnect();
       if (redis && redis.status === "ready") await redis.quit();
       process.exit(0);
     } catch (err) {

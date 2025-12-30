@@ -20,7 +20,6 @@
   "include": [
     "lib",
     "src",
-    "prisma",
     "generated",
     "tests"
   ],

@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
-import { Prisma } from "@prisma/client";
 import { sendError } from "../utils/response";
 import { Log } from "../utils/logger";
 
@@ -19,26 +18,7 @@ export function errorHandler(
     return sendError(res, 400, "Validation Error", formattedErrors);
   }
 
-  // 2. Prisma Errors
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    // P2002: Unique constraint failed
-    if (err.code === "P2002") {
-      const target = (err.meta?.target as string[]) || [];
-      const fields = target.length > 0 ? target.join(", ") : "field";
-      return sendError(res, 409, `Unique constraint failed on: ${fields}`);
-    }
-    // P2003: Foreign key constraint failed
-    if (err.code === "P2003") {
-      const field = err.meta?.field_name || "unknown field";
-      return sendError(res, 400, `Foreign key constraint failed on: ${field}`);
-    }
-    // P2025: Record not found
-    if (err.code === "P2025") {
-      return sendError(res, 404, "Record not found");
-    }
-  }
-
-  // 3. JWT Errors
+  // 2. JWT Errors
   if (err.name === "JsonWebTokenError") {
     return sendError(res, 401, "Invalid token");
   }

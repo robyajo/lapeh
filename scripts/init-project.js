@@ -6,7 +6,6 @@ const readline = require("readline");
 const rootDir = path.join(__dirname, "..");
 const envExample = path.join(rootDir, ".env.example");
 const envFile = path.join(rootDir, ".env");
-const prismaBaseFile = path.join(rootDir, "prisma", "base.prisma.template");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -44,32 +43,6 @@ const selectOption = async (query, options) => {
   console.log("🚀 Starting project initialization...");
 
   try {
-    // --- DATABASE SELECTION ---
-    console.log("\n--- Database Configuration ---");
-    const dbType = await selectOption("Database apa yang akan digunakan?", [
-      { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" },
-      { key: "mysql", label: "MySQL", provider: "mysql", defaultPort: "3306" },
-      { key: "mongo", label: "MongoDB", provider: "mongodb", defaultPort: "27017" },
-    ]);
-
-    let dbUrl = "";
-    let dbProvider = dbType.provider;
-
-    const host = await ask("Database Host", "localhost");
-    const port = await ask("Database Port", dbType.defaultPort);
-    const user = await ask("Database User", dbType.key === "mongo" ? "" : "root");
-    const password = await ask("Database Password", "");
-    const dbName = await ask("Database Name", "lapeh");
-
-    if (dbType.key === "pgsql") {
-      dbUrl = `postgresql://${user}:${password}@${host}:${port}/${dbName}?schema=public`;
-    } else if (dbType.key === "mysql") {
-      dbUrl = `mysql://${user}:${password}@${host}:${port}/${dbName}`;
-    } else if (dbType.key === "mongo") {
-      const auth = user ? `${user}:${password}@` : "";
-      dbUrl = `mongodb://${auth}${host}:${port}/${dbName}?authSource=admin`;
-    }
-
     // Close readline as we are done with input
     rl.close();
 
@@ -80,64 +53,15 @@ const selectOption = async (query, options) => {
       envContent = fs.readFileSync(envExample, "utf8");
     } else {
       // Fallback minimal env if example missing
-      envContent = `PORT=4000\nDATABASE_PROVIDER="postgresql"\nDATABASE_URL=""\nJWT_SECRET="replace_this"\n`;
-    }
-
-    // Replace DATABASE_URL and DATABASE_PROVIDER
-    // Regex to replace existing values or append if missing (simplified)
-    if (envContent.includes("DATABASE_URL=")) {
-      envContent = envContent.replace(/DATABASE_URL=".+"/g, `DATABASE_URL="${dbUrl}"`);
-      envContent = envContent.replace(/DATABASE_URL=.+/g, `DATABASE_URL="${dbUrl}"`); // Handle unquoted
-    } else {
-      envContent += `\nDATABASE_URL="${dbUrl}"`;
-    }
-
-    if (envContent.includes("DATABASE_PROVIDER=")) {
-      envContent = envContent.replace(/DATABASE_PROVIDER=".+"/g, `DATABASE_PROVIDER="${dbProvider}"`);
-      envContent = envContent.replace(/DATABASE_PROVIDER=.+/g, `DATABASE_PROVIDER="${dbProvider}"`);
-    } else {
-      envContent += `\nDATABASE_PROVIDER="${dbProvider}"`;
+      envContent = `PORT=4000\nJWT_SECRET="replace_this"\n`;
     }
 
     fs.writeFileSync(envFile, envContent);
-    console.log("✅ .env updated with database configuration.");
-
-    // Update base.prisma.template with the correct provider
-    console.log("\n�️  Updating Prisma configuration...");
-    if (fs.existsSync(prismaBaseFile)) {
-      let prismaContent = fs.readFileSync(prismaBaseFile, "utf8");
-      
-      // Replace provider in datasource block
-      // Matches: provider = "..." inside datasource db { ... }
-      prismaContent = prismaContent.replace(
-        /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")[^"]+(")/, 
-        `$1${dbProvider}$2`
-      );
-
-      fs.writeFileSync(prismaBaseFile, prismaContent);
-      console.log(`✅ prisma/base.prisma.template updated to use ${dbProvider}.`);
-    } else {
-        console.warn("⚠️  prisma/base.prisma.template not found. Skipping prisma update.");
-    }
+    console.log("✅ .env created.");
 
     // 3. Install dependencies
     console.log("\n📦 Installing dependencies...");
     execSync("npm install", { stdio: "inherit", cwd: rootDir });
-
-    // 4. Create .vscode/settings.json
-    console.log("\n🛠️ Configuring VS Code...");
-    const vscodeDir = path.join(rootDir, ".vscode");
-    if (!fs.existsSync(vscodeDir)) {
-      fs.mkdirSync(vscodeDir, { recursive: true });
-    }
-    const settingsFile = path.join(vscodeDir, "settings.json");
-    const settingsContent = {
-      "files.associations": {
-        "*.model": "prisma"
-      }
-    };
-    fs.writeFileSync(settingsFile, JSON.stringify(settingsContent, null, 2));
-    console.log("✅ VS Code configured (.model support added).");
 
     // 5. Generate JWT Secret
     console.log("\n🔑 Generating JWT Secret...");
@@ -150,41 +74,11 @@ const selectOption = async (query, options) => {
         console.warn("⚠️ Failed to generate JWT secret automatically.");
     }
 
-    // 5. Setup Database (Migrate)
-    console.log("\n🗄️ Setting up database...");
-    try {
-      execSync("node scripts/compile-schema.js", { stdio: "inherit", cwd: rootDir });
-      console.log("⚙️ Generating Prisma Client...");
-      execSync("npx prisma generate", { stdio: "inherit", cwd: rootDir });
-      
-      console.log("🚀 Running Migration...");
-      if (dbProvider === 'mongodb') {
-        execSync("npx prisma db push", { stdio: "inherit", cwd: rootDir });
-      } else {
-        execSync("npx prisma migrate dev --name init_setup", { stdio: "inherit", cwd: rootDir });
-      }
-    } catch (error) {
-      console.warn(
-        '⚠️ Database migration had an issue. Please check your database connection in .env and run "npm run prisma:migrate" manually.'
-      );
-    }
-
-    // 6. Seed Database
-    console.log("\n🌱 Seeding database...");
-    try {
-      execSync("npm run db:seed", { stdio: "inherit", cwd: rootDir });
-    } catch (error) {
-      console.warn(
-        '⚠️ Database seeding had an issue. You might need to run "npm run db:seed" manually.'
-      );
-    }
-
     console.log("\n✅ Setup complete! You can now run:");
     console.log("   npm run dev");
 
   } catch (error) {
     console.error("\n❌ Setup failed:", error.message);
-    rl.close();
     process.exit(1);
   }
 })();

@@ -1,5 +1,4 @@
 import { z, ZodSchema, ZodError, ZodIssue } from "zod";
-import { prisma } from "../core/database";
 
 export class Validator {
   private data: any;
@@ -242,44 +241,9 @@ export class Validator {
           break;
         case "unique":
           // unique:table,column,ignore,idColumn
-          const [table, column = "id", ignoreValue, ignoreColumn = "id"] =
-            params;
-          schema = schema.refine(
-            async (val: any) => {
-              if (!val) return true;
-              const where: any = { [column]: val };
-              if (ignoreValue && ignoreValue !== "null") {
-                // Try to handle numeric IDs if ignoreValue looks numeric
-                const ignoreVal = !isNaN(Number(ignoreValue))
-                  ? Number(ignoreValue)
-                  : ignoreValue;
-                // But Prisma uses BigInt for IDs often in this project?
-                // Let's assume string or number is fine, user can cast if needed.
-                // In this project, IDs are BigInt.
-                if (
-                  typeof ignoreVal === "number" ||
-                  /^\d+$/.test(String(ignoreValue))
-                ) {
-                  where[ignoreColumn] = { not: BigInt(ignoreValue) };
-                } else {
-                  where[ignoreColumn] = { not: ignoreValue };
-                }
-              }
-
-              try {
-                // @ts-ignore
-                const count = await prisma[table].count({ where });
-                return count === 0;
-              } catch (e) {
-                console.error(
-                  `Validator unique check failed for table ${table}:`,
-                  e
-                );
-                return false;
-              }
-            },
-            { message: `The ${column} has already been taken.` }
-          );
+          // NOTE: Unique check requires Database implementation.
+          // Since v3.0.0 (No-ORM), this rule is disabled by default.
+          // You should implement your own uniqueness check manually in the controller.
           break;
       }
     }

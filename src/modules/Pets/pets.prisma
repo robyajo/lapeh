@@ -1,9 +1,0 @@
-
-model pets {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  species    String
-  age        Int
-  created_at DateTime?
-  updated_at DateTime?
-}

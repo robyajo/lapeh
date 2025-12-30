@@ -9,7 +9,6 @@ To fully understand Lapeh Framework, you need to know what each file and folder 
 | `bin/`               | Contains execution scripts for CLI (`npx lapeh`). You rarely touch this.       |
 | `doc/`               | Project documentation resides here.                                            |
 | `lib/`               | **Framework Core**. Internal parts of the framework you rarely touch.          |
-| `prisma/`            | The heart of Database configuration.                                           |
 | `scripts/`           | Collection of Node.js utility scripts (generators, schema compilers, etc).     |
 | `src/`               | **Main Source Code**. 99% of your coding happens here.                         |
 | `.env`               | Secret variables (Database URL, API Keys). **Do not commit this file to Git!** |
@@ -29,7 +28,6 @@ Lapeh uses a **Modular** approach. Each feature is grouped into a single module 
 Example `Auth` module structure:
 
 - `Auth/auth.controller.ts`: Application logic (Controller).
-- `Auth/auth.prisma`: Database table definition (Model).
 
 ### `src/routes/`
 
@@ -54,7 +52,6 @@ This part is similar to `node_modules` or the `.next` folder in Next.js. This is
 The "Engine" part of the framework.
 
 - `server.ts`: Express App setup.
-- `database.ts`: Prisma Client instance.
 - `redis.ts`: Redis connection.
 - `serializer.ts`: JSON Schema caching logic.
 
@@ -74,18 +71,11 @@ Built-in Helper functions.
 - `response.ts`: Standard JSON response format (`sendFastSuccess`, `sendError`).
 - `logger.ts`: Logging system (Winston).
 
-## `prisma/` Folder
-
-- `migrations/`: Database change history (SQL files). Do not edit manually.
-- `base.prisma.template`: Header of the database schema (contains db datasource config).
-- `seed.ts`: Script for populating initial data (Data Seeding).
-
 ## `scripts/` Folder
 
 "Magic" scripts executed by `npm run`.
 
-- `make-module.js`: New module generator (Controller + Prisma Model).
-- `compile-schema.js`: Merges `.prisma` files from each module into a single `schema.prisma`.
+- `make-module.js`: New module generator (Controller).
 - `init-project.js`: Initial setup wizard.
 - `generate-jwt-secret.js`: Automatic JWT secret key generator.
 

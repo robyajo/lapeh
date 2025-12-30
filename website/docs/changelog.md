@@ -2,6 +2,22 @@
 
 File ini mencatat semua perubahan, pembaruan, dan perbaikan yang dilakukan pada framework Lapeh, diurutkan berdasarkan tanggal.
 
+## [2025-12-30] - Selasa, 30 Desember 2025 - Major Release v3.0.0 (No-ORM)
+
+### ⚠️ Perubahan Besar (Breaking Changes)
+
+- **Penghapusan Prisma ORM**: Lapeh Framework kini **tidak lagi menyertakan ORM bawaan** (seperti Prisma). Kami memberikan kebebasan penuh kepada pengguna untuk memilih stack database mereka sendiri (Prisma, TypeORM, Drizzle, dll).
+- **Update CLI**:
+  - `init`: Tidak lagi menanyakan konfigurasi database.
+  - `make:module`: Tidak lagi membuat file `.prisma`.
+  - Penghapusan script `compile-schema.js` dan logika terkait split-schema Prisma.
+
+### 🚀 Fitur & Refactor
+
+- **In-Memory Mock Data**: Modul bawaan (Auth, RBAC, Pets) kini menggunakan data dummy in-memory untuk demonstrasi tanpa perlu setup database.
+- **Redis Caching**: Implementasi caching Redis pada Pets controller.
+- **Dokumentasi**: Pembaruan menyeluruh pada dokumentasi untuk mencerminkan filosofi agnostik database.
+
 ## [2025-12-29] - Senin, 29 Desember 2025 - Perbaikan Bug CLI Init (v2.6.7)
 
 ### 🛠️ Perbaikan Bug

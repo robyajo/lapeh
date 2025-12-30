@@ -1,131 +1,54 @@
-# Getting Started with Lapeh Framework
+# Memulai (Getting Started)
 
-Selamat datang di dokumentasi resmi **Lapeh Framework**. Panduan ini akan membantu Anda memulai instalasi, konfigurasi, dan pemahaman dasar tentang struktur proyek.
+Selamat datang di dokumentasi Lapeh Framework! Panduan ini akan membantu Anda memulai proyek baru menggunakan Lapeh.
 
-## Persyaratan Sistem
+## Prasyarat
 
-Sebelum memulai, pastikan sistem Anda memenuhi persyaratan berikut:
+Sebelum memulai, pastikan Anda telah menginstal:
 
-- **Node.js**: Versi 18.x atau lebih baru.
-- **Database**: PostgreSQL (Recommended) atau MySQL/MariaDB.
-- **Package Manager**: NPM (bawaan Node.js).
+- [Node.js](https://nodejs.org/) (versi 18 atau lebih baru)
+- [npm](https://www.npmjs.com/) (biasanya terinstal bersama Node.js)
 
-## Instalasi
+## Instalasi & Pembuatan Proyek
 
-Anda dapat menggunakan `npx` (tanpa instalasi) atau menginstall CLI secara global.
-
-### Opsi 1: Menggunakan npx (Direkomendasikan)
-
-Cara termudah untuk memulai tanpa menginstall apapun.
+Anda dapat membuat proyek Lapeh baru dengan menjalankan perintah berikut di terminal Anda:
 
 ```bash
-# Setup Interaktif Standar
-npx lapeh@latest init nama-project-anda
+npx lapeh-cli@latest create my-app
 ```
 
-### Opsi 2: Instalasi Global CLI
+Ikuti petunjuk di terminal untuk mengonfigurasi proyek Anda.
 
-Jika Anda sering membuat project Lapeh, Anda bisa menginstall CLI secara global:
+## Menjalankan Proyek
 
-```bash
-npm install -g lapeh@latest
-```
-
-Setelah terinstall, Anda bisa menggunakan perintah `lapeh` langsung:
+Setelah proyek dibuat, masuk ke direktori proyek dan jalankan server pengembangan:
 
 ```bash
-lapeh init nama-project-anda
-```
-
-### Pilihan Setup Project
-
-Saat membuat project (baik via `npx` atau global), Anda bisa menggunakan flags berikut:
-
-- **Setup Lengkap** (Termasuk data dummy, disarankan untuk belajar):
-  ```bash
-  npx lapeh@latest init nama-project-anda --full
-  ```
-
-- **Setup Default** (Melewati pertanyaan, menggunakan PostgreSQL):
-  ```bash
-  npx lapeh@latest init nama-project-anda --y
-  ```
-
-### 2. Setup Awal
-
-Setelah project dibuat, masuk ke direktori project dan jalankan setup wizard:
-
-```bash
-cd nama-project-anda
-npm run first
-```
-
-Script ini akan melakukan hal-hal berikut secara otomatis:
-
-1.  Menyalin `.env.example` ke `.env`.
-2.  Menginstall semua dependency (`npm install`).
-3.  Membuat **JWT Secret** yang aman.
-4.  Menjalankan migrasi database (membuat tabel).
-5.  Menjalankan seeder (mengisi data awal).
-
-### 3. Jalankan Server Development
-
-```bash
+cd my-app
 npm run dev
 ```
 
-Server akan berjalan di `http://localhost:4000` (atau port yang Anda tentukan di `.env`).
+Server akan berjalan di `http://localhost:3000` (atau port yang Anda konfigurasi).
 
-## Struktur Direktori
+## Pengujian Login (Default Credentials)
 
-Berikut adalah struktur folder standar Lapeh Framework:
+Untuk memudahkan pengembangan dan pengujian awal, proyek ini menyertakan data pengguna default di `database.json`. Anda dapat menggunakan kredensial berikut untuk menguji endpoint login:
 
-```
-my-app/
-├── bin/                  # Script CLI untuk npx
-├── doc/                  # Dokumentasi proyek
-├── prisma/               # Konfigurasi Database & Schema
-│   ├── migrations/       # File history migrasi database
-│   ├── base.prisma.template # Template konfigurasi database
-│   ├── schema.prisma     # File schema gabungan (Auto-generated)
-│   └── seed.ts           # Script untuk mengisi data awal
-├── scripts/              # Script utility (Generator, Compiler)
-├── src/                  # Source code utama aplikasi
-│   ├── controllers/      # Logika bisnis (Handler request)
-│   ├── core/             # Konfigurasi inti (DB, Redis, Server)
-│   ├── middleware/       # Middleware Express (Auth, RateLimit)
-│   ├── models/           # Definisi Schema Prisma per-fitur
-│   ├── routes/           # Definisi routing API
-│   ├── utils/            # Helper function (Response, Validator)
-│   └── index.ts          # Entry point aplikasi
-├── .env                  # Variabel lingkungan (Rahasia)
-├── package.json          # Dependensi & Script NPM
-└── tsconfig.json         # Konfigurasi TypeScript
-```
+- **Email**: `sa@sa.com`
+- **Password**: `password`
 
-## Konfigurasi Environment (.env)
+Endpoint login biasanya tersedia di:
+`POST /api/v1/auth/login`
 
-File `.env` menyimpan konfigurasi penting. Berikut adalah variabel kunci:
+Gunakan kredensial ini untuk mendapatkan Access Token dan mulai menjelajahi API.
 
-```ini
-# Server
-PORT=4000
-NODE_ENV=development
+## Struktur Proyek
 
-# Database (Ganti sesuai kredensial Anda)
-DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
+Berikut adalah gambaran singkat struktur proyek Lapeh:
 
-# Security
-JWT_SECRET="rahasia-super-panjang-dan-acak"
-ACCESS_TOKEN_EXPIRES_IN=3600 # 1 jam
+- `src/modules`: Berisi logika bisnis (Controllers, Services).
+- `src/routes`: Definisi rute API.
+- `lib/core`: Komponen inti framework.
+- `database.json`: Penyimpanan data sementara (JSON-based).
 
-# Redis (Opsional - otomatis mock jika tidak ada)
-REDIS_URL="redis://localhost:6379"
-NO_REDIS=false # Set true untuk memaksa mode mock
-```
-
-## Langkah Selanjutnya
-
-- Pelajari cara menggunakan **[CLI Tools](CLI.md)** untuk mempercepat development.
-- Pahami **[Fitur & Konsep Inti](FEATURES.md)** framework.
-- Ikuti **[Tutorial Studi Kasus](TUTORIAL.md)** untuk membangun fitur nyata.
+Selamat berkarya dengan Lapeh!

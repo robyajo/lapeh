@@ -1,16 +1,16 @@
-const { PrismaClient } = require('@prisma/client');
+// const { PrismaClient } = require('@prisma/client');
 const https = require('https');
 
 let prisma;
 
-if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
-} else {
-  if (!global.prisma) {
-    global.prisma = new PrismaClient();
-  }
-  prisma = global.prisma;
-}
+// if (process.env.NODE_ENV === 'production') {
+//   prisma = new PrismaClient();
+// } else {
+//   if (!global.prisma) {
+//     global.prisma = new PrismaClient();
+//   }
+//   prisma = global.prisma;
+// }
 
 function getNpmVersion() {
   return new Promise((resolve) => {
@@ -50,10 +50,18 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      if (!process.env.DATABASE_URL) {
-         throw new Error('DATABASE_URL is not defined in environment variables');
-      }
+      // if (!process.env.DATABASE_URL) {
+      //    throw new Error('DATABASE_URL is not defined in environment variables');
+      // }
 
+      // Mock data since we removed Prisma
+      const totalInstalls = 0;
+      const nodeVersions = [];
+      const osStats = [];
+      const cliVersions = [];
+      const recentCrashes = [];
+
+      /*
       // 1. Total Installs (count of unique CLI 'init' or 'create' events)
       const totalInstalls = await prisma.telemetry.count({
         where: {
@@ -104,12 +112,13 @@ module.exports = async function handler(req, res) {
           timestamp: 'desc',
         },
       });
+      */
 
       // 6. Get Latest NPM Version
       const latestVersion = await getNpmVersion();
 
       // 7. Total Commands Executed (Proxy for Activity)
-      const totalCommands = await prisma.telemetry.count();
+      const totalCommands = 0; // await prisma.telemetry.count();
 
       res.status(200).json({
         totalInstalls,

@@ -2,9 +2,7 @@
   "extends": "./tsconfig.json",
   "include": [
     "lib",
-    "src",
-    "prisma",
-    "generated"
+    "src"
   ],
   "exclude": [
     "node_modules",

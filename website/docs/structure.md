@@ -9,7 +9,6 @@ Untuk memahami Lapeh Framework sepenuhnya, Anda perlu tahu apa fungsi setiap fil
 | `bin/`               | Berisi script eksekusi untuk CLI (`npx lapeh`). Anda jarang menyentuh ini.    |
 | `doc/`               | Dokumentasi proyek ini berada.                                                |
 | `lib/`               | **Framework Core**. Bagian internal framework yang jarang Anda sentuh.        |
-| `prisma/`            | Jantung konfigurasi Database.                                                 |
 | `scripts/`           | Kumpulan script Node.js untuk utility (generator, compiler schema, dll).      |
 | `src/`               | **Source Code Utama**. 99% kodingan Anda ada di sini.                         |
 | `.env`               | Variabel rahasia (Database URL, API Keys). **Jangan commit file ini ke Git!** |
@@ -29,7 +28,6 @@ Lapeh menggunakan pendekatan **Modular**. Setiap fitur dikelompokkan dalam satu 
 Contoh struktur modul `Auth`:
 
 - `Auth/auth.controller.ts`: Logika aplikasi (Controller).
-- `Auth/auth.prisma`: Definisi tabel database (Model).
 
 ### `src/routes/`
 
@@ -54,7 +52,6 @@ Bagian ini mirip dengan `node_modules` atau folder `.next` di Next.js. Ini adala
 Bagian "Mesin" framework.
 
 - `server.ts`: Setup Express App.
-- `database.ts`: Instance Prisma Client.
 - `redis.ts`: Koneksi Redis.
 - `serializer.ts`: Logic caching JSON Schema.
 
@@ -74,18 +71,11 @@ Fungsi bantuan (Helper) bawaan.
 - `response.ts`: Standar format JSON response (`sendFastSuccess`, `sendError`).
 - `logger.ts`: Sistem logging (Winston).
 
-## Folder `prisma/`
-
-- `migrations/`: History perubahan database (SQL file). Jangan diedit manual.
-- `base.prisma.template`: Header dari schema database (berisi konfigurasi datasource db).
-- `seed.ts`: Script untuk mengisi data awal (Data Seeding).
-
 ## Folder `scripts/`
 
 Script-script "Magic" yang dijalankan `npm run`.
 
-- `make-module.js`: Generator modul baru (Controller + Prisma Model).
-- `compile-schema.js`: Penggabung file `.prisma` dari setiap modul menjadi satu `schema.prisma`.
+- `make-module.js`: Generator modul baru (Controller).
 - `init-project.js`: Wizard setup awal.
 - `generate-jwt-secret.js`: Generator kunci rahasia JWT otomatis.
 

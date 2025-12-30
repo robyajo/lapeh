@@ -23,16 +23,6 @@ coverage
 *.swo
 .DS_Store
 
-# Prisma
-generated/prisma
-*.sqlite
-*.db
-*.db-journal
-dev.db
-
-# OS
-Thumbs.db
-
 # Logs
 testing/*
 # Logs

@@ -2,15 +2,15 @@
 
 **Lapeh** adalah framework **Node.js** berbasis **Express** dan **TypeScript** yang dirancang untuk kecepatan dan skalabilitas. Menggabungkan fleksibilitas Express dengan struktur solid ala **Laravel** dan **NestJS**, Lapeh memberikan pengalaman development **REST API** yang cepat, terstandarisasi, dan siap produksi.
 
-Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap: Prisma ORM, Authentication, RBAC, dan Zero-Config Redis.
+Cocok untuk developer yang mencari **Express boilerplate** dengan fitur lengkap: Authentication, dan Zero-Config Redis.
 
 ## 🚀 Fitur Utama
 
 - **Production Ready**: Struktur folder modular (MVC) yang mudah dikembangkan.
 - **TypeScript First**: Full type-safety untuk mengurangi runtime error.
-- **Prisma ORM Integration**: Database modern dengan dukungan PostgreSQL dan MySQL.
+- **Database Agnostic**: Bebas pilih database dan ORM (Prisma, TypeORM, Drizzle, dll).
 - **Standardized Structure**: Controller, Service, dan Route yang terpisah rapi.
-- **Auto CLI Generator**: Buat modul, model, dan controller dengan satu perintah.
+- **Auto CLI Generator**: Buat modul dan controller dengan satu perintah.
 - **Smart Caching**: Otomatis menggunakan Redis jika tersedia, fallback ke in-memory jika tidak.
 - **Secure by Default**: Dilengkapi Helmet, Rate Limiting, CORS, dan JWT Auth.
 - **Robust Validation**: Validasi request otomatis menggunakan Zod.
@@ -57,9 +57,7 @@ Kami menyusun "Learning Path" agar Anda bisa memahami framework ini dari nol hin
 
 ## 📦 Instalasi & Penggunaan
 
-Anda dapat menginstall framework ini menggunakan versi terbaru atau versi spesifik agar lebih fleksibel:
-
-### 1. Menggunakan Versi Terbaru (Recommended)
+Anda dapat menginstall framework ini menggunakan versi terbaru:
 
 ```bash
 npx lapeh@latest nama-project-anda
@@ -69,30 +67,13 @@ Perintah di atas akan membuat proyek **bersih** (clean slate):
 
 - Struktur folder dibuat.
 - Dependensi diinstall.
-- Database dikonfigurasi & dimigrasi (hanya Schema, **tanpa data**).
 - Folder `bin` dan `lib` framework tersembunyi di `node_modules` agar root proyek Anda tetap rapi.
-
-### 2. Setup Lengkap dengan Demo Data (`--full`)
-
-Jika Anda ingin mencoba fitur lengkap dengan data demo (Users, Roles, Pets), gunakan flag `--full`:
-
-```bash
-npx lapeh@latest nama-project-anda --full
-```
-
-Apa bedanya?
-
-- **Tanpa `--full`**: Database kosong (hanya tabel). Cocok untuk memulai proyek baru dari nol.
-- **Dengan `--full`**: Database otomatis di-seed dengan data User (Super Admin), Roles, Permissions, dan 50.000 data demo Pets.
 
 ### Apa yang terjadi otomatis?
 
 1. Struktur project dibuat (Core framework tersembunyi sebagai dependency).
 2. Dependencies diinstall.
-3. Database dipilih & dikonfigurasi secara interaktif.
-4. **Database** dibuat dan dimigrasi otomatis.
-5. **JWT Secret** di-generate otomatis.
-6. **Seeding Data** (Hanya jika menggunakan `--full`).
+3. **JWT Secret** di-generate otomatis.
 
 Masuk ke folder project dan jalankan:
 
@@ -111,18 +92,6 @@ Framework ini didesain dengan memprioritaskan keamanan:
 
 - **Zero-Vulnerability Policy**: Kami secara rutin melakukan audit dependensi (`npm audit`) untuk memastikan tidak ada celah keamanan.
 - **Framework-as-Dependency**: Dengan menyembunyikan core logic di `node_modules`, pembaruan framework menjadi lebih mudah (cukup update versi `lapeh` di `package.json`) tanpa merusak kode aplikasi Anda.
-
-### 🔑 Akun Default (Jika menggunakan `--full` atau `npm run db:seed`)
-
-Jika Anda melakukan setup dengan flag `--full`, database akan terisi dengan akun default berikut:
-
-| Role            | Email       | Password |
-| :-------------- | :---------- | :------- |
-| **Super Admin** | `sa@sa.com` | `string` |
-| **Admin**       | `a@a.com`   | `string` |
-| **User**        | `u@u.com`   | `string` |
-
-> **Catatan:** Segera ubah password akun-akun ini jika Anda mendeploy ke production!
 
 ---
 
@@ -202,18 +171,7 @@ Command ini akan membuat:
 - `src/services/product.service.ts`
 - `src/routes/product.route.ts` (dan otomatis didaftarkan di `src/routes/index.ts` jika memungkinkan)
 
-### 2. Membuat Model Database
-
-Membuat file model Prisma baru di dalam folder `src/models/` (atau `prisma/models` tergantung konfigurasi).
-
-```bash
-npm run make:model NamaModel
-# Contoh: npm run make:model User
-```
-
-Ini akan membuat file `src/models/User.prisma`.
-
-### 3. Membuat Controller
+### 2. Membuat Controller
 
 Membuat file Controller baru. Gunakan flag `-r` untuk membuat controller lengkap dengan method CRUD (index, show, store, update, destroy).
 
@@ -225,33 +183,21 @@ npm run make:controller NamaController
 npm run make:controller PaymentController -r
 ```
 
-### 4. Workflow Database (Prisma)
+### 3. Database (No-ORM)
 
-Karena framework ini menggunakan **Schema Terpisah** (split schema), Anda **TIDAK BOLEH** mengedit `prisma/schema.prisma` secara manual.
+Since v3.0.0, Lapeh Framework **does not include a default ORM** (like Prisma). We believe in giving you full control over your database stack.
 
-- **Edit Models**: Lakukan perubahan di `src/models/*.prisma`.
-- **Apply Changes**: Jalankan perintah migrasi standar, sistem akan otomatis menggabungkan (compile) schema Anda.
+You can freely choose to use:
 
-```bash
-# Generate Prisma Client (setiap ada perubahan model)
-npm run prisma:generate
+- **Prisma** (Manual installation)
+- **TypeORM**
+- **Drizzle ORM**
+- **Mongoose**
+- **Raw SQL** (pg, mysql2)
 
-# Migrasi Database (Development)
-npm run prisma:migrate
+The framework provides a `Validator` class for request validation and a `Serializer` for response formatting, but data persistence is up to you.
 
-# Membuka GUI Database (Prisma Studio)
-npm run db:studio
-
-# Migrasi Database Dan Seed (Development - Reset Total default option for development)
-npm run db:reset
-
-# Deploy ke Production
-npm run prisma:deploy
-```
-
-> **Catatan:** Script `compile-schema.js` akan otomatis berjalan sebelum perintah prisma di atas dieksekusi.
-
-### 5. Generate JWT Secret
+### 4. Generate JWT Secret
 
 Jika Anda perlu me-refresh secret key JWT:
 
@@ -259,7 +205,7 @@ Jika Anda perlu me-refresh secret key JWT:
 npm run generate:jwt
 ```
 
-### 6. Maintenance (Clear Config)
+### 5. Maintenance (Clear Config)
 
 Membersihkan cache framework, NPM, build artifacts, dan temporary files (sangat berguna jika mengalami isu cache aneh atau ingin reset environment development).
 
@@ -281,14 +227,10 @@ src/
 ├── controllers/     # Logika Request & Response
 ├── services/        # Business Logic
 ├── routes/          # Definisi Route API
-├── models/          # Definisi Schema Prisma per Model
 ├── middleware/      # Auth, Validation, Error Handling
 ├── schema/          # Zod Validation Schemas
 ├── utils/           # Helper Functions
 └── index.ts         # App Entry Point
-prisma/
-├── schema.prisma    # [GENERATED] Jangan edit file ini
-└── base.prisma.template # Konfigurasi Datasource & Generator
 ```
 
 ## 📝 Lisensi
@@ -299,24 +241,17 @@ MIT
 
 ## 🚀 Deployment Guide
 
-### 1) Build & Generate Prisma Client (Otomatis)
+### 1) Build
 
 - Build: `npm run build`
 - Start (dev): `npm run start`
 - Start (prod): `npm run start:prod`
-- Hooks otomatis:
-  - `prebuild`, `prestart`, dan `prestart:prod` akan memanggil `npm run prisma:generate` sehingga Prisma Client selalu tersedia tanpa error.
 
 ### 2) Production Environment
 
 - Pastikan `.env` berisi kredensial production:
-  - `DATABASE_URL` dan `DATABASE_PROVIDER` (mysql/postgresql)
   - `JWT_SECRET` (gunakan `npm run generate:jwt` untuk mengganti)
-- Terapkan migrasi production (tanpa reset data):
-
-```bash
-npm run prisma:deploy
-```
+  - Database credentials (sesuai pilihan ORM/DB Anda)
 
 ### 3) Menjalankan dengan PM2
 
@@ -417,7 +352,6 @@ sudo systemctl reload apache2
 
 ### 6) Checklist Produksi
 
-- `npm run prisma:deploy` sukses dan tabel terbentuk
 - `pm2 status` menunjukkan proses hidup
 - Proxy (Nginx/Apache) menuju port aplikasi (default 4000)
 - `.env` aman dan tidak di-commit ke repository

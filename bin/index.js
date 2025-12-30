@@ -2,8 +2,51 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, spawn } = require('child_process');
 const readline = require('readline');
+
+// --- Helper Functions for Animation ---
+
+async function spin(text, fn) {
+  const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+  let i = 0;
+  process.stdout.write(`\x1b[?25l`); // Hide cursor
+  
+  const interval = setInterval(() => {
+    process.stdout.write(`\r\x1b[36m${frames[i]} ${text}\x1b[0m`);
+    i = (i + 1) % frames.length;
+  }, 80);
+
+  try {
+    const result = await fn();
+    clearInterval(interval);
+    process.stdout.write(`\r\x1b[32m✔ ${text}\x1b[0m\n`);
+    return result;
+  } catch (e) {
+    clearInterval(interval);
+    process.stdout.write(`\r\x1b[31m✖ ${text}\x1b[0m\n`);
+    throw e;
+  } finally {
+    process.stdout.write(`\x1b[?25h`); // Show cursor
+  }
+}
+
+function runCommand(cmd, cwd) {
+  return new Promise((resolve, reject) => {
+    // Use spawn to capture output or run silently
+    // Using shell: true to handle cross-platform command execution
+    const child = spawn(cmd, { cwd, shell: true, stdio: 'pipe' });
+    let output = '';
+    
+    child.stdout.on('data', (data) => { output += data.toString(); });
+    child.stderr.on('data', (data) => { output += data.toString(); });
+    
+    child.on('close', (code) => {
+      if (code === 0) resolve(output);
+      else reject(new Error(`Command failed with code ${code}\n${output}`));
+    });
+  });
+}
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -93,10 +136,10 @@ switch (command) {
     runDev();
     break;
   case 'start':
-    runStart();
+    (async () => { await runStart(); })();
     break;
   case 'build':
-    runBuild();
+    (async () => { await runBuild(); })();
     break;
   case 'upgrade':
     (async () => {
@@ -115,23 +158,6 @@ switch (command) {
 function runDev() {
   console.log('🚀 Starting Lapeh in development mode...');
   try {
-    // Generate Prisma Client before starting
-    console.log('🔄 Generating Prisma Client...');
-    const compileSchemaPath = path.join(process.cwd(), 'scripts/compile-schema.js');
-    if (fs.existsSync(compileSchemaPath)) {
-        try {
-            execSync('node scripts/compile-schema.js', { stdio: 'inherit' });
-        } catch (e) {
-            console.warn('⚠️  Failed to run compile-schema.js', e.message);
-        }
-    }
-    
-    try {
-        execSync('npx prisma generate', { stdio: 'inherit' });
-    } catch (e) {
-        console.warn('⚠️  Failed to run prisma generate. Continuing...', e.message);
-    }
-
     const tsNodePath = require.resolve('ts-node/register');
     const tsConfigPathsPath = require.resolve('tsconfig-paths/register');
     
@@ -165,8 +191,10 @@ function runDev() {
   }
 }
 
-function runStart() {
-  console.log('🚀 Starting Lapeh production server...');
+async function runStart() {
+  await spin('Starting Lapeh production server...', async () => {
+     await new Promise(r => setTimeout(r, 1500)); // Simulate startup checks animation
+  });
   
   let bootstrapPath;
   try {
@@ -243,23 +271,6 @@ function runStart() {
 function runBuild() {
   console.log('🛠️  Building Lapeh project...');
   
-  const compileSchemaPath = path.join(process.cwd(), 'scripts/compile-schema.js');
-  if (fs.existsSync(compileSchemaPath)) {
-      try {
-          execSync('node scripts/compile-schema.js', { stdio: 'inherit' });
-      } catch (e) {
-          console.error('❌ Failed to compile schema.');
-          process.exit(1);
-      }
-  }
-
-  try {
-      execSync('npx prisma generate', { stdio: 'inherit' });
-  } catch (e) {
-      console.error('❌ Failed to generate prisma client.');
-      process.exit(1);
-  }
-
   try {
       execSync('npx tsc -p tsconfig.build.json && npx tsc-alias -p tsconfig.build.json', { stdio: 'inherit' });
   } catch (e) {
@@ -291,10 +302,7 @@ async function upgradeProject() {
     'tsconfig.json',
     'README.md',
     'ecosystem.config.js',
-    'src/redis.ts',
-    'src/prisma.ts',
-    'prisma/base.prisma.template', // Sync base template for upgrade
-    'prisma.config.ts' // Sync prisma config for upgrade
+    'src/redis.ts'
   ];
 
   function syncDirectory(src, dest, clean = false) {
@@ -329,25 +337,6 @@ async function upgradeProject() {
             }
         }
       }
-    }
-  }
-
-  // Rename .model -> .prisma (Legacy migration)
-  const modelsDir = path.join(currentDir, 'src', 'models');
-  if (fs.existsSync(modelsDir)) {
-    console.log('🔄 Checking for legacy .model files...');
-    const files = fs.readdirSync(modelsDir);
-    let renamedCount = 0;
-    files.forEach(file => {
-      if (file.endsWith('.model')) {
-        const oldPath = path.join(modelsDir, file);
-        const newPath = path.join(modelsDir, file.replace('.model', '.prisma'));
-        fs.renameSync(oldPath, newPath);
-        renamedCount++;
-      }
-    });
-    if (renamedCount > 0) {
-      console.log(`✅ Migrated ${renamedCount} files from .model to .prisma`);
     }
   }
 
@@ -497,61 +486,31 @@ function createProject(skipFirstArg = false) {
   };
 
   (async () => {
+    // Animation Lapeh "L"
+    const lFrames = [
+      "██╗     ",
+      "██║     ",
+      "██║     ",
+      "██║     ",
+      "███████╗",
+      "╚══════╝"
+    ];
+
+    console.clear();
+    console.log('\n');
+    for (let i = 0; i < lFrames.length; i++) {
+        await new Promise(r => setTimeout(r, 100));
+        console.log(`\x1b[36m   ${lFrames[i]}\x1b[0m`);
+    }
+    console.log('\n\x1b[36m   L A P E H   F R A M E W O R K\x1b[0m\n');
+    await new Promise(r => setTimeout(r, 800));
+
     console.log(`🚀 Creating a new API Lapeh project in ${projectDir}...`);
     fs.mkdirSync(projectDir);
 
-    console.log("\n--- ORM Configuration ---");
-    let usePrisma = true;
-    
-    if (!useDefaults) {
-      const ormChoice = await selectOption("Apakah ingin menggunakan ORM (Prisma)?", [
-        { key: "Y", label: "Ya (Disarankan)" },
-        { key: "T", label: "Tidak (Setup Manual)" }
-      ]);
-      usePrisma = ormChoice.key === "Y";
-    }
-
-    let dbType, host, port, user, password, dbName;
-    let dbUrl = "";
-    let dbProvider = "postgresql";
-
-    if (usePrisma) {
-      if (useDefaults) {
-         console.log("ℹ️  Using default database configuration (PostgreSQL)...");
-         dbType = { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" };
-         host = "localhost";
-         port = "5432";
-         user = "postgres";
-         password = "password";
-         dbName = projectName.replace(/-/g, '_');
-      } else {
-         console.log("\n--- Database Configuration ---");
-         dbType = await selectOption("Database apa yang akan digunakan?", [
-           { key: "pgsql", label: "PostgreSQL", provider: "postgresql", defaultPort: "5432" },
-           { key: "mysql", label: "MySQL", provider: "mysql", defaultPort: "3306" },
-         ]);
-
-         host = await ask("Database Host", "localhost");
-         port = await ask("Database Port", dbType.defaultPort);
-         user = await ask("Database User", "root");
-         password = await ask("Database Password", "");
-         dbName = await ask("Database Name", projectName.replace(/-/g, '_'));
-      }
-      
-      dbProvider = dbType.provider;
-      if (dbType.key === "pgsql") {
-        dbUrl = `postgresql://${user}:${password}@${host}:${port}/${dbName}?schema=public`;
-      } else if (dbType.key === "mysql") {
-        dbUrl = `mysql://${user}:${password}@${host}:${port}/${dbName}`;
-      }
-    } else {
-       console.log("ℹ️  Skipping ORM setup. You will need to configure your own database access.");
-    }
-    
     const ignoreList = [
       'node_modules', 'dist', '.git', '.env', 'bin', 'lib', 
-      'package-lock.json', '.DS_Store', 'prisma/migrations', 
-      'prisma/dev.db', 'prisma/dev.db-journal', 'website', 
+      'package-lock.json', '.DS_Store', 'prisma', 'website', 
       'init', 'test-local-run', 'coverage', 'doc', projectName
     ];
 
@@ -562,7 +521,6 @@ function createProject(skipFirstArg = false) {
         const srcPath = path.join(src, entry.name);
         const destPath = path.join(dest, entry.name);
 
-        if (entry.name === 'migrations' && srcPath.includes('prisma')) continue;
 
         if (entry.isDirectory()) {
           fs.mkdirSync(destPath);
@@ -587,17 +545,6 @@ function createProject(skipFirstArg = false) {
     
     if (fs.existsSync(envExamplePath)) {
       let envContent = fs.readFileSync(envExamplePath, 'utf8');
-      if (usePrisma) {
-        envContent = envContent.replace(/DATABASE_URL=".+"/g, `DATABASE_URL="${dbUrl}"`);
-        envContent = envContent.replace(/DATABASE_URL=.+/g, `DATABASE_URL="${dbUrl}"`);
-        envContent = envContent.replace(/DATABASE_PROVIDER=".+"/g, `DATABASE_PROVIDER="${dbProvider}"`);
-        envContent = envContent.replace(/DATABASE_PROVIDER=.+/g, `DATABASE_PROVIDER="${dbProvider}"`);
-      } else {
-        envContent = envContent.replace(/DATABASE_URL=".+"/g, `DATABASE_URL=""`);
-        envContent = envContent.replace(/DATABASE_URL=.+/g, `DATABASE_URL=""`);
-        envContent = envContent.replace(/DATABASE_PROVIDER=".+"/g, `DATABASE_PROVIDER="none"`);
-        envContent = envContent.replace(/DATABASE_PROVIDER=.+/g, `DATABASE_PROVIDER="none"`);
-      }
       fs.writeFileSync(envPath, envContent);
     }
 
@@ -614,14 +561,7 @@ function createProject(skipFirstArg = false) {
        packageJson.dependencies["lapeh"] = `file:${lapehPath}`;
     }
 
-    // Ensure @prisma/client is in dependencies for the new project
-    if (usePrisma) {
-       packageJson.dependencies["@prisma/client"] = "^6.0.0";
-       packageJson.prisma = {
-         seed: "npx ts-node -r tsconfig-paths/register prisma/seed.ts"
-       };
-    }
-    
+
     packageJson.version = '1.0.0';
     delete packageJson.bin;
     delete packageJson.peerDependencies;
@@ -654,64 +594,28 @@ function createProject(skipFirstArg = false) {
     }
 
     const prismaBaseFile = path.join(projectDir, "prisma", "base.prisma.template");
-    if (usePrisma && fs.existsSync(prismaBaseFile)) {
-       let baseContent = fs.readFileSync(prismaBaseFile, "utf8");
-       // Update provider
-       baseContent = baseContent.replace(
-        /(datasource\s+db\s+\{[\s\S]*?provider\s*=\s*")[^"]+(")/, 
-        `$1${dbProvider}$2`
-      );
-      fs.writeFileSync(prismaBaseFile, baseContent);
-    }
+    // Removed Prisma base file handling
 
-    console.log('📦 Installing dependencies...');
     try {
-      execSync('npm install', { cwd: projectDir, stdio: 'inherit' });
+      await spin('Installing dependencies...', async () => {
+          await runCommand('npm install', projectDir);
+      });
     } catch (e) {
       console.error('❌ Error installing dependencies.');
+      console.error(e.message);
       process.exit(1);
     }
 
     try {
-      execSync('npm run generate:jwt', { cwd: projectDir, stdio: 'inherit' });
+       // Also silence the JWT generation output or animate it if needed, but for now just silence/pipe
+       // Or keep inherit if user wants to see the key.
+       // The original code used 'inherit', and printed "✅ JWT Secret generated..."
+       // Let's keep it simple or use runCommand to just do it silently.
+       await runCommand('npm run generate:jwt', projectDir);
+       console.log('✅ JWT Secret generated.');
     } catch (e) {}
 
-    if (usePrisma) {
-      console.log('🗄️ Setting up database...');
-      try {
-        execSync('node scripts/compile-schema.js', { cwd: projectDir, stdio: 'inherit' });
-        
-        console.log('   Running migration...');
-        if (dbProvider === 'mongodb') {
-           execSync('npx prisma db push', { cwd: projectDir, stdio: 'inherit' });
-        } else {
-           // For Prisma v7, ensure prisma.config.ts is used/detected
-           execSync('npx prisma migrate dev --name init_setup', { cwd: projectDir, stdio: 'inherit' });
-        }
-
-        // Explicitly generate Prisma Client to ensure .prisma/client/default exists
-        console.log('   Generating Prisma Client...');
-        execSync('npx prisma generate', { cwd: projectDir, stdio: 'inherit' });
-
-        let runSeed = false;
-        if (!useDefaults) {
-           const seedChoice = await selectOption("Jalankan seeder?", [
-             { key: "Y", label: "Ya" },
-             { key: "T", label: "Tidak" }
-           ]);
-           runSeed = seedChoice.key === "Y";
-        } else {
-            runSeed = isFull;
-        }
-
-        if (runSeed) {
-           console.log('   Seeding database...');
-           execSync('npm run db:seed', { cwd: projectDir, stdio: 'inherit' });
-        }
-      } catch (e) {
-         console.warn('⚠️  Database setup failed. Check .env and run manually.');
-      }
-    }
+    // Removed Prisma setup steps
 
     console.log(`\n✅ Project ${projectName} created successfully!`);
     rl.close();

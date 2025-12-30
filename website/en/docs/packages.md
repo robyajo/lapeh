@@ -57,9 +57,8 @@ Package ini hanya dipakai saat koding, tidak ikut terinstall di server productio
 | **`typescript`** | Compiler TS. | Mengubah kode `.ts` menjadi `.js`. |
 | **`nodemon`** | Auto-restarter. | Restart server otomatis setiap kita save file. |
 | **`eslint`** | Linter (Polisi Kode). | Mencari potensi error dan variabel yang tidak terpakai. |
-| **`@types/*`** | Definisi Tipe. | Memberikan intellisense (saran kode) untuk library JavaScript biasa. |
-| **`prisma`** | Prisma CLI. | Alat untuk migrasi database (`prisma migrate`) dan generate client. |
-| **`tsc-alias`** | Path resolver. | Mengubah alias `@/core` menjadi path relatif `../core` saat build production. |
+| **`@types/*`** | Type Definitions. | Provides intellisense (code suggestions) for plain JavaScript libraries. |
+| **`tsc-alias`** | Path resolver. | Resolves `@/core` aliases to relative `../core` paths during production build. |
 
 ---
 

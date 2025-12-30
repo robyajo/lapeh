@@ -1,5 +1,16 @@
 import { Request, Response } from "express";
-import { prisma } from "@lapeh/core/database";
+import {
+  users,
+  roles,
+  permissions,
+  role_permissions,
+  user_roles,
+  user_permissions,
+  generateId,
+  Role,
+  Permission,
+  saveStore,
+} from "@lapeh/core/store";
 import { sendError, sendFastSuccess } from "@lapeh/utils/response";
 import { Validator } from "@lapeh/utils/validator";
 import { z } from "zod";
@@ -66,17 +77,24 @@ export async function createRole(req: Request, res: Response) {
   }
 
   const { name, slug, description } = await validator.validated();
-  // Manual unique check removed as it is handled by validator
 
-  const role = await prisma.roles.create({
-    data: {
-      name,
-      slug,
-      description: description || null,
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-  });
+  // Manual unique check
+  if (roles.find((r) => r.slug === slug)) {
+    sendError(res, 422, "Validation error", { slug: "Slug already exists" });
+    return;
+  }
+
+  const role: Role = {
+    id: generateId(),
+    name,
+    slug,
+    description: description || null,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
+  roles.push(role);
+  saveStore();
+
   sendFastSuccess(res, 201, roleSerializer, {
     status: "success",
     message: "Role created",
@@ -85,9 +103,6 @@ export async function createRole(req: Request, res: Response) {
 }
 
 export async function listRoles(_req: Request, res: Response) {
-  const roles = await prisma.roles.findMany({
-    orderBy: { id: "asc" },
-  });
   const serialized = roles.map((r: any) => ({ ...r, id: r.id.toString() }));
   sendFastSuccess(res, 200, roleListSerializer, {
     status: "success",
@@ -112,21 +127,32 @@ export async function updateRole(req: Request, res: Response) {
   }
   const { name, slug, description } = await validator.validated();
 
-  const role = await prisma.roles.findUnique({ where: { id: roleId } });
-  if (!role) {
+  const roleIndex = roles.findIndex((r) => r.id === roleId);
+  if (roleIndex === -1) {
     sendError(res, 404, "Role not found");
     return;
   }
-  // Manual unique check removed as it is handled by validator
-  const updated = await prisma.roles.update({
-    where: { id: roleId },
-    data: {
-      name: name ?? role.name,
-      slug: slug ?? role.slug,
-      description: description ?? role.description,
-      updated_at: new Date(),
-    },
-  });
+
+  // Manual unique check for update
+  if (
+    slug &&
+    slug !== roles[roleIndex].slug &&
+    roles.find((r) => r.slug === slug)
+  ) {
+    sendError(res, 422, "Validation error", { slug: "Slug already exists" });
+    return;
+  }
+
+  roles[roleIndex] = {
+    ...roles[roleIndex],
+    name: name ?? roles[roleIndex].name,
+    slug: slug ?? roles[roleIndex].slug,
+    description: description ?? roles[roleIndex].description,
+    updated_at: new Date(),
+  };
+  saveStore();
+
+  const updated = roles[roleIndex];
   sendFastSuccess(res, 200, roleSerializer, {
     status: "success",
     message: "Role updated",
@@ -137,14 +163,29 @@ export async function updateRole(req: Request, res: Response) {
 export async function deleteRole(req: Request, res: Response) {
   const { id } = req.params;
   const roleId = id;
-  const role = await prisma.roles.findUnique({ where: { id: roleId } });
-  if (!role) {
+  const roleIndex = roles.findIndex((r) => r.id === roleId);
+  if (roleIndex === -1) {
     sendError(res, 404, "Role not found");
     return;
   }
-  await prisma.role_permissions.deleteMany({ where: { role_id: roleId } });
-  await prisma.user_roles.deleteMany({ where: { role_id: roleId } });
-  await prisma.roles.delete({ where: { id: roleId } });
+
+  // Clean up relationships
+  // Remove from role_permissions
+  for (let i = role_permissions.length - 1; i >= 0; i--) {
+    if (role_permissions[i].role_id === roleId) {
+      role_permissions.splice(i, 1);
+    }
+  }
+
+  // Remove from user_roles
+  for (let i = user_roles.length - 1; i >= 0; i--) {
+    if (user_roles[i].role_id === roleId) {
+      user_roles.splice(i, 1);
+    }
+  }
+
+  roles.splice(roleIndex, 1);
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Role deleted",
@@ -164,17 +205,24 @@ export async function createPermission(req: Request, res: Response) {
     return;
   }
   const { name, slug, description } = await validator.validated();
-  // Manual unique check removed as it is handled by validator
 
-  const permission = await prisma.permissions.create({
-    data: {
-      name,
-      slug,
-      description: description || null,
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-  });
+  // Manual unique check
+  if (permissions.find((p) => p.slug === slug)) {
+    sendError(res, 422, "Validation error", { slug: "Slug already exists" });
+    return;
+  }
+
+  const permission: Permission = {
+    id: generateId(),
+    name,
+    slug,
+    description: description || null,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
+  permissions.push(permission);
+  saveStore();
+
   sendFastSuccess(res, 201, permissionSerializer, {
     status: "success",
     message: "Permission created",
@@ -183,9 +231,6 @@ export async function createPermission(req: Request, res: Response) {
 }
 
 export async function listPermissions(_req: Request, res: Response) {
-  const permissions = await prisma.permissions.findMany({
-    orderBy: { id: "asc" },
-  });
   const serialized = permissions.map((p: any) => ({
     ...p,
     id: p.id.toString(),
@@ -213,23 +258,32 @@ export async function updatePermission(req: Request, res: Response) {
   }
   const { name, slug, description } = await validator.validated();
 
-  const permission = await prisma.permissions.findUnique({
-    where: { id: permissionId },
-  });
-  if (!permission) {
+  const permIndex = permissions.findIndex((p) => p.id === permissionId);
+  if (permIndex === -1) {
     sendError(res, 404, "Permission not found");
     return;
   }
-  // Manual unique check removed as it is handled by validator
-  const updated = await prisma.permissions.update({
-    where: { id: permissionId },
-    data: {
-      name: name ?? permission.name,
-      slug: slug ?? permission.slug,
-      description: description ?? permission.description,
-      updated_at: new Date(),
-    },
-  });
+
+  if (
+    slug &&
+    slug !== permissions[permIndex].slug &&
+    permissions.find((p) => p.slug === slug)
+  ) {
+    sendError(res, 422, "Validation error", { slug: "Slug already exists" });
+    return;
+  }
+
+  permissions[permIndex] = {
+    ...permissions[permIndex],
+    name: name ?? permissions[permIndex].name,
+    slug: slug ?? permissions[permIndex].slug,
+    description: description ?? permissions[permIndex].description,
+    updated_at: new Date(),
+  };
+  saveStore();
+
+  const updated = permissions[permIndex];
+
   sendFastSuccess(res, 200, permissionSerializer, {
     status: "success",
     message: "Permission updated",
@@ -240,20 +294,29 @@ export async function updatePermission(req: Request, res: Response) {
 export async function deletePermission(req: Request, res: Response) {
   const { id } = req.params;
   const permissionId = id;
-  const permission = await prisma.permissions.findUnique({
-    where: { id: permissionId },
-  });
-  if (!permission) {
+
+  const permIndex = permissions.findIndex((p) => p.id === permissionId);
+  if (permIndex === -1) {
     sendError(res, 404, "Permission not found");
     return;
   }
-  await prisma.role_permissions.deleteMany({
-    where: { permission_id: permissionId },
-  });
-  await prisma.user_permissions.deleteMany({
-    where: { permission_id: permissionId },
-  });
-  await prisma.permissions.delete({ where: { id: permissionId } });
+
+  // Clean up relationships
+  for (let i = role_permissions.length - 1; i >= 0; i--) {
+    if (role_permissions[i].permission_id === permissionId) {
+      role_permissions.splice(i, 1);
+    }
+  }
+
+  for (let i = user_permissions.length - 1; i >= 0; i--) {
+    if (user_permissions[i].permission_id === permissionId) {
+      user_permissions.splice(i, 1);
+    }
+  }
+
+  permissions.splice(permIndex, 1);
+  saveStore();
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Permission deleted",
@@ -273,34 +336,30 @@ export async function assignRoleToUser(req: Request, res: Response) {
   }
   const { userId, roleId } = await validator.validated();
 
-  const user = await prisma.users.findUnique({
-    where: { id: userId },
-  });
+  const user = users.find((u) => u.id === userId);
   if (!user) {
     sendError(res, 404, "User not found");
     return;
   }
-  const role = await prisma.roles.findUnique({
-    where: { id: roleId },
-  });
+  const role = roles.find((r) => r.id === roleId);
   if (!role) {
     sendError(res, 404, "Role not found");
     return;
   }
-  await prisma.user_roles.upsert({
-    where: {
-      user_id_role_id: {
-        user_id: userId,
-        role_id: roleId,
-      },
-    },
-    create: {
+
+  const exists = user_roles.find(
+    (ur) => ur.user_id === userId && ur.role_id === roleId
+  );
+  if (!exists) {
+    user_roles.push({
+      id: generateId(),
       user_id: userId,
       role_id: roleId,
       created_at: new Date(),
-    },
-    update: {},
-  });
+    });
+    saveStore();
+  }
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Role assigned to user",
@@ -320,12 +379,12 @@ export async function removeRoleFromUser(req: Request, res: Response) {
   }
   const { userId, roleId } = await validator.validated();
 
-  await prisma.user_roles.deleteMany({
-    where: {
-      user_id: userId,
-      role_id: roleId,
-    },
-  });
+  for (let i = user_roles.length - 1; i >= 0; i--) {
+    if (user_roles[i].user_id === userId && user_roles[i].role_id === roleId) {
+      user_roles.splice(i, 1);
+    }
+  }
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Role removed from user",
@@ -345,34 +404,30 @@ export async function assignPermissionToRole(req: Request, res: Response) {
   }
   const { roleId, permissionId } = await validator.validated();
 
-  const role = await prisma.roles.findUnique({
-    where: { id: roleId },
-  });
+  const role = roles.find((r) => r.id === roleId);
   if (!role) {
     sendError(res, 404, "Role not found");
     return;
   }
-  const permission = await prisma.permissions.findUnique({
-    where: { id: permissionId },
-  });
+  const permission = permissions.find((p) => p.id === permissionId);
   if (!permission) {
     sendError(res, 404, "Permission not found");
     return;
   }
-  await prisma.role_permissions.upsert({
-    where: {
-      role_id_permission_id: {
-        role_id: roleId,
-        permission_id: permissionId,
-      },
-    },
-    create: {
+
+  const exists = role_permissions.find(
+    (rp) => rp.role_id === roleId && rp.permission_id === permissionId
+  );
+  if (!exists) {
+    role_permissions.push({
+      id: generateId(),
       role_id: roleId,
       permission_id: permissionId,
       created_at: new Date(),
-    },
-    update: {},
-  });
+    });
+    saveStore();
+  }
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Permission assigned to role",
@@ -392,12 +447,15 @@ export async function removePermissionFromRole(req: Request, res: Response) {
   }
   const { roleId, permissionId } = await validator.validated();
 
-  await prisma.role_permissions.deleteMany({
-    where: {
-      role_id: roleId,
-      permission_id: permissionId,
-    },
-  });
+  for (let i = role_permissions.length - 1; i >= 0; i--) {
+    if (
+      role_permissions[i].role_id === roleId &&
+      role_permissions[i].permission_id === permissionId
+    ) {
+      role_permissions.splice(i, 1);
+    }
+  }
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Permission removed from role",
@@ -417,34 +475,29 @@ export async function assignPermissionToUser(req: Request, res: Response) {
   }
   const { userId, permissionId } = await validator.validated();
 
-  const user = await prisma.users.findUnique({
-    where: { id: userId },
-  });
+  const user = users.find((u) => u.id === userId);
   if (!user) {
     sendError(res, 404, "User not found");
     return;
   }
-  const permission = await prisma.permissions.findUnique({
-    where: { id: permissionId },
-  });
+  const permission = permissions.find((p) => p.id === permissionId);
   if (!permission) {
     sendError(res, 404, "Permission not found");
     return;
   }
-  await prisma.user_permissions.upsert({
-    where: {
-      user_id_permission_id: {
-        user_id: userId,
-        permission_id: permissionId,
-      },
-    },
-    create: {
+
+  const exists = user_permissions.find(
+    (up) => up.user_id === userId && up.permission_id === permissionId
+  );
+  if (!exists) {
+    user_permissions.push({
+      id: generateId(),
       user_id: userId,
       permission_id: permissionId,
       created_at: new Date(),
-    },
-    update: {},
-  });
+    });
+  }
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Permission assigned to user",
@@ -464,12 +517,14 @@ export async function removePermissionFromUser(req: Request, res: Response) {
   }
   const { userId, permissionId } = await validator.validated();
 
-  await prisma.user_permissions.deleteMany({
-    where: {
-      user_id: userId,
-      permission_id: permissionId,
-    },
-  });
+  const index = user_permissions.findIndex(
+    (up) => up.user_id === userId && up.permission_id === permissionId
+  );
+  if (index !== -1) {
+    user_permissions.splice(index, 1);
+    saveStore();
+  }
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Permission removed from user",

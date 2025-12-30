@@ -2,67 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-12-30 - Major Release (No-ORM)
+
+### 💥 Breaking Changes
+
+- **No-ORM Architecture**: Lapeh Framework v3.0.0 fully removes the built-in Prisma ORM integration.
+  - Users are now free to choose any database library (Prisma, TypeORM, Drizzle, Kysely, or raw SQL).
+  - Removed `prisma` folder and related scripts (`compile-schema.js`).
+  - Removed `npx lapeh make:model` and `prisma:migrate` commands.
+  - `npx lapeh init` no longer asks for database configuration.
+
+### 🚀 New Features
+
+- **Simplified Project Structure**: Cleaner project root without ORM configuration files.
+- **Enhanced CLI**: Streamlined `init` process for faster project bootstrapping.
+- **Improved Performance**: Reduced startup time and dependencies size.
+
+### 🛠️ Maintenance
+
+- **Dependency Cleanup**: Removed `@prisma/client` and `prisma` from default dependencies.
+- **Documentation Update**: Comprehensive update to all documentation to reflect the No-ORM approach.
+
+---
+
 ### Fixed
 
 - **CLI**: Fixed `tsconfig.build.json` not being included in the published package, causing `lapeh build` to fail in generated projects.
 - **Prisma**: Updated seed command to use `tsconfig-paths/register` to support path aliases in `prisma/seed.ts`.
-
-### Fixed
-
-- **Core**: Removed explicit `datasources` configuration in `PrismaClient` initialization to prevent validation errors in generated projects. `PrismaClient` now relies on the environment variable defined in `schema.prisma`.
-
-## [2.6.6] - 2025-12-29
-
-### Fixed
-
-- Upgrade CLI command now respects local file dependencies (`file:...`) while upgrading npm dependencies for others.
-- Fixed `BigInt` serialization issues in Auth controller for MongoDB compatibility.
-- Fixed `sendSuccess` optional data parameter.
-
-## [2.6.5] - 2025-12-29
-
-### Fixed
-
-- **CLI**: Fixed `upgrade` command correctly handling `lapeh` dependency version (uses version number instead of local file path when installed via npm).
-- **CLI**: Fixed `upgrade` command updating `tsconfig.json` paths to point to `dist/lib` instead of `lib`.
-
-## [2.6.4] - 2025-12-29
-
-### Fixed
-
-- **CLI**: Fixed `tsconfig.json` paths in generated projects to correctly point `@lapeh/*` to `node_modules/lapeh/dist/lib/*`.
-- **Make Module**: Fixed import aliases in generated module files (uses `@lapeh/` instead of `@/`) and unused variable errors.
-- **Framework**: Made `data` parameter optional in `sendSuccess` helper.
-
-## [2.6.1] - 2025-12-29
-
-### Fixed
-
-- **CLI**: Fixed `--default` flag behavior (added support for singular `--default` alias).
-- **Prisma**: Fixed `prisma.config.ts` seed configuration to prevent warnings during init.
-
-## [2.6.0] - 2025-12-29
-
-### Added
-
-- **Modular Architecture**: Adopted a module-based structure similar to NestJS.
-  - Controllers, Services, and Prisma models are now grouped in `src/modules/<ModuleName>`.
-  - Added `src/config` for centralized configuration (CORS, App settings).
-- **CLI Commands**:
-  - Added `make:modul` (or `make:module`) to generate a full module structure (Controller, Route, Service, Prisma Model).
-  - Added interactive prompts in `npx lapeh-cli init` for ORM selection (Yes/No) and Database configuration (Postgres/MySQL).
-- **Prisma v7 Support**:
-  - Upgraded to Prisma v7.2.0.
-  - Added `prisma.config.ts` for modern Prisma configuration.
-  - Updated `compile-schema.js` to support new module structure.
-- **Telemetry**: Added basic telemetry to track CLI usage and crash reports.
-
-### Changed
-
-- **Folder Structure**: Cleaned up `src` root. `src/controllers` and `src/models` are deprecated in favor of `src/modules`.
-- **Database**: `DATABASE_URL` is now dynamically configured during init.
-- **Dependencies**: Updated `@prisma/client` and `prisma` to `7.2.0`.
-
-### Removed
-
-- Removed `make:controller` and `make:model` commands (replaced by `make:module`).

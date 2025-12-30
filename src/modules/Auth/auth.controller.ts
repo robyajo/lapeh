@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "@lapeh/core/database";
 import { sendError, sendFastSuccess } from "@lapeh/utils/response";
 import { Validator } from "@lapeh/utils/validator";
 import { getSerializer, createResponseSchema } from "@lapeh/core/serializer";
+import { users, roles, user_roles, saveStore } from "@lapeh/core/store";
+import { redis } from "@lapeh/core/redis";
 
 export const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 7 * 24 * 60 * 60;
 
@@ -96,39 +97,48 @@ export async function register(req: Request, res: Response) {
     return;
   }
   const { email, name, password } = await validator.validated();
-  // Manual unique check removed as it is handled by validator
-  const hash = await bcrypt.hash(password, 10);
-  const user = await prisma.users.create({
-    data: {
-      email,
-      name,
-      password: hash,
-      uuid: uuidv4(),
-      created_at: new Date(),
-      updated_at: new Date(),
-    },
-  });
 
-  const defaultRole = await prisma.roles.findUnique({
-    where: { slug: "user" },
-  });
+  // Manual unique check (In-Memory)
+  if (users.find((u) => u.email === email)) {
+    sendError(res, 422, "Validation error", { email: "Email already taken" });
+    return;
+  }
+
+  const hash = await bcrypt.hash(password, 10);
+
+  const newUser = {
+    id: (users.length + 1).toString(), // Simple ID generation
+    email,
+    name,
+    password: hash,
+    uuid: uuidv4(),
+    created_at: new Date(),
+    updated_at: new Date(),
+    avatar: null,
+    avatar_url: null,
+    email_verified_at: null,
+    remember_token: null,
+  };
+  users.push(newUser);
+
+  const defaultRole = roles.find((r) => r.slug === "user");
   if (defaultRole) {
-    await prisma.user_roles.create({
-      data: {
-        user_id: user.id,
-        role_id: defaultRole.id,
-        created_at: new Date(),
-      },
+    user_roles.push({
+      id: (user_roles.length + 1).toString(),
+      user_id: newUser.id,
+      role_id: defaultRole.id,
+      created_at: new Date(),
     });
   }
+  saveStore();
 
   sendFastSuccess(res, 201, registerSerializer, {
     status: "success",
-    message: "Registration successful",
+    message: "Registration successful. You can now login.",
     data: {
-      id: user.id.toString(),
-      email: user.email,
-      name: user.name,
+      id: newUser.id.toString(),
+      email: newUser.email,
+      name: newUser.name,
       role: defaultRole ? defaultRole.slug : "user",
     },
   });
@@ -145,16 +155,9 @@ export async function login(req: Request, res: Response) {
     return;
   }
   const { email, password } = await validator.validated();
-  const user = await prisma.users.findUnique({
-    where: { email },
-    include: {
-      user_roles: {
-        include: {
-          role: true,
-        },
-      },
-    },
-  });
+
+  const user = users.find((u) => u.email === email);
+
   if (!user) {
     sendError(res, 401, "Email not registered", {
       field: "email",
@@ -162,7 +165,7 @@ export async function login(req: Request, res: Response) {
     });
     return;
   }
-  const ok = await bcrypt.compare(password, user.password);
+  const ok = await bcrypt.compare(password, user.password || "");
   if (!ok) {
     sendError(res, 401, "Invalid credentials", {
       field: "password",
@@ -175,10 +178,18 @@ export async function login(req: Request, res: Response) {
     sendError(res, 500, "Server misconfigured");
     return;
   }
+
+  // Find user roles
+  const userRoleLinks = user_roles.filter((ur) => ur.user_id === user.id);
+  const userRoleObjects = userRoleLinks
+    .map((ur) => roles.find((r) => r.id === ur.role_id))
+    .filter((r) => r);
+
   const primaryUserRole =
-    user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
-      ? user.user_roles[0].role.slug
+    userRoleObjects.length > 0 && userRoleObjects[0]
+      ? userRoleObjects[0].slug
       : "user";
+
   const accessExpiresInSeconds = ACCESS_TOKEN_EXPIRES_IN_SECONDS;
   const accessExpiresAt = new Date(
     Date.now() + accessExpiresInSeconds * 1000
@@ -218,32 +229,54 @@ export async function me(req: Request, res: Response) {
     sendError(res, 401, "Unauthorized");
     return;
   }
-  const user = await prisma.users.findUnique({
-    where: { id: payload.userId },
-    include: {
-      user_roles: {
-        include: {
-          role: true,
-        },
-      },
-    },
-  });
+
+  // Try to get from Redis
+  const cachedUser = await redis.get(`user:${payload.userId}`);
+  if (cachedUser) {
+    const user = JSON.parse(cachedUser);
+    sendFastSuccess(res, 200, userProfileSerializer, {
+      status: "success",
+      message: "User profile (cached)",
+      data: user,
+    });
+    return;
+  }
+
+  const user = users.find((u) => u.id === payload.userId);
+
   if (!user) {
     sendError(res, 404, "User not found");
     return;
   }
-  const { password, remember_token, ...rest } = user as any;
+
+  // Find user roles
+  const userRoleLinks = user_roles.filter((ur) => ur.user_id === user.id);
+  const userRoleObjects = userRoleLinks
+    .map((ur) => roles.find((r) => r.id === ur.role_id))
+    .filter((r) => r);
+
+  const primaryRoleSlug =
+    userRoleObjects.length > 0 ? userRoleObjects[0]?.slug : "user";
+
+  const { password, ...rest } = user;
+  const userData = {
+    ...rest,
+    id: user.id.toString(),
+    role: primaryRoleSlug,
+  };
+
+  // Cache in Redis for 1 hour
+  await redis.set(
+    `user:${payload.userId}`,
+    JSON.stringify(userData),
+    "EX",
+    3600
+  );
+
   sendFastSuccess(res, 200, userProfileSerializer, {
     status: "success",
     message: "User profile",
-    data: {
-      ...rest,
-      id: user.id.toString(),
-      role:
-        user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
-          ? user.user_roles[0].role.slug
-          : "user",
-    },
+    data: userData,
   });
 }
 
@@ -284,24 +317,25 @@ export async function refreshToken(req: Request, res: Response) {
       sendError(res, 401, "Invalid refresh token");
       return;
     }
-    const user = await prisma.users.findUnique({
-      where: { id: decoded.userId },
-      include: {
-        user_roles: {
-          include: {
-            role: true,
-          },
-        },
-      },
-    });
+
+    const user = users.find((u) => u.id === decoded.userId);
+
     if (!user) {
       sendError(res, 401, "Invalid refresh token");
       return;
     }
+
+    // Find user roles
+    const userRoleLinks = user_roles.filter((ur) => ur.user_id === user.id);
+    const userRoleObjects = userRoleLinks
+      .map((ur) => roles.find((r) => r.id === ur.role_id))
+      .filter((r) => r);
+
     const primaryUserRole =
-      user.user_roles && user.user_roles.length > 0 && user.user_roles[0].role
-        ? user.user_roles[0].role.slug
+      userRoleObjects.length > 0 && userRoleObjects[0]
+        ? userRoleObjects[0].slug
         : "user";
+
     const accessExpiresInSeconds = ACCESS_TOKEN_EXPIRES_IN_SECONDS;
     const accessExpiresAt = new Date(
       Date.now() + accessExpiresInSeconds * 1000
@@ -357,21 +391,22 @@ export async function updateAvatar(req: Request, res: Response) {
   const avatar = file.filename;
   const avatar_url =
     process.env.AVATAR_BASE_URL || `/uploads/avatars/${file.filename}`;
-  const updated = await prisma.users.update({
-    where: { id: userId },
-    data: {
-      avatar,
-      avatar_url,
-      updated_at: new Date(),
-    },
-  });
-  const { password, remember_token, ...rest } = updated as any;
-  // Note: user_roles might not be fetched in update, so role defaults to "user" or fetched if needed.
-  // Ideally we should refetch or pass existing role.
-  // For now assuming role is preserved or handled by frontend state, but API should return it.
-  // Let's rely on nullable role or simple "user" fallback if not present in `updated`.
-  // Actually `update` returns what was updated. Relations are not included unless specified.
-  // For now we will return it compatible with userProfileSchema.
+
+  const userIndex = users.findIndex((u) => u.id === userId);
+  if (userIndex === -1) {
+    sendError(res, 404, "User not found");
+    return;
+  }
+
+  users[userIndex] = {
+    ...users[userIndex],
+    avatar,
+    avatar_url,
+    updated_at: new Date(),
+  };
+
+  const updated = users[userIndex];
+  const { password, ...rest } = updated;
 
   sendFastSuccess(res, 200, userProfileSerializer, {
     status: "success",
@@ -400,14 +435,15 @@ export async function updatePassword(req: Request, res: Response) {
     return;
   }
   const { currentPassword, newPassword } = await validator.validated();
-  const user = await prisma.users.findUnique({
-    where: { id: payload.userId },
-  });
-  if (!user) {
+
+  const userIndex = users.findIndex((u) => u.id === payload.userId);
+  if (userIndex === -1) {
     sendError(res, 404, "User not found");
     return;
   }
-  const ok = await bcrypt.compare(currentPassword, user.password);
+
+  const user = users[userIndex];
+  const ok = await bcrypt.compare(currentPassword, user.password || "");
   if (!ok) {
     sendError(res, 401, "Invalid credentials", {
       field: "currentPassword",
@@ -416,13 +452,13 @@ export async function updatePassword(req: Request, res: Response) {
     return;
   }
   const hash = await bcrypt.hash(newPassword, 10);
-  await prisma.users.update({
-    where: { id: user.id },
-    data: {
-      password: hash,
-      updated_at: new Date(),
-    },
-  });
+
+  users[userIndex] = {
+    ...user,
+    password: hash,
+    updated_at: new Date(),
+  };
+
   sendFastSuccess(res, 200, voidSerializer, {
     status: "success",
     message: "Password updated successfully",
@@ -446,17 +482,31 @@ export async function updateProfile(req: Request, res: Response) {
   }
   const { name, email } = await validator.validated();
   const userId = payload.userId;
-  // Manual unique check removed as it is handled by validator
 
-  const updated = await prisma.users.update({
-    where: { id: userId },
-    data: {
-      name,
-      email,
-      updated_at: new Date(),
-    },
-  });
-  const { password, remember_token, ...rest } = updated as any;
+  // Manual unique check (In-Memory)
+  if (users.find((u) => u.email === email && u.id !== userId)) {
+    sendError(res, 422, "Validation error", { email: "Email already taken" });
+    return;
+  }
+
+  const userIndex = users.findIndex((u) => u.id === userId);
+  if (userIndex === -1) {
+    sendError(res, 404, "User not found");
+    return;
+  }
+
+  users[userIndex] = {
+    ...users[userIndex],
+    name,
+    email,
+    updated_at: new Date(),
+  };
+  saveStore();
+  await redis.del(`user:${userId}`);
+
+  const updated = users[userIndex];
+  const { password, ...rest } = updated;
+
   sendFastSuccess(res, 200, userProfileSerializer, {
     status: "success",
     message: "Profile updated successfully",

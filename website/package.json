@@ -5,13 +5,10 @@
   "scripts": {
     "dev": "node scripts/sync-docs.js && vitepress dev",
     "build": "node scripts/sync-docs.js && vitepress build",
-    "preview": "vitepress preview",
-    "postinstall": "prisma generate"
+    "preview": "vitepress preview"
   },
   "dependencies": {
-    "@prisma/client": "5.22.0",
     "chart.js": "^4.5.1",
-    "prisma": "5.22.0",
     "vitepress": "^1.5.0",
     "vue": "^3.5.0",
     "vue-chartjs": "^5.3.3"

@@ -24,30 +24,31 @@ module.exports = async function handler(req, res) {
     const { command, nodeVersion, cliVersion, osPlatform, osRelease, error, stack } = req.body;
 
     try {
-      if (error) {
-        await prisma.crashReport.create({
-          data: {
-            command: command || 'unknown',
-            nodeVersion: nodeVersion || 'unknown',
-            cliVersion: cliVersion || 'unknown',
-            osPlatform: osPlatform || 'unknown',
-            error,
-            stack,
-            timestamp: new Date()
-          }
-        });
-      } else {
-        await prisma.telemetry.create({
-          data: {
-            command,
-            nodeVersion,
-            cliVersion: cliVersion || 'unknown',
-            osPlatform,
-            osRelease: osRelease || '',
-            timestamp: new Date()
-          }
-        });
-      }
+      // if (error) {
+      //   await prisma.crashReport.create({
+      //     data: {
+      //       command: command || 'unknown',
+      //       nodeVersion: nodeVersion || 'unknown',
+      //       cliVersion: cliVersion || 'unknown',
+      //       osPlatform: osPlatform || 'unknown',
+      //       error,
+      //       stack,
+      //       timestamp: new Date()
+      //     }
+      //   });
+      // } else {
+      //   await prisma.telemetry.create({
+      //     data: {
+      //       command,
+      //       nodeVersion,
+      //       cliVersion: cliVersion || 'unknown',
+      //       osPlatform,
+      //       osRelease: osRelease || '',
+      //       timestamp: new Date()
+      //     }
+      //   });
+      // }
+      console.log('Telemetry received:', { command, error });
       res.status(200).json({ status: 'ok' });
     } catch (e) {
       console.error('Telemetry Error:', e);

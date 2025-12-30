@@ -12,11 +12,7 @@ Referensi cepat untuk perintah dan kode yang sering digunakan.
 | **`npm run lint:fix`**               | Perbaiki kode kotor otomatis.                |
 | **`npm run make:module <Name>`**     | Buat Controller, Route, & Model sekaligus.   |
 | **`npm run make:controller <Name>`** | Buat Controller saja.                        |
-| **`npm run make:model <Name>`**      | Buat Model Prisma saja.                      |
-| **`npm run prisma:migrate`**         | Apply perubahan schema ke DB lokal.          |
-| **`npm run db:studio`**              | Buka GUI Database.                           |
 | **`npm run db:seed`**                | Isi data dummy.                              |
-| **`npm run db:reset`**               | Hapus DB & mulai dari nol.                   |
 
 ## 🛡️ Validator Rules (Simple Syntax)
 

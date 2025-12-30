@@ -60,3 +60,27 @@ D. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu d
  7. npm run build
  8. npm run start
  9. bersihkan semua project ujicoba setelah semuanya selesai
+
+
+
+ E. Pengurangan Fiture
+ 1. hilangkan prisma dari semua configurasi disini saya tidak ingin mmenggunakan prisma lagi , Untuk orm saya full dari user di framework ini tidak menyediakan orm dan perbaharui semua documentasi(
+    a. E:\PROJECT\ANY\2026\lapeh\doc
+    b. E:\PROJECT\ANY\2026\lapeh\website
+    c. E:\PROJECT\ANY\2026\lapeh\README.md
+    d. E:\PROJECT\ANY\2026\lapeh\package.json
+ ),
+ 2. ganti untuk cotroler barc, auth ( fungsi me gunakan redis) dan hapus pets, sementara agar user dapat menguji routenya  menggunkan  database.json (json server),
+ 3. cari dan uji sampai semua prisma hilang dari package framework ini
+ 4. upgrade versi framework jadi 3.0.0
+
+E. Setelah semua di lakukan lakukan pengujian sebagai user ( lakukan semua itu dalam folder pengjujian) pastikan semua berjalan lancar
+ 1. buat project baru
+ 2. buat project baru --full
+ 3. buat project baru --default
+ 4. buat project baru --y
+ 5. npx lapeh@latest upgrade
+ 6. npm run dev
+ 7. npm run build
+ 8. npm run start
+ 9. bersihkan semua project ujicoba setelah semuanya selesai
