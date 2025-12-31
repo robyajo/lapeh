@@ -395,7 +395,6 @@ async function upgradeProject() {
 
   const filesToSync = [
     'lib',
-    'scripts',
     'docker-compose.yml',
     '.env.example',
     '.vscode',
@@ -404,6 +403,12 @@ async function upgradeProject() {
     'ecosystem.config.js',
     'src/redis.ts'
   ];
+
+  const scriptsDir = path.join(currentDir, 'scripts');
+  if (fs.existsSync(scriptsDir)) {
+      console.log(`🗑️  Removing obsolete directory: ${scriptsDir}`);
+      fs.rmSync(scriptsDir, { recursive: true, force: true });
+  }
 
   const updateStats = {
       updated: [],
@@ -510,14 +515,32 @@ async function upgradeProject() {
 
   const templatePackageJson = require(path.join(templateDir, 'package.json'));
 
+  // Define scripts to remove (those that depend on the scripts folder)
+  const scriptsToRemove = ['first', 'generate:jwt', 'make:module', 'make:modul', 'config:clear', 'release'];
+
+  // Filter template scripts
+  const filteredTemplateScripts = Object.keys(templatePackageJson.scripts)
+    .filter(key => !scriptsToRemove.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = templatePackageJson.scripts[key];
+      return obj;
+    }, {});
+
   currentPackageJson.scripts = {
     ...currentPackageJson.scripts,
-    ...templatePackageJson.scripts,
+    ...filteredTemplateScripts,
     "dev": "lapeh dev",
     "start": "lapeh start",
     "build": "lapeh build",
     "start:prod": "lapeh start"
   };
+
+  // Clean up existing scripts that we want to remove
+  scriptsToRemove.forEach(script => {
+      if (currentPackageJson.scripts[script]) {
+          delete currentPackageJson.scripts[script];
+      }
+  });
 
   currentPackageJson.dependencies = {
     ...currentPackageJson.dependencies,
