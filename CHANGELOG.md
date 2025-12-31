@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable Update changes to this project will be documented in this file.
 
 ## [3.0.7] - 2025-12-30 - Documentation & CLI Update
 

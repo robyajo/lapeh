@@ -4,6 +4,16 @@ Updates on Lapeh Framework development, tutorials, and tips & tricks.
 
 ---
 
+## 🚀 [Release v3.0.14: Maintenance Release](./release-v3.0.14)
+
+_December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
+
+Routine maintenance and updates. [Read more →](./release-v3.0.14)
+
+---
+
+---
+
 ## 🚀 [Release v3.0.13: Maintenance Release](./release-v3.0.13)
 
 _December 31, 2025_ • 👤 Lapeh Team • 🏷️ _Release_
