@@ -639,21 +639,21 @@ function createProject(skipFirstArg = false) {
   };
 
   (async () => {
-    // Animation Lapeh "L"
-    const lFrames = [
-      "██╗     ",
-      "██║     ",
-      "██║     ",
-      "██║     ",
-      "███████╗",
-      "╚══════╝"
+    // Animation Lapeh "L A P E H"
+    const frames = [
+      "██╗      █████╗ ██████╗ ███████╗██╗  ██╗",
+      "██║     ██╔══██╗██╔══██╗██╔════╝██║  ██║",
+      "██║     ███████║██████╔╝█████╗  ███████║",
+      "██║     ██╔══██║██╔═══╝ ██╔══╝  ██╔══██║",
+      "███████╗██║  ██║██║     ███████╗██║  ██║",
+      "╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝"
     ];
 
     console.clear();
     console.log('\n');
-    for (let i = 0; i < lFrames.length; i++) {
+    for (let i = 0; i < frames.length; i++) {
         await new Promise(r => setTimeout(r, 100));
-        console.log(`\x1b[36m   ${lFrames[i]}\x1b[0m`);
+        console.log(`\x1b[36m   ${frames[i]}\x1b[0m`);
     }
     console.log('\n\x1b[36m   L A P E H   F R A M E W O R K\x1b[0m\n');
     await new Promise(r => setTimeout(r, 800));
@@ -662,7 +662,7 @@ function createProject(skipFirstArg = false) {
     fs.mkdirSync(projectDir);
 
     const ignoreList = [
-      'node_modules', 'dist', '.git', '.env', 'bin', 'lib', 
+      'node_modules', 'dist', '.git', '.env', 'bin', 'scripts',
       'package-lock.json', '.DS_Store', 'prisma', 'website', 
       'init', 'test-local-run', 'coverage', 'doc', projectName
     ];
@@ -734,6 +734,12 @@ function createProject(skipFirstArg = false) {
       "build": "lapeh build",
       "start:prod": "lapeh start"
     };
+
+    // Remove scripts that depend on the scripts folder
+    const scriptsToRemove = ['first', 'generate:jwt', 'make:module', 'make:modul', 'config:clear', 'release'];
+    scriptsToRemove.forEach(script => {
+        delete packageJson.scripts[script];
+    });
     
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
@@ -747,6 +753,11 @@ function createProject(skipFirstArg = false) {
         
         // Ensure @lapeh/* points to the installed package
         tsconfig.compilerOptions.paths["@lapeh/*"] = ["./node_modules/lapeh/dist/lib/*"];
+        
+        // Add ts-node configuration to allow compiling lapeh in node_modules
+        tsconfig["ts-node"] = {
+          "ignore": ["node_modules/(?!lapeh)"]
+        };
         
         fs.writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2));
       } catch (e) {
@@ -767,13 +778,29 @@ function createProject(skipFirstArg = false) {
     }
 
     try {
-       // Also silence the JWT generation output or animate it if needed, but for now just silence/pipe
-       // Or keep inherit if user wants to see the key.
-       // The original code used 'inherit', and printed "✅ JWT Secret generated..."
-       // Let's keep it simple or use runCommand to just do it silently.
-       await runCommand('npm run generate:jwt', projectDir);
+       // Inline JWT Generation Logic
+       const crypto = require('crypto');
+       const secret = crypto.randomBytes(64).toString('hex');
+       
+       let envContent = '';
+       if (fs.existsSync(envPath)) {
+         envContent = fs.readFileSync(envPath, 'utf8');
+       }
+       
+       if (envContent.match(/^JWT_SECRET=/m)) {
+         envContent = envContent.replace(/^JWT_SECRET=.*/m, `JWT_SECRET="${secret}"`);
+       } else {
+         if (envContent && !envContent.endsWith('\n')) {
+           envContent += '\n';
+         }
+         envContent += `JWT_SECRET="${secret}"\n`;
+       }
+       
+       fs.writeFileSync(envPath, envContent);
        console.log('✅ JWT Secret generated.');
-    } catch (e) {}
+    } catch (e) {
+       console.warn('⚠️ Failed to generate JWT secret automatically.');
+    }
 
     // Removed Prisma setup steps
 
