@@ -137,6 +137,7 @@ function showHelp() {
     console.log('  start           Start production server');
     console.log('  build           Build the project for production');
     console.log('  upgrade         Upgrade project files to match framework version');
+    console.log('  module <name>   Create a new module (controller, routes, etc.)');
     console.log('  help            Show this help message');
     console.log('\nOptions:');
     console.log('  --full          Create project with full example (auth, users, etc)');
@@ -173,6 +174,16 @@ switch (command) {
     (async () => {
       await upgradeProject();
     })();
+    break;
+  case 'make:module':
+  case 'module':
+    const moduleName = args[1];
+    if (!moduleName) {
+        console.error('❌ Please specify the module name.');
+        console.error('   Usage: npx lapeh module <ModuleName>');
+        process.exit(1);
+    }
+    createModule(moduleName);
     break;
   case 'init':
   case 'create':
@@ -584,6 +595,96 @@ async function upgradeProject() {
   }
 
   console.log('\n   Please check your .env file against .env.example for any new required variables.');
+}
+
+function createModule(moduleName) {
+  // Capitalize first letter
+  const name = moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
+  const lowerName = moduleName.toLowerCase();
+  
+  const currentDir = process.cwd();
+  // Support both src/modules (default) and just modules if user changed structure
+  const srcModulesDir = path.join(currentDir, 'src', 'modules');
+  const modulesDir = fs.existsSync(srcModulesDir) ? srcModulesDir : path.join(currentDir, 'modules');
+  
+  if (!fs.existsSync(path.join(currentDir, 'src')) && !fs.existsSync(modulesDir)) {
+      console.error('❌ Could not find src directory. Are you in a Lapeh project root?');
+      process.exit(1);
+  }
+
+  const targetDir = path.join(modulesDir, name);
+
+  if (fs.existsSync(targetDir)) {
+    console.error(`❌ Module ${name} already exists at ${targetDir}`);
+    process.exit(1);
+  }
+
+  fs.mkdirSync(targetDir, { recursive: true });
+
+  // Controller
+  const controllerContent = `import { Request, Response } from "express";
+import { sendSuccess } from "@lapeh/utils/response";
+// import * as ${name}Service from "./${lowerName}.service";
+
+export async function index(_req: Request, res: Response) {
+  sendSuccess(res, 200, "Index ${name}");
+}
+
+export async function show(req: Request, res: Response) {
+  const { id } = req.params;
+  sendSuccess(res, 200, "Show ${name} " + id);
+}
+
+export async function create(_req: Request, res: Response) {
+  sendSuccess(res, 201, "Create ${name}");
+}
+
+export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  sendSuccess(res, 200, "Update ${name} " + id);
+}
+
+export async function destroy(req: Request, res: Response) {
+  const { id } = req.params;
+  sendSuccess(res, 200, "Delete ${name} " + id);
+}
+`;
+
+  fs.writeFileSync(path.join(targetDir, `${lowerName}.controller.ts`), controllerContent);
+
+  // Service
+  const serviceContent = `
+export async function findAll() {
+  return [];
+}
+
+export async function findOne(_id: number) {
+  return null;
+}
+`;
+  fs.writeFileSync(path.join(targetDir, `${lowerName}.service.ts`), serviceContent);
+
+  // Route Stub
+  const routeContent = `import { Router } from "express";
+import * as ${name}Controller from "./${lowerName}.controller";
+
+const router = Router();
+
+router.get("/", ${name}Controller.index);
+router.get("/:id", ${name}Controller.show);
+router.post("/", ${name}Controller.create);
+router.put("/:id", ${name}Controller.update);
+router.delete("/:id", ${name}Controller.destroy);
+
+export default router;
+`;
+  fs.writeFileSync(path.join(targetDir, `${lowerName}.routes.ts`), routeContent);
+
+  console.log(`✅ Module ${name} created successfully at src/modules/${name}`);
+  console.log(`   - ${lowerName}.controller.ts`);
+  console.log(`   - ${lowerName}.service.ts`);
+  console.log(`   - ${lowerName}.routes.ts`);
+  console.log(`\n👉 Don't forget to register the route in src/routes/index.ts!`);
 }
 
 function createProject(skipFirstArg = false) {
